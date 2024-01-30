@@ -327,7 +327,7 @@
 
   function start() {
     WebAssembly.instantiateStreaming(
-      fetch("target/wasm-gc/release/build/main/main.wasm"),
+      fetch("target/wasm-gc/debug/build/main/main.wasm"),
       importObject
     ).then((obj) => {
       obj.instance.exports._start();
