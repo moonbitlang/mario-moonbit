@@ -404,7 +404,7 @@ pub fn generate(player_count : Int, w : Double, h : Double) ->
   let blockw = w / 16.0
   let blockh = h / 16.0 - 1.0
   let collide_list = generate_helper(blockw, blockh)
-  var start = 50.0
+  let mut start = 50.0
   let players = map(
     tolist(Array::make(player_count, Spawn::Player(Small, Standing))),
     fn(s) {

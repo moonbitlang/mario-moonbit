@@ -264,7 +264,7 @@ fn update_collidable(state : St, collid : Collidable,
 // (* Converts a keypress to a list of control keys, allowing more than one key
 // * to be processed each frame. *)
 fn translate_keys() -> List[Control] {
-  var res = List::Nil
+  let mut res = List::Nil
   if which.value {
     if pressed_keys.up {
       res = List::Cons(Control::Up, res)
