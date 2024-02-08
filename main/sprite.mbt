@@ -6,7 +6,7 @@ struct SpriteParams {
   src_offset : (Double, Double)
   bbox_offset : (Double, Double)
   bbox_size : (Double, Double)
-  loop : Bool
+  repeat : Bool
 }
 
 struct Sprite {
@@ -16,7 +16,7 @@ struct Sprite {
   mut img : Image
 }
 
-fn setup_sprite(loop : Bool, bbox_offset : (Double, Double),
+fn setup_sprite(repeat : Bool, bbox_offset : (Double, Double),
         bbox_size : (Double, Double), img_src : Image, max_frames : Int,
         max_ticks : Int, frame_size : (Double, Double),
         src_offset : (Double, Double)) -> SpriteParams {
@@ -28,7 +28,7 @@ fn setup_sprite(loop : Bool, bbox_offset : (Double, Double),
     src_offset,
     bbox_offset,
     bbox_size,
-    loop,
+    repeat,
   }
 }
 
@@ -43,7 +43,7 @@ fn setup_sprite_(img_src : Image, max_frames : Int, max_ticks : Int,
     src_offset,
     bbox_offset: (0.0, 0.0),
     bbox_size: frame_size,
-    loop: true,
+    repeat: true,
   }
 }
 
@@ -366,7 +366,7 @@ fn update_animation(spr : Sprite) {
   let curr_ticks = spr.ticks.value
   if curr_ticks >= spr.params.max_ticks {
     spr.ticks.value = 0
-    if spr.params.loop {
+    if spr.params.repeat {
       spr.frame.value = (spr.frame.value + 1) % spr.params.max_frames
     }
   } else {

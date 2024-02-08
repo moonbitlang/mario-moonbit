@@ -152,7 +152,7 @@ fn broad_phase(collid : Collidable, all_collids : List[Collidable], state : St) 
   let obj = get_obj(collid)
   filter(
     all_collids,
-    fn(c) {
+    fn(_c) {
       in_viewport(state.vpt, obj.pos) || is_player(collid) || out_of_viewport_below(
         state.vpt,
         obj.pos.y,
@@ -161,7 +161,7 @@ fn broad_phase(collid : Collidable, all_collids : List[Collidable], state : St) 
   )
 }
 
-// (*narrow_phase of collision is used in order to continuously loop through
+// (*narrow_phase of collision is used in order to continuously repeat through
 // *each of the collidable objects to constantly check if collisions are
 // *occurring.*)
 fn narrow_phase(c : Collidable, cs : List[Collidable], state : St) ->
@@ -382,7 +382,7 @@ fn update_helper(time : Double, state : St, objs : List[Collidable],
       }
       Some(p) => {
         let a = get_obj(p).pos
-        let Some(p) = last(players.value, fn(p) { get_obj(p).kill.not() })
+        let p = last(players.value, fn(p) { get_obj(p).kill.not() }).unwrap()
         let b = get_obj(p).pos
         let c = XY::make((a.x + b.x) * 0.5, (a.y + b.y) * 0.5)
         state.vpt = update(state.vpt, c)
