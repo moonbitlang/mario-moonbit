@@ -49,7 +49,7 @@ fn calc_fps(t0 : Double, t1 : Double) -> Double {
 }
 
 // (* Adds [i] to the score in [state] *)
-fn update_score(state : St, i : Int) {
+fn update_score(state : St, i : Int) -> Unit {
   state.score = state.score + i
 }
 
@@ -307,7 +307,7 @@ fn run_update_collid(state : St, collid : Collidable,
       o.crouch = false
       let player = match update_player(o, keys) {
         None => p
-        Some(new_typ, new_spr) => {
+        Some((new_typ, new_spr)) => {
           normalize_pos(o.pos, s.params, new_spr.params)
           Player(new_typ, new_spr, o)
         }
@@ -337,7 +337,7 @@ fn run_update_collid(state : St, collid : Collidable,
 }
 
 // (* Primary update function to update and persist a particle *)
-fn run_update_particle(state : St, part : Particle) {
+fn run_update_particle(state : St, part : Particle) -> Unit {
   process(part)
   let x = part.pos.x - state.vpt.pos.x
   let y = part.pos.y - state.vpt.pos.y
@@ -350,7 +350,7 @@ fn run_update_particle(state : St, part : Particle) {
 let which : Ref[Bool] = Ref::make(true)
 
 fn update_helper(time : Double, state : St, objs : List[Collidable],
-        parts : List[Particle]) {
+        parts : List[Particle]) -> Unit {
   if state.game_over == true {
     match first(players.value, fn(p) { get_obj(p).kill.not() }) {
       None => game_lose()
@@ -395,74 +395,74 @@ fn update_helper(time : Double, state : St, objs : List[Collidable],
   }
 }
 
-pub fn game_update(t : Double) {
+pub fn game_update(t : Double) -> Unit {
   update_helper(t, state, collid_objs.value, particles.value)
 }
 
-pub fn keydown_B() {
+pub fn keydown_B() -> Unit {
   pressed_keys.bbox = pressed_keys.bbox.lxor(1)
 }
 
-pub fn keydown_up() {
+pub fn keydown_up() -> Unit {
   pressed_keys.up = true
 }
 
-pub fn keydown_up2() {
+pub fn keydown_up2() -> Unit {
   pressed_keys.up2 = true
 }
 
-pub fn keydown_down() {
+pub fn keydown_down() -> Unit {
   pressed_keys.down = true
 }
 
-pub fn keydown_down2() {
+pub fn keydown_down2() -> Unit {
   pressed_keys.down2 = true
 }
 
-pub fn keydown_left() {
+pub fn keydown_left() -> Unit {
   pressed_keys.left = true
 }
 
-pub fn keydown_left2() {
+pub fn keydown_left2() -> Unit {
   pressed_keys.left2 = true
 }
 
-pub fn keydown_right() {
+pub fn keydown_right() -> Unit {
   pressed_keys.right = true
 }
 
-pub fn keydown_right2() {
+pub fn keydown_right2() -> Unit {
   pressed_keys.right2 = true
 }
 
-pub fn keyup_up() {
+pub fn keyup_up() -> Unit {
   pressed_keys.up = false
 }
 
-pub fn keyup_up2() {
+pub fn keyup_up2() -> Unit {
   pressed_keys.up2 = false
 }
 
-pub fn keyup_down() {
+pub fn keyup_down() -> Unit {
   pressed_keys.down = false
 }
 
-pub fn keyup_down2() {
+pub fn keyup_down2() -> Unit {
   pressed_keys.down2 = false
 }
 
-pub fn keyup_left() {
+pub fn keyup_left() -> Unit {
   pressed_keys.left = false
 }
 
-pub fn keyup_left2() {
+pub fn keyup_left2() -> Unit {
   pressed_keys.left2 = false
 }
 
-pub fn keyup_right() {
+pub fn keyup_right() -> Unit {
   pressed_keys.right = false
 }
 
-pub fn keyup_right2() {
+pub fn keyup_right2() -> Unit {
   pressed_keys.right2 = false
 }

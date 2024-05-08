@@ -355,14 +355,14 @@ fn make_bgd() -> Sprite {
   Sprite::make_(params)
 }
 
-fn transform_enemy(enemy_typ : Enemy, spr : Sprite, dir : Dir1d) {
+fn transform_enemy(enemy_typ : Enemy, spr : Sprite, dir : Dir1d) -> Unit {
   let params = make_enemy(enemy_typ, dir)
   let img = params.img_src
   spr.params = params
   spr.img = img
 }
 
-fn update_animation(spr : Sprite) {
+fn update_animation(spr : Sprite) -> Unit {
   let curr_ticks = spr.ticks.value
   if curr_ticks >= spr.params.max_ticks {
     spr.ticks.value = 0

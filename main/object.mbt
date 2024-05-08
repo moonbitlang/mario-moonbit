@@ -56,7 +56,7 @@ fn setup_objp() -> ObjectParams {
   setup_objp2(true, 1.0)
 }
 
-fn set_vel_to_speed(self : Object) {
+fn set_vel_to_speed(self : Object) -> Unit {
   let speed = self.params.speed
   match self.dir {
     Left => {
@@ -171,7 +171,7 @@ fn op_equal(self : Collidable, optb : Collidable) -> Bool {
   return self.get_obj().id == optb.get_obj().id
 }
 
-fn update_player_keys(player : Object, controls : Control) {
+fn update_player_keys(player : Object, controls : Control) -> Unit {
   let lr_acc = player.vel.x * 0.2
   match controls {
     Left => if player.crouch.not() {
@@ -200,7 +200,7 @@ fn update_player_keys(player : Object, controls : Control) {
   }
 }
 
-fn normalize_pos(pos : XY, p1 : SpriteParams, p2 : SpriteParams) {
+fn normalize_pos(pos : XY, p1 : SpriteParams, p2 : SpriteParams) -> Unit {
   let (box1, boy1) = p1.bbox_offset
   let (box2, boy2) = p2.bbox_offset
   let (bw1, bh1) = p1.bbox_size
@@ -214,7 +214,7 @@ fn update_player(player : Object, keys : List[Control]) ->
   let prev_jumping = player.jumping
   let prev_dir = player.dir
   let prev_vx = abs(player.vel.x)
-  map(keys, fn(x) { update_player_keys(player, x) })
+  map(keys, fn(x) { update_player_keys(player, x) }) |> ignore
   let v = player.vel.x * friction
   let vel_damped = if abs(v) < 0.1 {
     0.0
@@ -228,22 +228,22 @@ fn update_player(player : Object, keys : List[Control]) ->
     Large
   }
   if prev_jumping.not() && player.jumping {
-    Option::Some(pl_typ, Sprite::make(Player(pl_typ, Jumping), player.dir))
+    Some((pl_typ, Sprite::make(Player(pl_typ, Jumping), player.dir)))
   } else if prev_dir != player.dir || (prev_vx == 0.0 && abs(player.vel.x) > 0.0) &&
   player.jumping.not() {
-    Option::Some(pl_typ, Sprite::make(Player(pl_typ, Running), player.dir))
+    Some((pl_typ, Sprite::make(Player(pl_typ, Running), player.dir)))
   } else if prev_dir != player.dir && player.jumping && prev_jumping {
-    Some(pl_typ, Sprite::make(Player(pl_typ, Jumping), player.dir))
+    Some((pl_typ, Sprite::make(Player(pl_typ, Jumping), player.dir)))
   } else if player.vel.y == 0.0 && player.crouch {
-    Some(pl_typ, Sprite::make(Player(pl_typ, Crouching), player.dir))
+    Some((pl_typ, Sprite::make(Player(pl_typ, Crouching), player.dir)))
   } else if player.vel.y == 0.0 && player.vel.x == 0.0 {
-    Some(pl_typ, Sprite::make(Player(pl_typ, Standing), player.dir))
+    Some((pl_typ, Sprite::make(Player(pl_typ, Standing), player.dir)))
   } else {
     None
   }
 }
 
-fn update_vel(self : Object) {
+fn update_vel(self : Object) -> Unit {
   if self.grounded {
     self.vel.y = 0.0
   } else if self.params.has_gravity {
@@ -251,14 +251,14 @@ fn update_vel(self : Object) {
   }
 }
 
-fn update_pos(self : Object) {
+fn update_pos(self : Object) -> Unit {
   self.pos.x = self.vel.x + self.pos.x
   if self.params.has_gravity {
     self.pos.y = self.vel.y + self.pos.y
   }
 }
 
-fn process_obj(obj : Object, mapy : Double) {
+fn process_obj(obj : Object, mapy : Double) -> Unit {
   obj.update_vel()
   obj.update_pos()
   if obj.pos.y > mapy {
@@ -266,7 +266,7 @@ fn process_obj(obj : Object, mapy : Double) {
   }
 }
 
-fn collide_block(check_x : Bool, dir : Dir2d, obj : Object) {
+fn collide_block(check_x : Bool, dir : Dir2d, obj : Object) -> Unit {
   match dir {
     North => {
       obj.vel.y = -0.001
@@ -289,7 +289,7 @@ fn opposite_dir(dir : Dir1d) -> Dir1d {
   }
 }
 
-fn reverse_left_right(obj : Object) {
+fn reverse_left_right(obj : Object) -> Unit {
   obj.vel.x = -obj.vel.x
   obj.dir = opposite_dir(obj.dir)
 }
@@ -335,14 +335,14 @@ fn evolve_enemy(player_dir : Dir1d, typ : Enemy, spr : Sprite, obj : Object) ->
   }
 }
 
-fn rev_dir(o : Object, t : Enemy, s : Sprite) {
+fn rev_dir(o : Object, t : Enemy, s : Sprite) -> Unit {
   reverse_left_right(o)
   let old_params = s.params
   transform_enemy(t, s, o.dir)
   normalize_pos(o.pos, old_params, s.params)
 }
 
-fn dec_health(obj : Object) {
+fn dec_health(obj : Object) -> Unit {
   let health = obj.health - 1
   if health == 0 {
     obj.kill = true

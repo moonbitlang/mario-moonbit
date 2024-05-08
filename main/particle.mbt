@@ -22,9 +22,9 @@ fn make_params(sprite_params : SpriteParams, lifetime : Int) -> ParticleParams {
 
 fn ParticleParams::with_type(part : Part) -> ParticleParams {
   match part {
-    BrickChunkL as t => make_params(make_particle(t), 300)
-    BrickChunkR as t => make_params(make_particle(t), 300)
-    _ as t => make_params(make_particle(t), 30)
+    BrickChunkL => make_params(make_particle(part), 300)
+    BrickChunkR => make_params(make_particle(part), 300)
+    _ => make_params(make_particle(part), 30)
   }
 }
 
@@ -53,17 +53,17 @@ fn make_score(score : Int, pos : XY) -> Particle {
   )
 }
 
-fn update_vel(self : Particle) {
+fn update_vel(self : Particle) -> Unit {
   self.vel.x = self.vel.x + self.acc.x
   self.vel.y = self.vel.y + self.acc.y
 }
 
-fn update_pos(self : Particle) {
+fn update_pos(self : Particle) -> Unit {
   self.pos.x = self.pos.x + self.vel.x
   self.pos.y = self.pos.y + self.vel.y
 }
 
-fn process(self : Particle) {
+fn process(self : Particle) -> Unit {
   self.life = self.life - 1
   if self.life == 0 {
     self.kill = true

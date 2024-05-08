@@ -306,8 +306,6 @@
       },
     },
     spectest: {
-      print_i32: (x) => console.log(String(x)),
-      print_f64: (x) => console.log(String(x)),
       print_char: (x) => console.log(String.fromCharCode(x)),
     },
   };
@@ -331,26 +329,26 @@
       importObject
     ).then((obj) => {
       obj.instance.exports._start();
-      game_win = obj.instance.exports["mario/main::game_win"];
-      game_lose = obj.instance.exports["mario/main::game_lose"];
-      game_update = obj.instance.exports["mario/main::game_update"];
-      keydown_B = obj.instance.exports["mario/main::keydown_B"];
-      keydown_up = obj.instance.exports["mario/main::keydown_up"];
-      keydown_up2 = obj.instance.exports["mario/main::keydown_up2"];
-      keydown_down = obj.instance.exports["mario/main::keydown_down"];
-      keydown_down2 = obj.instance.exports["mario/main::keydown_down2"];
-      keydown_left = obj.instance.exports["mario/main::keydown_left"];
-      keydown_left2 = obj.instance.exports["mario/main::keydown_left2"];
-      keydown_right = obj.instance.exports["mario/main::keydown_right"];
-      keydown_right2 = obj.instance.exports["mario/main::keydown_right2"];
-      keyup_up = obj.instance.exports["mario/main::keyup_up"];
-      keyup_up2 = obj.instance.exports["mario/main::keyup_up2"];
-      keyup_down = obj.instance.exports["mario/main::keyup_down"];
-      keyup_down2 = obj.instance.exports["mario/main::keyup_down2"];
-      keyup_left = obj.instance.exports["mario/main::keyup_left"];
-      keyup_left2 = obj.instance.exports["mario/main::keyup_left2"];
-      keyup_right = obj.instance.exports["mario/main::keyup_right"];
-      keyup_right2 = obj.instance.exports["mario/main::keyup_right2"];
+      game_win = obj.instance.exports["game_win"];
+      game_lose = obj.instance.exports["game_lose"];
+      game_update = obj.instance.exports["game_update"];
+      keydown_B = obj.instance.exports["keydown_B"];
+      keydown_up = obj.instance.exports["keydown_up"];
+      keydown_up2 = obj.instance.exports["keydown_up2"];
+      keydown_down = obj.instance.exports["keydown_down"];
+      keydown_down2 = obj.instance.exports["keydown_down2"];
+      keydown_left = obj.instance.exports["keydown_left"];
+      keydown_left2 = obj.instance.exports["keydown_left2"];
+      keydown_right = obj.instance.exports["keydown_right"];
+      keydown_right2 = obj.instance.exports["keydown_right2"];
+      keyup_up = obj.instance.exports["keyup_up"];
+      keyup_up2 = obj.instance.exports["keyup_up2"];
+      keyup_down = obj.instance.exports["keyup_down"];
+      keyup_down2 = obj.instance.exports["keyup_down2"];
+      keyup_left = obj.instance.exports["keyup_left"];
+      keyup_left2 = obj.instance.exports["keyup_left2"];
+      keyup_right = obj.instance.exports["keyup_right"];
+      keyup_right2 = obj.instance.exports["keyup_right2"];
       requestAnimationFrameId = requestAnimationFrame(update);
     });
   }

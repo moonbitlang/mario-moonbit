@@ -51,13 +51,13 @@ fn render_(img : Image, sx : Double, sy : Double, sw : Double, sh : Double,
 
 fn render_box_(a : Double, b : Double, c : Double, d : Double) = "canvas" "render_box"
 
-fn render_box(sprite : Sprite, posx : Double, posy : Double) {
+fn render_box(sprite : Sprite, posx : Double, posy : Double) -> Unit {
   let (bbox, bboy) = sprite.params.bbox_offset
   let (bbsx, bbsy) = sprite.params.bbox_size
   render_box_(posx + bbox, posy + bboy, bbsx, bbsy)
 }
 
-fn render(sprite : Sprite, posx : Double, posy : Double) {
+fn render(sprite : Sprite, posx : Double, posy : Double) -> Unit {
   let (sx, sy) = sprite.params.src_offset
   let (sw, sh) = sprite.params.frame_size
   let (dx, dy) = (posx, posy)
@@ -69,7 +69,7 @@ fn render(sprite : Sprite, posx : Double, posy : Double) {
 // (*Draws two background images, which needs to be done because of the
 // *constantly changing viewport, which is always at most going to be
 // *between two background images.*)
-fn draw_bgd(bgd : Sprite, off_x : Double) {
+fn draw_bgd(bgd : Sprite, off_x : Double) -> Unit {
   render(bgd, -off_x, 0.0)
   render(bgd, bgd.params.frame_size.0 - off_x, 0.0)
 }
