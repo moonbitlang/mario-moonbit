@@ -24,7 +24,7 @@ struct ObjectParams {
   speed : Double
 }
 
-let id_counter : Ref[Int] = Ref::make(0)
+let id_counter : Ref[Int] = @ref.ref(0)
 
 struct Object {
   params : ObjectParams
@@ -59,12 +59,8 @@ fn setup_objp() -> ObjectParams {
 fn set_vel_to_speed(self : Object) -> Unit {
   let speed = self.params.speed
   match self.dir {
-    Left => {
-      self.vel.x = -speed
-    }
-    Right => {
-      self.vel.x = speed
-    }
+    Left => self.vel.x = -speed
+    Right => self.vel.x = speed
   }
 }
 
@@ -103,12 +99,17 @@ fn make_type(spawn : Spawn) -> ObjectParams {
 }
 
 fn new_id() -> Int {
-  id_counter.value = id_counter.value + 1
-  id_counter.value
+  id_counter.val += 1
+  id_counter.val
 }
 
-fn makeobj(id : Int, dir : Dir1d, spawn : Spawn, posx : Double, posy : Double) ->
-     (Sprite, Object) {
+fn makeobj(
+  id : Int,
+  dir : Dir1d,
+  spawn : Spawn,
+  posx : Double,
+  posy : Double
+) -> (Sprite, Object) {
   let spr = Sprite::make(spawn, dir)
   let params = make_type(spawn)
   let obj : Object = {
@@ -174,29 +175,30 @@ fn op_equal(self : Collidable, optb : Collidable) -> Bool {
 fn update_player_keys(player : Object, controls : Control) -> Unit {
   let lr_acc = player.vel.x * 0.2
   match controls {
-    Left => if player.crouch.not() {
-      if player.vel.x > -player.params.speed {
-        player.vel.x = player.vel.x - (0.4 - lr_acc)
+    Left =>
+      if player.crouch.not() {
+        if player.vel.x > -player.params.speed {
+          player.vel.x = player.vel.x - (0.4 - lr_acc)
+        }
+        player.dir = Left
       }
-      player.dir = Left
-    }
-    Right => if player.crouch.not() {
-      if player.vel.x < player.params.speed {
-        player.vel.x = player.vel.x + (0.4 + lr_acc)
+    Right =>
+      if player.crouch.not() {
+        if player.vel.x < player.params.speed {
+          player.vel.x = player.vel.x + (0.4 + lr_acc)
+        }
+        player.dir = Right
       }
-      player.dir = Right
-    }
-    Up => if player.jumping.not() && player.grounded {
-      player.jumping = true
-      player.grounded = false
-      player.vel.y = max(
-        player.vel.y - (player_jump + abs(player.vel.x * 0.25)),
-        player_max_jump,
-      )
-    }
-    Down => if player.jumping.not() && player.grounded {
-      player.crouch = true
-    }
+    Up =>
+      if player.jumping.not() && player.grounded {
+        player.jumping = true
+        player.grounded = false
+        player.vel.y = @math.maximum(
+          player.vel.y - (player_jump + @double.abs(player.vel.x * 0.25)),
+          player_max_jump,
+        )
+      }
+    Down => if player.jumping.not() && player.grounded { player.crouch = true }
   }
 }
 
@@ -209,28 +211,23 @@ fn normalize_pos(pos : XY, p1 : SpriteParams, p2 : SpriteParams) -> Unit {
   pos.y = pos.y - (bh2 + boy2) + (bh1 + boy1)
 }
 
-fn update_player(player : Object, keys : List[Control]) ->
-     Option[(PlayerSize, Sprite)] {
+fn update_player(
+  player : Object,
+  keys : List[Control]
+) -> Option[(PlayerSize, Sprite)] {
   let prev_jumping = player.jumping
   let prev_dir = player.dir
-  let prev_vx = abs(player.vel.x)
-  map(keys, fn(x) { update_player_keys(player, x) }) |> ignore
+  let prev_vx = @double.abs(player.vel.x)
+  keys.iter(fn(x) { update_player_keys(player, x) })
   let v = player.vel.x * friction
-  let vel_damped = if abs(v) < 0.1 {
-    0.0
-  } else {
-    v
-  }
+  let vel_damped = if @double.abs(v) < 0.1 { 0.0 } else { v }
   player.vel.x = vel_damped
-  let pl_typ = if player.health <= 1 {
-    PlayerSize::Small
-  } else {
-    Large
-  }
+  let pl_typ = if player.health <= 1 { PlayerSize::Small } else { Large }
   if prev_jumping.not() && player.jumping {
     Some((pl_typ, Sprite::make(Player(pl_typ, Jumping), player.dir)))
-  } else if prev_dir != player.dir || (prev_vx == 0.0 && abs(player.vel.x) > 0.0) &&
-  player.jumping.not() {
+  } else if prev_dir != player.dir || (prev_vx == 0.0 && @double.abs(
+    player.vel.x,
+  ) > 0.0) && player.jumping.not() {
     Some((pl_typ, Sprite::make(Player(pl_typ, Running), player.dir)))
   } else if prev_dir != player.dir && player.jumping && prev_jumping {
     Some((pl_typ, Sprite::make(Player(pl_typ, Jumping), player.dir)))
@@ -247,7 +244,10 @@ fn update_vel(self : Object) -> Unit {
   if self.grounded {
     self.vel.y = 0.0
   } else if self.params.has_gravity {
-    self.vel.y = min(self.vel.y + gravity + abs(self.vel.y) * 0.01, max_y_vel)
+    self.vel.y = @math.minimum(
+      self.vel.y + gravity + @double.abs(self.vel.y) * 0.01,
+      max_y_vel,
+    )
   }
 }
 
@@ -268,17 +268,13 @@ fn process_obj(obj : Object, mapy : Double) -> Unit {
 
 fn collide_block(check_x : Bool, dir : Dir2d, obj : Object) -> Unit {
   match dir {
-    North => {
-      obj.vel.y = -0.001
-    }
+    North => obj.vel.y = -0.001
     South => {
       obj.vel.y = 0.0
       obj.grounded = true
       obj.jumping = false
     }
-    East | West => if check_x {
-      obj.vel.x = 0.0
-    }
+    East | West => if check_x { obj.vel.x = 0.0 }
   }
 }
 
@@ -294,8 +290,12 @@ fn reverse_left_right(obj : Object) -> Unit {
   obj.dir = opposite_dir(obj.dir)
 }
 
-fn evolve_enemy(player_dir : Dir1d, typ : Enemy, spr : Sprite, obj : Object) ->
-     Option[Collidable] {
+fn evolve_enemy(
+  player_dir : Dir1d,
+  typ : Enemy,
+  spr : Sprite,
+  obj : Object
+) -> Option[Collidable] {
   match typ {
     GKoopa => {
       let (new_spr, new_obj) = makeobj(
@@ -413,9 +413,9 @@ fn check_collision(c1 : Collidable, c2 : Collidable) -> Option[Dir2d] {
     let vy = b1.center.y - b2.center.y
     let hwidths = b1.half.x + b2.half.x
     let hheights = b1.half.y + b2.half.y
-    if abs(vx) < hwidths && abs(vy) < hheights {
-      let ox = hwidths - abs(vx)
-      let oy = hheights - abs(vy)
+    if @double.abs(vx) < hwidths && @double.abs(vy) < hheights {
+      let ox = hwidths - @double.abs(vx)
+      let oy = hheights - @double.abs(vy)
       if ox >= oy {
         if vy > 0.0 {
           o1.pos.y = o1.pos.y + oy
@@ -443,60 +443,61 @@ fn kill(collid : Collidable) -> List[Particle] {
     Enemy(t, _, o) => {
       let pos = { x: o.pos.x, y: o.pos.y }
       let score = if o.score > 0 {
-        tolist([make_score(o.score, pos)])
+        List::[make_score(o.score, pos)]
       } else {
         List::Nil
       }
       let remains = match t {
-        Goomba => tolist(
-          [
+        Goomba =>
+          List::[
             Particle::make(
               { x: 0.0, y: 0.0 },
               { x: 0.0, y: 0.0 },
               GoombaSquish,
               pos,
             ),
-          ],
-        )
+          ]
         _ => List::Nil
       }
-      concat(score, remains)
+      score + remains
     }
-    Block(t, _, o) => match t {
-      Brick => {
-        let pos = { x: o.pos.x, y: o.pos.y }
-        let p1 = Particle::make(
-          XY::make(-5.0, -5.0),
-          XY::make(0.0, 0.2),
-          BrickChunkL,
-          XY::make(pos.x, pos.y),
-        )
-        let p2 = Particle::make(
-          XY::make(-3.0, -4.0),
-          XY::make(0.0, 0.2),
-          BrickChunkL,
-          XY::make(pos.x, pos.y),
-        )
-        let p3 = Particle::make(
-          XY::make(3.0, -4.0),
-          XY::make(0.0, 0.2),
-          BrickChunkR,
-          XY::make(pos.x, pos.y),
-        )
-        let p4 = Particle::make(
-          XY::make(5.0, -5.0),
-          XY::make(0.0, 0.2),
-          BrickChunkR,
-          XY::make(pos.x, pos.y),
-        )
-        tolist([p1, p2, p3, p4])
+    Block(t, _, o) =>
+      match t {
+        Brick => {
+          let pos = { x: o.pos.x, y: o.pos.y }
+          let p1 = Particle::make(
+            XY::make(-5.0, -5.0),
+            XY::make(0.0, 0.2),
+            BrickChunkL,
+            XY::make(pos.x, pos.y),
+          )
+          let p2 = Particle::make(
+            XY::make(-3.0, -4.0),
+            XY::make(0.0, 0.2),
+            BrickChunkL,
+            XY::make(pos.x, pos.y),
+          )
+          let p3 = Particle::make(
+            XY::make(3.0, -4.0),
+            XY::make(0.0, 0.2),
+            BrickChunkR,
+            XY::make(pos.x, pos.y),
+          )
+          let p4 = Particle::make(
+            XY::make(5.0, -5.0),
+            XY::make(0.0, 0.2),
+            BrickChunkR,
+            XY::make(pos.x, pos.y),
+          )
+          List::[p1, p2, p3, p4]
+        }
+        _ => List::Nil
       }
-      _ => List::Nil
-    }
-    Item(t, _, o) => match t {
-      Mushroom => tolist([make_score(o.score, XY::make(o.pos.x, o.pos.y))])
-      _ => List::Nil
-    }
+    Item(t, _, o) =>
+      match t {
+        Mushroom => List::[make_score(o.score, XY::make(o.pos.x, o.pos.y))]
+        _ => List::Nil
+      }
     _ => List::Nil
   }
 }

@@ -35,11 +35,11 @@ let pressed_keys : Keys = {
   bbox: 0,
 }
 
-let collid_objs : Ref[List[Collidable]] = Ref::make(List::Nil) // (* List of next iteration collidable objects *)
+let collid_objs : Ref[List[Collidable]] = @ref.ref(Nil) // (* List of next iteration collidable objects *)
 
-let particles : Ref[List[Particle]] = Ref::make(List::Nil) // (* List of next iteration particles *)
+let particles : Ref[List[Particle]] = @ref.ref(Nil) // (* List of next iteration particles *)
 
-let last_time : Ref[Double] = Ref::make(-16.6) // (* Used for calculating fps *)
+let last_time : Ref[Double] = @ref.ref(-16.6) // (* Used for calculating fps *)
 
 // (* Calculates fps as the difference between [t0] and [t1] *)
 
@@ -53,8 +53,13 @@ fn update_score(state : St, i : Int) -> Unit {
   state.score = state.score + i
 }
 
-fn player_attack_enemy(o1 : Object, typ : Enemy, s2 : Sprite, o2 : Object,
-        state : St) -> (Option[Collidable], Option[Collidable]) {
+fn player_attack_enemy(
+  o1 : Object,
+  typ : Enemy,
+  s2 : Sprite,
+  o2 : Object,
+  state : St
+) -> (Option[Collidable], Option[Collidable]) {
   o1.invuln = 10
   o1.jumping = false
   o1.grounded = true
@@ -84,8 +89,12 @@ fn player_attack_enemy(o1 : Object, typ : Enemy, s2 : Sprite, o2 : Object,
 }
 
 // (*enemy_attack_player is used when an enemy kills a player.*)
-fn enemy_attack_player(o1 : Object, t2 : Enemy, s2 : Sprite, o2 : Object) ->
-     (Option[Collidable], Option[Collidable]) {
+fn enemy_attack_player(
+  o1 : Object,
+  t2 : Enemy,
+  s2 : Sprite,
+  o2 : Object
+) -> (Option[Collidable], Option[Collidable]) {
   match t2 {
     GKoopaShell | RKoopaShell => {
       let r2 = if o2.vel.x == 0.0 {
@@ -108,8 +117,15 @@ fn enemy_attack_player(o1 : Object, t2 : Enemy, s2 : Sprite, o2 : Object) ->
 // (*In the case that two enemies collide, they are to reverse directions. However,
 // *in the case that one or more of the two enemies is a koopa shell, then
 // *the koopa shell kills the other enemy. *)
-fn col_enemy_enemy(t1 : Enemy, s1 : Sprite, o1 : Object, t2 : Enemy, s2 : Sprite,
-        o2 : Object, dir : Dir2d) -> (Option[Collidable], Option[Collidable]) {
+fn col_enemy_enemy(
+  t1 : Enemy,
+  s1 : Sprite,
+  o1 : Object,
+  t2 : Enemy,
+  s2 : Sprite,
+  o2 : Object,
+  dir : Dir2d
+) -> (Option[Collidable], Option[Collidable]) {
   match (t1, t2) {
     (GKoopaShell, GKoopaShell) | (GKoopaShell, RKoopaShell) => {
       dec_health(o1)
@@ -121,37 +137,42 @@ fn col_enemy_enemy(t1 : Enemy, s1 : Sprite, o1 : Object, t2 : Enemy, s2 : Sprite
       dec_health(o2)
       (None, None)
     }
-    (RKoopaShell, _) | (GKoopaShell, _) => if o1.vel.x == 0.0 {
-      rev_dir(o2, t2, s2)
-      (None, None)
-    } else {
-      dec_health(o2)
-      (None, None)
-    }
-    (_, RKoopaShell) | (_, GKoopaShell) => if o2.vel.x == 0.0 {
-      rev_dir(o1, t1, s1)
-      (None, None)
-    } else {
-      dec_health(o1)
-      (None, None)
-    }
-    _ => match dir {
-      West | East => {
-        rev_dir(o1, t1, s1)
+    (RKoopaShell, _) | (GKoopaShell, _) =>
+      if o1.vel.x == 0.0 {
         rev_dir(o2, t2, s2)
         (None, None)
+      } else {
+        dec_health(o2)
+        (None, None)
       }
-      _ => (None, None)
-    }
+    (_, RKoopaShell) | (_, GKoopaShell) =>
+      if o2.vel.x == 0.0 {
+        rev_dir(o1, t1, s1)
+        (None, None)
+      } else {
+        dec_health(o1)
+        (None, None)
+      }
+    _ =>
+      match dir {
+        West | East => {
+          rev_dir(o1, t1, s1)
+          rev_dir(o2, t2, s2)
+          (None, None)
+        }
+        _ => (None, None)
+      }
   }
 }
 
 // (* Run the broad phase object filtering *)
-fn broad_phase(collid : Collidable, all_collids : List[Collidable], state : St) ->
-     List[Collidable] {
+fn broad_phase(
+  collid : Collidable,
+  all_collids : List[Collidable],
+  state : St
+) -> List[Collidable] {
   let obj = get_obj(collid)
-  filter(
-    all_collids,
+  all_collids.filter(
     fn(_c) {
       in_viewport(state.vpt, obj.pos) || is_player(collid) || out_of_viewport_below(
         state.vpt,
@@ -164,10 +185,17 @@ fn broad_phase(collid : Collidable, all_collids : List[Collidable], state : St) 
 // (*narrow_phase of collision is used in order to continuously repeat through
 // *each of the collidable objects to constantly check if collisions are
 // *occurring.*)
-fn narrow_phase(c : Collidable, cs : List[Collidable], state : St) ->
-     List[Collidable] {
-  fn narrow_helper(c : Collidable, cs : List[Collidable], state : St,
-          acc : List[Collidable]) -> List[Collidable] {
+fn narrow_phase(
+  c : Collidable,
+  cs : List[Collidable],
+  state : St
+) -> List[Collidable] {
+  fn narrow_helper(
+    c : Collidable,
+    cs : List[Collidable],
+    state : St,
+    acc : List[Collidable]
+  ) -> List[Collidable] {
     match cs {
       Nil => acc
       Cons(h, t) => {
@@ -175,11 +203,12 @@ fn narrow_phase(c : Collidable, cs : List[Collidable], state : St) ->
         let new_objs = if c != h {
           match check_collision(c, h) {
             None => (Option::None, Option::None)
-            Some(dir) => if get_obj(h).id != c_obj.id {
-              process_collision(dir, c, h, state)
-            } else {
-              (None, None)
-            }
+            Some(dir) =>
+              if get_obj(h).id != c_obj.id {
+                process_collision(dir, c, h, state)
+              } else {
+                (None, None)
+              }
           }
         } else {
           (None, None)
@@ -209,8 +238,11 @@ fn narrow_phase(c : Collidable, cs : List[Collidable], state : St) ->
 // * This method returns a list of objects that are created, which should be
 // * added to the list of collidables for the next iteration.
 // * *)
-fn check_collisions(collid : Collidable, all_collids : List[Collidable],
-        state : St) -> List[Collidable] {
+fn check_collisions(
+  collid : Collidable,
+  all_collids : List[Collidable],
+  state : St
+) -> List[Collidable] {
   match collid {
     Block(_, _, _) => Nil
     _ => {
@@ -227,15 +259,14 @@ fn check_bbox_enabled() -> Bool {
 
 // (* update_collidable is the primary update method for collidable objects,
 // * checking the collision, updating the object, and drawing to the canvas.*)
-fn update_collidable(state : St, collid : Collidable,
-        all_collids : List[Collidable]) -> List[Collidable] {
+fn update_collidable(
+  state : St,
+  collid : Collidable,
+  all_collids : List[Collidable]
+) -> List[Collidable] {
   let obj = get_obj(collid)
   let spr = get_sprite(collid)
-  obj.invuln = if obj.invuln > 0 {
-    obj.invuln - 1
-  } else {
-    0
-  }
+  obj.invuln = if obj.invuln > 0 { obj.invuln - 1 } else { 0 }
   // (* Prevent position from being updated outside of viewport *)
   let viewport_filter = in_viewport(state.vpt, obj.pos) || is_player(collid) || out_of_viewport_below(
       state.vpt,
@@ -265,7 +296,7 @@ fn update_collidable(state : St, collid : Collidable,
 // * to be processed each frame. *)
 fn translate_keys() -> List[Control] {
   let mut res = List::Nil
-  if which.value {
+  if which.val {
     if pressed_keys.up {
       res = List::Cons(Control::Up, res)
     }
@@ -299,8 +330,11 @@ fn translate_keys() -> List[Control] {
 // * as a wrapper method. This method is necessary to differentiate between
 // * the player collidable and the remaining collidables, as special operations
 // * such as viewport centering only occur with the player.*)
-fn run_update_collid(state : St, collid : Collidable,
-        all_collids : List[Collidable]) -> Collidable {
+fn run_update_collid(
+  state : St,
+  collid : Collidable,
+  all_collids : List[Collidable]
+) -> Collidable {
   match collid {
     Player(_, s, o) as p => {
       let keys = translate_keys()
@@ -313,24 +347,17 @@ fn run_update_collid(state : St, collid : Collidable,
         }
       }
       let evolved = update_collidable(state, player, all_collids)
-      collid_objs.value = concat(collid_objs.value, evolved)
+      collid_objs.val += evolved
       player
     }
     _ => {
       let obj = get_obj(collid)
       let evolved = update_collidable(state, collid, all_collids)
       if not(obj.kill) {
-        collid_objs.value = List::Cons(
-          collid,
-          concat(collid_objs.value, evolved),
-        )
+        collid_objs.val = List::Cons(collid, collid_objs.val + evolved)
       }
-      let new_parts = if obj.kill {
-        kill(collid)
-      } else {
-        List::Nil
-      }
-      particles.value = concat(particles.value, new_parts)
+      let new_parts = if obj.kill { kill(collid) } else { List::Nil }
+      particles.val += new_parts
       collid
     }
   }
@@ -343,51 +370,54 @@ fn run_update_particle(state : St, part : Particle) -> Unit {
   let y = part.pos.y - state.vpt.pos.y
   render(part.params.sprite, x, y)
   if not(part.kill) {
-    particles.value = List::Cons(part, particles.value)
+    particles.val = List::Cons(part, particles.val)
   }
 }
 
-let which : Ref[Bool] = Ref::make(true)
+let which : Ref[Bool] = @ref.ref(true)
 
-fn update_helper(time : Double, state : St, objs : List[Collidable],
-        parts : List[Particle]) -> Unit {
+fn update_helper(
+  time : Double,
+  state : St,
+  objs : List[Collidable],
+  parts : List[Particle]
+) -> Unit {
   if state.game_over == true {
-    match first(players.value, fn(p) { get_obj(p).kill.not() }) {
+    match players.val.find(fn(p) { get_obj(p).kill.not() }) {
       None => game_lose()
       Some(_) => game_win()
     }
   } else {
-    collid_objs.value = List::Nil
-    particles.value = List::Nil
-    let fps_ = calc_fps(last_time.value, time).to_int()
-    last_time.value = time
+    collid_objs.val = Nil
+    particles.val = Nil
+    let fps_ = calc_fps(last_time.val, time).to_int()
+    last_time.val = time
     clear_canvas()
 
     // (* Parallax background *)
     let vpos_x_int = (state.vpt.pos.x / 5.0).to_int()
     let bgd_width = state.bgd.params.frame_size.0.to_int()
     draw_bgd(state.bgd, (vpos_x_int % bgd_width).to_double())
-    which.value = false
-    players.value = map(
-      players.value,
+    which.val = false
+    players.val = players.val.map(
       fn(p) {
-        which.value = not(which.value)
+        which.val = which.val.not()
         run_update_collid(state, p, objs)
       },
     )
-    match first(players.value, fn(p) { get_obj(p).kill.not() }) {
+    match players.val.find(fn(p) { get_obj(p).kill.not() }) {
       None => {
         state.game_over = true
         game_lose()
       }
       Some(p) => {
         let a = get_obj(p).pos
-        let p = last(players.value, fn(p) { get_obj(p).kill.not() }).unwrap()
+        let p = players.val.reverse().find(fn(p) { get_obj(p).kill.not() }).unwrap()
         let b = get_obj(p).pos
         let c = XY::make((a.x + b.x) * 0.5, (a.y + b.y) * 0.5)
         state.vpt = update(state.vpt, c)
-        let _ = map(objs, fn(obj) { run_update_collid(state, obj, objs) })
-        let _ = map(parts, fn(part) { run_update_particle(state, part) })
+        let _ = objs.map(fn(obj) { run_update_collid(state, obj, objs) })
+        let _ = parts.map(fn(part) { run_update_particle(state, part) })
         fps(fps_)
         hud(state.score, state.coins)
       }
@@ -396,7 +426,7 @@ fn update_helper(time : Double, state : St, objs : List[Collidable],
 }
 
 pub fn game_update(t : Double) -> Unit {
-  update_helper(t, state, collid_objs.value, particles.value)
+  update_helper(t, state, collid_objs.val, particles.val)
 }
 
 pub fn keydown_B() -> Unit {
