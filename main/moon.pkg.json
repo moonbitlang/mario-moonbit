@@ -5,8 +5,6 @@
   "link": {
     "wasm-gc": {
       "exports": [
-        "game_win",
-        "game_lose",
         "game_update"
       ]
     }

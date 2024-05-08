@@ -35,8 +35,6 @@ let dropInterval = 10;
 const scoreDom = document.getElementById("score");
 
 let halt = false;
-let game_win = null;
-let game_lose = null;
 let game_update = null;
 
 window.addEventListener("keydown", (e) => {
@@ -151,8 +149,6 @@ function start() {
     ).then((obj) => {
         memory = obj.instance.exports["moonbit.memory"];
         obj.instance.exports._start();
-        game_win = obj.instance.exports["game_win"];
-        game_lose = obj.instance.exports["game_lose"];
         game_update = obj.instance.exports["game_update"];
         requestAnimationFrameId = requestAnimationFrame(update);
     });
