@@ -1,27 +1,13 @@
 {
+  "import": [
+    "peter-jerry-ye/canvas"
+  ],
   "link": {
     "wasm-gc": {
       "exports": [
         "game_win",
         "game_lose",
-        "game_update",
-        "keydown_B",
-        "keydown_up",
-        "keydown_up2",
-        "keydown_down",
-        "keydown_down2",
-        "keydown_left",
-        "keydown_left2",
-        "keydown_right",
-        "keydown_right2",
-        "keyup_up",
-        "keyup_up2",
-        "keyup_down",
-        "keyup_down2",
-        "keyup_left",
-        "keyup_left2",
-        "keyup_right",
-        "keyup_right2"
+        "game_update"
       ]
     }
   }

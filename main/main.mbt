@@ -31,5 +31,36 @@ let state : St = {
 }
 
 fn init {
+  @canvas.set_on_key_down(
+    fn(event) {
+      match event.code() {
+        "KeyB" => pressed_keys.bbox = pressed_keys.bbox.lxor(1)
+        "ArrowUp" => pressed_keys.up = true
+        "KeyW" => pressed_keys.up2 = true
+        "ArrowDown" => pressed_keys.down = true
+        "KeyS" => pressed_keys.down2 = true
+        "ArrowLeft" => pressed_keys.left = true
+        "KeyA" => pressed_keys.left2 = true
+        "ArrowRight" => pressed_keys.right = true
+        "KeyD" => pressed_keys.right2 = true
+        _ => ()
+      }
+    },
+  )
+  @canvas.set_on_key_up(
+    fn(event) {
+      match event.code() {
+        "ArrowUp" => pressed_keys.up = false
+        "KeyW" => pressed_keys.up2 = false
+        "ArrowDown" => pressed_keys.down = false
+        "KeyS" => pressed_keys.down2 = false
+        "ArrowLeft" => pressed_keys.left = false
+        "KeyA" => pressed_keys.left2 = false
+        "ArrowRight" => pressed_keys.right = false
+        "KeyD" => pressed_keys.right2 = false
+        _ => ()
+      }
+    },
+  )
   update_helper(0.0, state, objs, List::Nil)
 }

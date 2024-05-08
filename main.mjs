@@ -1,3 +1,4 @@
+import ffi from './.mooncakes/peter-jerry-ye/canvas/import.mjs'
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
 const WIDTH = 512;
@@ -37,23 +38,6 @@ let halt = false;
 let game_win = null;
 let game_lose = null;
 let game_update = null;
-let keydown_B = null;
-let keydown_up = null;
-let keydown_up2 = null;
-let keydown_down = null;
-let keydown_down2 = null;
-let keydown_left = null;
-let keydown_left2 = null;
-let keydown_right = null;
-let keydown_right2 = null;
-let keyup_up = null;
-let keyup_up2 = null;
-let keyup_down = null;
-let keyup_down2 = null;
-let keyup_left = null;
-let keyup_left2 = null;
-let keyup_right = null;
-let keyup_right2 = null;
 
 window.addEventListener("keydown", (e) => {
     if (e.code === "Space") {
@@ -61,73 +45,12 @@ window.addEventListener("keydown", (e) => {
         start();
         return;
     }
-
-    if (!requestAnimationFrameId) return;
-    switch (e.code) {
-        case "KeyB":
-            keydown_B();
-            break;
-        case "ArrowUp":
-            keydown_up();
-            break;
-        case "KeyW":
-            keydown_up2();
-            break;
-        case "ArrowDown":
-            keydown_down();
-            break;
-        case "KeyS":
-            keydown_down2();
-            break;
-        case "ArrowLeft":
-            keydown_left();
-            break;
-        case "KeyA":
-            keydown_left2();
-            break;
-        case "ArrowRight":
-            keydown_right();
-            break;
-        case "KeyD":
-            keydown_right2();
-            break;
-    }
 });
 
-window.addEventListener("keyup", (e) => {
-    if (!requestAnimationFrameId) return;
-    switch (e.code) {
-        case "KeyB":
-            keyup_B();
-            break;
-        case "ArrowUp":
-            keyup_up();
-            break;
-        case "KeyW":
-            keyup_up2();
-            break;
-        case "ArrowDown":
-            keyup_down();
-            break;
-        case "KeyS":
-            keyup_down2();
-            break;
-        case "ArrowLeft":
-            keyup_left();
-            break;
-        case "KeyA":
-            keyup_left2();
-            break;
-        case "ArrowRight":
-            keyup_right();
-            break;
-        case "KeyD":
-            keyup_right2();
-            break;
-    }
-});
+let memory
 
 const importObject = {
+    ...ffi(() => memory),
     canvas: {
         get_backg: () => {
             return backg;
@@ -226,27 +149,11 @@ function start() {
         fetch("target/wasm-gc/release/build/main/main.wasm"),
         importObject
     ).then((obj) => {
+        memory = obj.instance.exports["moonbit.memory"];
         obj.instance.exports._start();
         game_win = obj.instance.exports["game_win"];
         game_lose = obj.instance.exports["game_lose"];
         game_update = obj.instance.exports["game_update"];
-        keydown_B = obj.instance.exports["keydown_B"];
-        keydown_up = obj.instance.exports["keydown_up"];
-        keydown_up2 = obj.instance.exports["keydown_up2"];
-        keydown_down = obj.instance.exports["keydown_down"];
-        keydown_down2 = obj.instance.exports["keydown_down2"];
-        keydown_left = obj.instance.exports["keydown_left"];
-        keydown_left2 = obj.instance.exports["keydown_left2"];
-        keydown_right = obj.instance.exports["keydown_right"];
-        keydown_right2 = obj.instance.exports["keydown_right2"];
-        keyup_up = obj.instance.exports["keyup_up"];
-        keyup_up2 = obj.instance.exports["keyup_up2"];
-        keyup_down = obj.instance.exports["keyup_down"];
-        keyup_down2 = obj.instance.exports["keyup_down2"];
-        keyup_left = obj.instance.exports["keyup_left"];
-        keyup_left2 = obj.instance.exports["keyup_left2"];
-        keyup_right = obj.instance.exports["keyup_right"];
-        keyup_right2 = obj.instance.exports["keyup_right2"];
         requestAnimationFrameId = requestAnimationFrame(update);
     });
 }
