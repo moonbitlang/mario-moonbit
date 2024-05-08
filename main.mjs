@@ -56,39 +56,39 @@ let keyup_right = null;
 let keyup_right2 = null;
 
 window.addEventListener("keydown", (e) => {
-    if (e.keyCode === 32) {
+    if (e.code === "Space") {
         halt = false;
         start();
         return;
     }
 
     if (!requestAnimationFrameId) return;
-    switch (e.keyCode) {
-        case 66:
+    switch (e.code) {
+        case "KeyB":
             keydown_B();
             break;
-        case 38:
+        case "ArrowUp":
             keydown_up();
             break;
-        case 87:
+        case "KeyW":
             keydown_up2();
             break;
-        case 40:
+        case "ArrowDown":
             keydown_down();
             break;
-        case 83:
+        case "KeyS":
             keydown_down2();
             break;
-        case 37:
+        case "ArrowLeft":
             keydown_left();
             break;
-        case 65:
+        case "KeyA":
             keydown_left2();
             break;
-        case 39:
+        case "ArrowRight":
             keydown_right();
             break;
-        case 68:
+        case "KeyD":
             keydown_right2();
             break;
     }
@@ -96,32 +96,32 @@ window.addEventListener("keydown", (e) => {
 
 window.addEventListener("keyup", (e) => {
     if (!requestAnimationFrameId) return;
-    switch (e.keyCode) {
-        case 66:
+    switch (e.code) {
+        case "KeyB":
             keyup_B();
             break;
-        case 38:
+        case "ArrowUp":
             keyup_up();
             break;
-        case 87:
+        case "KeyW":
             keyup_up2();
             break;
-        case 40:
+        case "ArrowDown":
             keyup_down();
             break;
-        case 83:
+        case "KeyS":
             keyup_down2();
             break;
-        case 37:
+        case "ArrowLeft":
             keyup_left();
             break;
-        case 65:
+        case "KeyA":
             keyup_left2();
             break;
-        case 39:
+        case "ArrowRight":
             keyup_right();
             break;
-        case 68:
+        case "KeyD":
             keyup_right2();
             break;
     }
