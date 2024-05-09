@@ -435,21 +435,20 @@ fn generate_helper(blockw : Double, blockh : Double) -> List[Collidable] {
 // (*Main function called to procedurally generate the level map. w and h args
 // * are in pixel form. Converts to block form to call generate_helper. Spawns
 // * the list of collidables received from generate_helper to display on canvas.*)
-pub fn generate(
-  player_count : Int,
-  w : Double,
-  h : Double
-) -> (List[Collidable], List[Collidable]) {
+pub fn generate(w : Double, h : Double) -> List[Collidable] {
   let blockw = w / 16.0
   let blockh = h / 16.0 - 1.0
   let collide_list = generate_helper(blockw, blockh)
+  collide_list
+}
+
+fn generate_players(player_count : Int) -> List[Collidable] {
   let mut start = 50.0
-  let players = Array::make(player_count, Spawn::Player(Small, Standing)).to_list().map(
+  Array::make(player_count, Spawn::Player(Small, Standing)).to_list().map(
     fn(s) {
       let c = spawn(s, start, 0.0)
       start = start - 30.0
       c
     },
   )
-  (players, collide_list)
 }

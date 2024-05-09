@@ -11,18 +11,8 @@ let requestAnimationFrameId = null;
 let lastTime = 0;
 let dropCounter = 0;
 let dropInterval = 10;
-const scoreDom = document.getElementById("score");
 
-let halt = false;
 let game_update = null;
-
-window.addEventListener("keydown", (e) => {
-    if (e.code === "Space") {
-        halt = false;
-        start();
-        return;
-    }
-});
 
 let memory
 
@@ -43,9 +33,7 @@ function update(time = 0) {
         dropCounter = 0;
     }
     lastTime = time;
-    if (!halt) {
-        requestAnimationFrameId = requestAnimationFrame(update);
-    }
+    requestAnimationFrameId = requestAnimationFrame(update);
 }
 
 function start() {

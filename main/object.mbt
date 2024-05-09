@@ -48,13 +48,7 @@ enum Collidable {
   Block(Block, Sprite, Object)
 }
 
-fn setup_objp2(has_gravity : Bool, speed : Double) -> ObjectParams {
-  { has_gravity, speed }
-}
-
-fn setup_objp() -> ObjectParams {
-  setup_objp2(true, 1.0)
-}
+let default_obj : ObjectParams = { has_gravity: true, speed: 1.0 }
 
 fn set_vel_to_speed(self : Object) -> Unit {
   let speed = self.params.speed
@@ -65,28 +59,28 @@ fn set_vel_to_speed(self : Object) -> Unit {
 }
 
 fn makeplayer() -> ObjectParams {
-  setup_objp2(true, player_speed)
+  { has_gravity: true, speed: player_speed }
 }
 
 fn makeitem(item : Item) -> ObjectParams {
   match item {
-    Mushroom => setup_objp()
-    Coin => setup_objp2(false, 1.0)
+    Mushroom => default_obj
+    Coin => { has_gravity: false, speed: 1.0 }
   }
 }
 
 fn makeenemy(enemy : Enemy) -> ObjectParams {
   match enemy {
-    Goomba => setup_objp()
-    GKoopa => setup_objp()
-    RKoopa => setup_objp()
-    GKoopaShell => setup_objp2(true, 3.0)
-    RKoopaShell => setup_objp2(true, 3.0)
+    Goomba => default_obj
+    GKoopa => default_obj
+    RKoopa => default_obj
+    GKoopaShell => { has_gravity: true, speed: 3.0 }
+    RKoopaShell => { has_gravity: true, speed: 3.0 }
   }
 }
 
 fn makeblock() -> ObjectParams {
-  setup_objp2(false, 1.0)
+  { has_gravity: false, speed: 1.0 }
 }
 
 fn make_type(spawn : Spawn) -> ObjectParams {

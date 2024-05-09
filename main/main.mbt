@@ -4,13 +4,7 @@ let level_height : Double = 256.0
 
 let player_count = 2
 
-let temp : (List[Collidable], List[Collidable]) = generate(
-  player_count, level_width, level_height,
-)
-
-let players : Ref[List[Collidable]] = @ref.ref(temp.0)
-
-let objs : List[Collidable] = temp.1
+let players : Ref[List[Collidable]] = @ref.ref(generate_players(player_count))
 
 let map_dim : XY = { x: 2400.0, y: 256.0 }
 
@@ -43,6 +37,7 @@ fn init {
         "KeyA" => pressed_keys.left2 = true
         "ArrowRight" => pressed_keys.right = true
         "KeyD" => pressed_keys.right2 = true
+        "Space" => reset()
         _ => ()
       }
     },
@@ -64,6 +59,20 @@ fn init {
   )
 }
 
+pub fn reset() -> Unit {
+  id_counter.val = 0
+  players.val = generate_players(player_count)
+  let objs : List[Collidable] = generate(level_width, level_height)
+  collid_objs.val = objs
+  particles.val = List::Nil
+  state.vpt = update(viewport, get_obj(players.val.nth_exn(0)).pos)
+  state.score = 0
+  state.coins = 0
+  state.multiplier = 1
+  state.game_over = false
+}
+
 pub fn start(canvas : @canvas.Canvas2D) -> Unit {
+  let objs : List[Collidable] = generate(level_width, level_height)
   update_helper(canvas, 0.0, state, objs, List::Nil)
 }
