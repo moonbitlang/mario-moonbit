@@ -10,12 +10,7 @@ canvas.height = HEIGHT;
 let memory
 
 const importObject = {
-    ...ffi(() => memory),
-    canvas: {
-        random: (l, r) => {
-            return l + Math.floor(Math.random() * (r - l));
-        }
-    }
+    ...ffi(() => memory)
 };
 
 WebAssembly.instantiateStreaming(
@@ -24,5 +19,5 @@ WebAssembly.instantiateStreaming(
 ).then((obj) => {
     memory = obj.instance.exports["moonbit.memory"];
     obj.instance.exports._start();
-    obj.instance.exports.entry(context);
+    obj.instance.exports.entry(context, new Date().getTime());
 });

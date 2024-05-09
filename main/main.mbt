@@ -78,7 +78,8 @@ fn reset() -> Unit {
   state.game_over = false
 }
 
-pub fn entry(canvas : @canvas.Canvas2D) -> Unit {
+pub fn entry(canvas : @canvas.Canvas2D, s : Int) -> Unit {
+  seed.val = s.to_int64()
   fn update(time : Int64) -> Unit {
     let delta_time = time - last.val
     drop_counter.val += delta_time.to_int()

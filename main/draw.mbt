@@ -78,8 +78,6 @@ fn game_lose(canvas2d : @canvas.Canvas2D) -> Unit {
   canvas2d.fill_text("GAME OVER. You lose!", 60.0, 128.0)
 }
 
-fn random(l : Int, r : Int) -> Int = "canvas" "random"
-
 fn render_box(
   canvas2d : @canvas.Canvas2D,
   sprite : Sprite,
