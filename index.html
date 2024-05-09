@@ -3,12 +3,13 @@
 <head>
   <link rel="stylesheet" href="css/keys.css" type="text/css" />
   <link rel="stylesheet" href="css/style.css" type="text/css" />
+  <script src=".mooncakes/peter-jerry-ye/canvas/component.mjs" type="module"></script>
 </head>
 
 <body>
   <br />
   <h1>Super Mario</h1>
-  <canvas id="canvas"></canvas>
+  <canvas id="canvas" is="moonbit-canvas" src="target/wasm-gc/release/build/main/main.wasm" width="512" height="256"></canvas>
   <div class="center" style="padding: 5px">
     <h3>How to play:</h3>
     <table>
@@ -46,7 +47,6 @@
       </tr>
     </table>
   </div>
-  <script type="module" src="main.mjs"> </script>
 </body>
 
 </html>
