@@ -1,3 +1,6 @@
 {
-  "name": "mario"
+  "name": "mario",
+  "deps": {
+    "peter-jerry-ye/canvas": "0.1.11"
+  }
 }

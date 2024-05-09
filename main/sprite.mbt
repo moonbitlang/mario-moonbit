@@ -1,7 +1,7 @@
 struct SpriteParams {
   max_frames : Int
   max_ticks : Int
-  img_src : Image
+  img_src : @canvas.HTMLImageElement
   frame_size : (Double, Double)
   src_offset : (Double, Double)
   bbox_offset : (Double, Double)
@@ -13,14 +13,14 @@ struct Sprite {
   mut params : SpriteParams
   frame : Ref[Int]
   ticks : Ref[Int]
-  mut img : Image
+  mut img : @canvas.HTMLImageElement
 }
 
 fn setup_sprite(
   repeat : Bool,
   bbox_offset : (Double, Double),
   bbox_size : (Double, Double),
-  img_src : Image,
+  img_src : @canvas.HTMLImageElement,
   max_frames : Int,
   max_ticks : Int,
   frame_size : (Double, Double),
@@ -39,7 +39,7 @@ fn setup_sprite(
 }
 
 fn setup_sprite_(
-  img_src : Image,
+  img_src : @canvas.HTMLImageElement,
   max_frames : Int,
   max_ticks : Int,
   frame_size : (Double, Double),
