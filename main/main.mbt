@@ -24,6 +24,12 @@ let state : St = {
   game_over: false,
 }
 
+let last : Ref[Int64] = { val: 0L }
+
+let drop_counter : Ref[Int] = { val: 0 }
+
+let drop_interval = 10
+
 fn init {
   @canvas.set_on_key_down(
     fn(event) {
@@ -59,7 +65,7 @@ fn init {
   )
 }
 
-pub fn reset() -> Unit {
+fn reset() -> Unit {
   id_counter.val = 0
   players.val = generate_players(player_count)
   let objs : List[Collidable] = generate(level_width, level_height)
@@ -72,7 +78,19 @@ pub fn reset() -> Unit {
   state.game_over = false
 }
 
-pub fn start(canvas : @canvas.Canvas2D) -> Unit {
+pub fn entry(canvas : @canvas.Canvas2D) -> Unit {
+  fn update(time : Int64) -> Unit {
+    let delta_time = time - last.val
+    drop_counter.val += delta_time.to_int()
+    if drop_counter.val > drop_interval {
+      game_update(canvas, time.to_double())
+      drop_counter.val = 0
+    }
+    last.val = time
+    @canvas.request_animation_frame(update) |> ignore
+  }
+
   let objs : List[Collidable] = generate(level_width, level_height)
   update_helper(canvas, 0.0, state, objs, List::Nil)
+  @canvas.request_animation_frame(update) |> ignore
 }

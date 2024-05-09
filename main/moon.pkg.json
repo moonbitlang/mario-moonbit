@@ -5,8 +5,7 @@
   "link": {
     "wasm-gc": {
       "exports": [
-        "start",
-        "game_update"
+        "entry"
       ]
     }
   }

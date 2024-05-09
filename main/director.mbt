@@ -436,6 +436,6 @@ fn update_helper(
   }
 }
 
-pub fn game_update(canvas : @canvas.Canvas2D, t : Double) -> Unit {
+fn game_update(canvas : @canvas.Canvas2D, t : Double) -> Unit {
   update_helper(canvas, t, state, collid_objs.val, particles.val)
 }
