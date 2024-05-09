@@ -62,5 +62,8 @@ fn init {
       }
     },
   )
-  update_helper(0.0, state, objs, List::Nil)
+}
+
+pub fn start(canvas : @canvas.Canvas2D) -> Unit {
+  update_helper(canvas, 0.0, state, objs, List::Nil)
 }

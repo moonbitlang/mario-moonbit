@@ -186,6 +186,7 @@ fn broad_phase(
 // *each of the collidable objects to constantly check if collisions are
 // *occurring.*)
 fn narrow_phase(
+  canvas : @canvas.Canvas2D,
   c : Collidable,
   cs : List[Collidable],
   state : St
@@ -205,7 +206,7 @@ fn narrow_phase(
             None => (Option::None, Option::None)
             Some(dir) =>
               if get_obj(h).id != c_obj.id {
-                process_collision(dir, c, h, state)
+                process_collision(canvas, dir, c, h, state)
               } else {
                 (None, None)
               }
@@ -239,6 +240,7 @@ fn narrow_phase(
 // * added to the list of collidables for the next iteration.
 // * *)
 fn check_collisions(
+  canvas : @canvas.Canvas2D,
   collid : Collidable,
   all_collids : List[Collidable],
   state : St
@@ -247,7 +249,7 @@ fn check_collisions(
     Block(_, _, _) => Nil
     _ => {
       let broad = broad_phase(collid, all_collids, state)
-      narrow_phase(collid, broad, state)
+      narrow_phase(canvas, collid, broad, state)
     }
   }
 }
@@ -260,6 +262,7 @@ fn check_bbox_enabled() -> Bool {
 // (* update_collidable is the primary update method for collidable objects,
 // * checking the collision, updating the object, and drawing to the canvas.*)
 fn update_collidable(
+  canvas : @canvas.Canvas2D,
   state : St,
   collid : Collidable,
   all_collids : List[Collidable]
@@ -276,12 +279,12 @@ fn update_collidable(
     obj.grounded = false
     process_obj(obj, state.map)
     // (* Run collision detection if moving object*)
-    let evolved = check_collisions(collid, all_collids, state)
+    let evolved = check_collisions(canvas, collid, all_collids, state)
     // (* Render and update animation *)
     let vpt_adj_xy = coord_to_viewport(state.vpt, obj.pos)
-    render(spr, vpt_adj_xy.x, vpt_adj_xy.y)
+    render(canvas, spr, vpt_adj_xy.x, vpt_adj_xy.y)
     if check_bbox_enabled() {
-      render_box(spr, vpt_adj_xy.x, vpt_adj_xy.y)
+      render_box(canvas, spr, vpt_adj_xy.x, vpt_adj_xy.y)
     }
     if obj.vel.x != 0.0 || not(is_enemy(collid)) {
       update_animation(spr)
@@ -331,6 +334,7 @@ fn translate_keys() -> List[Control] {
 // * the player collidable and the remaining collidables, as special operations
 // * such as viewport centering only occur with the player.*)
 fn run_update_collid(
+  canvas : @canvas.Canvas2D,
   state : St,
   collid : Collidable,
   all_collids : List[Collidable]
@@ -346,13 +350,13 @@ fn run_update_collid(
           Player(new_typ, new_spr, o)
         }
       }
-      let evolved = update_collidable(state, player, all_collids)
+      let evolved = update_collidable(canvas, state, player, all_collids)
       collid_objs.val += evolved
       player
     }
     _ => {
       let obj = get_obj(collid)
-      let evolved = update_collidable(state, collid, all_collids)
+      let evolved = update_collidable(canvas, state, collid, all_collids)
       if not(obj.kill) {
         collid_objs.val = List::Cons(collid, collid_objs.val + evolved)
       }
@@ -364,11 +368,15 @@ fn run_update_collid(
 }
 
 // (* Primary update function to update and persist a particle *)
-fn run_update_particle(state : St, part : Particle) -> Unit {
+fn run_update_particle(
+  canvas : @canvas.Canvas2D,
+  state : St,
+  part : Particle
+) -> Unit {
   process(part)
   let x = part.pos.x - state.vpt.pos.x
   let y = part.pos.y - state.vpt.pos.y
-  render(part.params.sprite, x, y)
+  render(canvas, part.params.sprite, x, y)
   if not(part.kill) {
     particles.val = List::Cons(part, particles.val)
   }
@@ -377,6 +385,7 @@ fn run_update_particle(state : St, part : Particle) -> Unit {
 let which : Ref[Bool] = @ref.ref(true)
 
 fn update_helper(
+  canvas : @canvas.Canvas2D,
   time : Double,
   state : St,
   objs : List[Collidable],
@@ -384,31 +393,31 @@ fn update_helper(
 ) -> Unit {
   if state.game_over == true {
     match players.val.find(fn(p) { get_obj(p).kill.not() }) {
-      None => game_lose()
-      Some(_) => game_win()
+      None => game_lose(canvas)
+      Some(_) => game_win(canvas)
     }
   } else {
     collid_objs.val = Nil
     particles.val = Nil
     let fps_ = calc_fps(last_time.val, time).to_int()
     last_time.val = time
-    clear_canvas()
+    clear_canvas(canvas)
 
     // (* Parallax background *)
     let vpos_x_int = (state.vpt.pos.x / 5.0).to_int()
     let bgd_width = state.bgd.params.frame_size.0.to_int()
-    draw_bgd(state.bgd, (vpos_x_int % bgd_width).to_double())
+    draw_bgd(canvas, state.bgd, (vpos_x_int % bgd_width).to_double())
     which.val = false
     players.val = players.val.map(
       fn(p) {
         which.val = which.val.not()
-        run_update_collid(state, p, objs)
+        run_update_collid(canvas, state, p, objs)
       },
     )
     match players.val.find(fn(p) { get_obj(p).kill.not() }) {
       None => {
         state.game_over = true
-        game_lose()
+        game_lose(canvas)
       }
       Some(p) => {
         let a = get_obj(p).pos
@@ -416,15 +425,17 @@ fn update_helper(
         let b = get_obj(p).pos
         let c = XY::make((a.x + b.x) * 0.5, (a.y + b.y) * 0.5)
         state.vpt = update(state.vpt, c)
-        let _ = objs.map(fn(obj) { run_update_collid(state, obj, objs) })
-        let _ = parts.map(fn(part) { run_update_particle(state, part) })
-        fps(fps_)
-        hud(state.score, state.coins)
+        let _ = objs.map(
+          fn(obj) { run_update_collid(canvas, state, obj, objs) },
+        )
+        let _ = parts.map(fn(part) { run_update_particle(canvas, state, part) })
+        fps(canvas, fps_)
+        hud(canvas, state.score, state.coins)
       }
     }
   }
 }
 
-pub fn game_update(t : Double) -> Unit {
-  update_helper(t, state, collid_objs.val, particles.val)
+pub fn game_update(canvas : @canvas.Canvas2D, t : Double) -> Unit {
+  update_helper(canvas, t, state, collid_objs.val, particles.val)
 }
