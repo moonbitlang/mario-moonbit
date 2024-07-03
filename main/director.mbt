@@ -35,9 +35,9 @@ let pressed_keys : Keys = {
   bbox: 0,
 }
 
-let collid_objs : Ref[List[Collidable]] = @ref.ref(Nil) // (* List of next iteration collidable objects *)
+let collid_objs : Ref[@immut/list.List[Collidable]] = @ref.ref(Nil) // (* @immut/list.List of next iteration collidable objects *)
 
-let particles : Ref[List[Particle]] = @ref.ref(Nil) // (* List of next iteration particles *)
+let particles : Ref[@immut/list.List[Particle]] = @ref.ref(Nil) // (* @immut/list.List of next iteration particles *)
 
 let last_time : Ref[Double] = @ref.ref(-16.6) // (* Used for calculating fps *)
 
@@ -168,9 +168,9 @@ fn col_enemy_enemy(
 // (* Run the broad phase object filtering *)
 fn broad_phase(
   collid : Collidable,
-  all_collids : List[Collidable],
+  all_collids : @immut/list.List[Collidable],
   state : St
-) -> List[Collidable] {
+) -> @immut/list.List[Collidable] {
   let obj = get_obj(collid)
   all_collids.filter(
     fn(_c) {
@@ -188,15 +188,15 @@ fn broad_phase(
 fn narrow_phase(
   canvas : @canvas.Canvas2D,
   c : Collidable,
-  cs : List[Collidable],
+  cs : @immut/list.List[Collidable],
   state : St
-) -> List[Collidable] {
+) -> @immut/list.List[Collidable] {
   fn narrow_helper(
     c : Collidable,
-    cs : List[Collidable],
+    cs : @immut/list.List[Collidable],
     state : St,
-    acc : List[Collidable]
-  ) -> List[Collidable] {
+    acc : @immut/list.List[Collidable]
+  ) -> @immut/list.List[Collidable] {
     match cs {
       Nil => acc
       Cons(h, t) => {
@@ -215,8 +215,8 @@ fn narrow_phase(
           (None, None)
         }
         let acc = match new_objs {
-          (None, Some(o)) => List::Cons(o, acc)
-          (Some(o), None) => List::Cons(o, acc)
+          (None, Some(o)) => @immut/list.List::Cons(o, acc)
+          (Some(o), None) => @immut/list.List::Cons(o, acc)
           (Some(o1), Some(o2)) => Cons(o1, Cons(o2, acc))
           (None, None) => acc
         }
@@ -242,9 +242,9 @@ fn narrow_phase(
 fn check_collisions(
   canvas : @canvas.Canvas2D,
   collid : Collidable,
-  all_collids : List[Collidable],
+  all_collids : @immut/list.List[Collidable],
   state : St
-) -> List[Collidable] {
+) -> @immut/list.List[Collidable] {
   match collid {
     Block(_, _, _) => Nil
     _ => {
@@ -265,8 +265,8 @@ fn update_collidable(
   canvas : @canvas.Canvas2D,
   state : St,
   collid : Collidable,
-  all_collids : List[Collidable]
-) -> List[Collidable] {
+  all_collids : @immut/list.List[Collidable]
+) -> @immut/list.List[Collidable] {
   let obj = get_obj(collid)
   let spr = get_sprite(collid)
   obj.invuln = if obj.invuln > 0 { obj.invuln - 1 } else { 0 }
@@ -297,33 +297,33 @@ fn update_collidable(
 
 // (* Converts a keypress to a list of control keys, allowing more than one key
 // * to be processed each frame. *)
-fn translate_keys() -> List[Control] {
-  let mut res = List::Nil
+fn translate_keys() -> @immut/list.List[Control] {
+  let mut res = @immut/list.List::Nil
   if which.val {
     if pressed_keys.up {
-      res = List::Cons(Control::Up, res)
+      res = @immut/list.List::Cons(Control::Up, res)
     }
     if pressed_keys.down {
-      res = List::Cons(Control::Down, res)
+      res = @immut/list.List::Cons(Control::Down, res)
     }
     if pressed_keys.left {
-      res = List::Cons(Control::Left, res)
+      res = @immut/list.List::Cons(Control::Left, res)
     }
     if pressed_keys.right {
-      res = List::Cons(Control::Right, res)
+      res = @immut/list.List::Cons(Control::Right, res)
     }
   } else {
     if pressed_keys.up2 {
-      res = List::Cons(Control::Up, res)
+      res = @immut/list.List::Cons(Control::Up, res)
     }
     if pressed_keys.down2 {
-      res = List::Cons(Control::Down, res)
+      res = @immut/list.List::Cons(Control::Down, res)
     }
     if pressed_keys.left2 {
-      res = List::Cons(Control::Left, res)
+      res = @immut/list.List::Cons(Control::Left, res)
     }
     if pressed_keys.right2 {
-      res = List::Cons(Control::Right, res)
+      res = @immut/list.List::Cons(Control::Right, res)
     }
   }
   res
@@ -337,7 +337,7 @@ fn run_update_collid(
   canvas : @canvas.Canvas2D,
   state : St,
   collid : Collidable,
-  all_collids : List[Collidable]
+  all_collids : @immut/list.List[Collidable]
 ) -> Collidable {
   match collid {
     Player(_, s, o) as p => {
@@ -358,9 +358,9 @@ fn run_update_collid(
       let obj = get_obj(collid)
       let evolved = update_collidable(canvas, state, collid, all_collids)
       if not(obj.kill) {
-        collid_objs.val = List::Cons(collid, collid_objs.val + evolved)
+        collid_objs.val = @immut/list.List::Cons(collid, collid_objs.val + evolved)
       }
-      let new_parts = if obj.kill { kill(collid) } else { List::Nil }
+      let new_parts = if obj.kill { kill(collid) } else { @immut/list.List::Nil }
       particles.val += new_parts
       collid
     }
@@ -378,7 +378,7 @@ fn run_update_particle(
   let y = part.pos.y - state.vpt.pos.y
   render(canvas, part.params.sprite, x, y)
   if not(part.kill) {
-    particles.val = List::Cons(part, particles.val)
+    particles.val = @immut/list.List::Cons(part, particles.val)
   }
 }
 
@@ -388,8 +388,8 @@ fn update_helper(
   canvas : @canvas.Canvas2D,
   time : Double,
   state : St,
-  objs : List[Collidable],
-  parts : List[Particle]
+  objs : @immut/list.List[Collidable],
+  parts : @immut/list.List[Particle]
 ) -> Unit {
   if state.game_over == true {
     match players.val.find(fn(p) { get_obj(p).kill.not() }) {

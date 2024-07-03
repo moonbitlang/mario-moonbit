@@ -4,7 +4,7 @@ let level_height : Double = 256.0
 
 let player_count = 2
 
-let players : Ref[List[Collidable]] = @ref.ref(generate_players(player_count))
+let players : Ref[@immut/list.List[Collidable]] = @ref.ref(generate_players(player_count))
 
 let map_dim : XY = { x: 2400.0, y: 256.0 }
 
@@ -68,9 +68,9 @@ fn init {
 fn reset() -> Unit {
   id_counter.val = 0
   players.val = generate_players(player_count)
-  let objs : List[Collidable] = generate(level_width, level_height)
+  let objs : @immut/list.List[Collidable] = generate(level_width, level_height)
   collid_objs.val = objs
-  particles.val = List::Nil
+  particles.val = @immut/list.List::Nil
   state.vpt = update(viewport, get_obj(players.val.nth_exn(0)).pos)
   state.score = 0
   state.coins = 0
@@ -91,7 +91,7 @@ pub fn entry(canvas : @canvas.Canvas2D, s : Int) -> Unit {
     @canvas.request_animation_frame(update) |> ignore
   }
 
-  let objs : List[Collidable] = generate(level_width, level_height)
-  update_helper(canvas, 0.0, state, objs, List::Nil)
+  let objs : @immut/list.List[Collidable] = generate(level_width, level_height)
+  update_helper(canvas, 0.0, state, objs, @immut/list.List::Nil)
   @canvas.request_animation_frame(update) |> ignore
 }
