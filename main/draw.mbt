@@ -46,8 +46,17 @@ fn game_lose() = "canvas" "game_lose"
 
 fn random(l : Int, r : Int) -> Int = "canvas" "random"
 
-fn render_(img : Image, sx : Double, sy : Double, sw : Double, sh : Double,
-        dx : Double, dy : Double, dw : Double, dh : Double) = "canvas" "render"
+fn render_(
+  img : Image,
+  sx : Double,
+  sy : Double,
+  sw : Double,
+  sh : Double,
+  dx : Double,
+  dy : Double,
+  dw : Double,
+  dh : Double
+) = "canvas" "render"
 
 fn render_box_(a : Double, b : Double, c : Double, d : Double) = "canvas" "render_box"
 

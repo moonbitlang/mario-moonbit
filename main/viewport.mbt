@@ -14,7 +14,10 @@ fn Viewport::make(v : XY, m : XY) -> Viewport {
 
 fn calc_viewport_point(cc : Double, vc : Double, mc : Double) -> Double {
   let vc_half = vc / 2.0
-  @math.minimum(@math.maximum(cc - vc_half, 0.0), @math.minimum(mc - vc, @double.abs(cc - vc_half)))
+  @math.minimum(
+    @math.maximum(cc - vc_half, 0.0),
+    @math.minimum(mc - vc, @double.abs(cc - vc_half)),
+  )
 }
 
 // (* Returns whether a coordinate pair [pos] is inside the viewport [v] *)

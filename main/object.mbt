@@ -213,12 +213,12 @@ fn normalize_pos(pos : XY, p1 : SpriteParams, p2 : SpriteParams) -> Unit {
 
 fn update_player(
   player : Object,
-  keys : List[Control]
-) -> Option[(PlayerSize, Sprite)] {
+  keys : @immut/list.List[Control]
+) -> (PlayerSize, Sprite)? {
   let prev_jumping = player.jumping
   let prev_dir = player.dir
   let prev_vx = @double.abs(player.vel.x)
-  keys.iter(fn(x) { update_player_keys(player, x) })
+  keys.each(fn(x) { update_player_keys(player, x) })
   let v = player.vel.x * friction
   let vel_damped = if @double.abs(v) < 0.1 { 0.0 } else { v }
   player.vel.x = vel_damped
@@ -295,7 +295,7 @@ fn evolve_enemy(
   typ : Enemy,
   spr : Sprite,
   obj : Object
-) -> Option[Collidable] {
+) -> Collidable? {
   match typ {
     GKoopa => {
       let (new_spr, new_obj) = makeobj(
@@ -402,7 +402,7 @@ fn col_bypass(c1 : Collidable, c2 : Collidable) -> Bool {
 // (*Used for checking if collisions occur. Compares half-widths and half-heights
 // *and adjusts for when collisions do occur, by changing position so that
 // *a second collision does not occur again immediately. This causes snapping.*)
-fn check_collision(c1 : Collidable, c2 : Collidable) -> Option[Dir2d] {
+fn check_collision(c1 : Collidable, c2 : Collidable) -> Dir2d? {
   let b1 = get_aabb(c1)
   let b2 = get_aabb(c2)
   let o1 = get_obj(c1)
@@ -438,18 +438,18 @@ fn check_collision(c1 : Collidable, c2 : Collidable) -> Option[Dir2d] {
 }
 
 // (*"Kills" the matched object by setting certain parameters for each.*)
-fn kill(collid : Collidable) -> List[Particle] {
+fn kill(collid : Collidable) -> @immut/list.List[Particle] {
   match collid {
     Enemy(t, _, o) => {
       let pos = { x: o.pos.x, y: o.pos.y }
       let score = if o.score > 0 {
-        List::[make_score(o.score, pos)]
+        @immut/list.List::[make_score(o.score, pos)]
       } else {
-        List::Nil
+        @immut/list.List::Nil
       }
       let remains = match t {
         Goomba =>
-          List::[
+          @immut/list.List::[
             Particle::make(
               { x: 0.0, y: 0.0 },
               { x: 0.0, y: 0.0 },
@@ -457,7 +457,7 @@ fn kill(collid : Collidable) -> List[Particle] {
               pos,
             ),
           ]
-        _ => List::Nil
+        _ => @immut/list.List::Nil
       }
       score + remains
     }
@@ -489,15 +489,16 @@ fn kill(collid : Collidable) -> List[Particle] {
             BrickChunkR,
             XY::make(pos.x, pos.y),
           )
-          List::[p1, p2, p3, p4]
+          @immut/list.List::[p1, p2, p3, p4]
         }
-        _ => List::Nil
+        _ => @immut/list.List::Nil
       }
     Item(t, _, o) =>
       match t {
-        Mushroom => List::[make_score(o.score, XY::make(o.pos.x, o.pos.y))]
-        _ => List::Nil
+        Mushroom =>
+          @immut/list.List::[make_score(o.score, XY::make(o.pos.x, o.pos.y))]
+        _ => @immut/list.List::Nil
       }
-    _ => List::Nil
+    _ => @immut/list.List::Nil
   }
 }

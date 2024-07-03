@@ -7,7 +7,7 @@
 // * in loclist.*)
 fn mem_loc(
   checkloc : (Double, Double),
-  loclist : List[(Int, (Double, Double))]
+  loclist : @immut/list.List[(Int, (Double, Double))]
 ) -> Bool {
   match loclist {
     Nil => false
@@ -19,8 +19,8 @@ fn mem_loc(
 // (*Converts list of locations from blocksize to pixelsize by multiplying (x,y) by
 // * 16.*)
 fn convert_list(
-  list : List[(Int, (Double, Double))]
-) -> List[(Int, (Double, Double))] {
+  list : @immut/list.List[(Int, (Double, Double))]
+) -> @immut/list.List[(Int, (Double, Double))] {
   list.map(fn(x) { (x.0, (x.1.0 * 16.0, x.1.1 * 16.0)) })
 }
 
@@ -49,9 +49,9 @@ fn choose_sblock_typ(typ : Int) -> Block {
 // (*Optimizes lst such that there are no two items in the list that have the same
 // * coordinates. If there is one, it is removed.*)
 fn avoid_overlap(
-  lst : List[(Int, (Double, Double))],
-  currentLst : List[(Int, (Double, Double))]
-) -> List[(Int, (Double, Double))] {
+  lst : @immut/list.List[(Int, (Double, Double))],
+  currentLst : @immut/list.List[(Int, (Double, Double))]
+) -> @immut/list.List[(Int, (Double, Double))] {
   match lst {
     Nil => Nil
     Cons(h, t) =>
@@ -66,10 +66,10 @@ fn avoid_overlap(
 // (*Gets rid of objects with coordinates in the ending frame, within 128 pixels of
 // * the start, at the very top, and two blocks from the ground.*)
 fn trim_edges(
-  lst : List[(Int, (Double, Double))],
+  lst : @immut/list.List[(Int, (Double, Double))],
   blockw : Double,
   blockh : Double
-) -> List[(Int, (Double, Double))] {
+) -> @immut/list.List[(Int, (Double, Double))] {
   match lst {
     Nil => Nil
     Cons(h, t) => {
@@ -92,18 +92,18 @@ fn generate_ground_stairs(
   cbx : Double,
   cby : Double,
   typ : Int
-) -> List[(Int, (Double, Double))] {
-  let x = List::Nil
-  let x = List::Cons((typ, (cbx + 3.0, cby - 3.0)), x)
-  let x = List::Cons((typ, (cbx + 3.0, cby - 2.0)), x)
-  let x = List::Cons((typ, (cbx + 2.0, cby - 2.0)), x)
-  let x = List::Cons((typ, (cbx + 3.0, cby - 1.0)), x)
-  let x = List::Cons((typ, (cbx + 2.0, cby - 1.0)), x)
-  let x = List::Cons((typ, (cbx + 1.0, cby - 1.0)), x)
-  let x = List::Cons((typ, (cbx + 3.0, cby - 0.0)), x)
-  let x = List::Cons((typ, (cbx + 2.0, cby - 0.0)), x)
-  let x = List::Cons((typ, (cbx + 1.0, cby - 0.0)), x)
-  let x = List::Cons((typ, (cbx + 0.0, cby - 0.0)), x)
+) -> @immut/list.List[(Int, (Double, Double))] {
+  let x = @immut/list.List::Nil
+  let x = @immut/list.List::Cons((typ, (cbx + 3.0, cby - 3.0)), x)
+  let x = @immut/list.List::Cons((typ, (cbx + 3.0, cby - 2.0)), x)
+  let x = @immut/list.List::Cons((typ, (cbx + 2.0, cby - 2.0)), x)
+  let x = @immut/list.List::Cons((typ, (cbx + 3.0, cby - 1.0)), x)
+  let x = @immut/list.List::Cons((typ, (cbx + 2.0, cby - 1.0)), x)
+  let x = @immut/list.List::Cons((typ, (cbx + 1.0, cby - 1.0)), x)
+  let x = @immut/list.List::Cons((typ, (cbx + 3.0, cby - 0.0)), x)
+  let x = @immut/list.List::Cons((typ, (cbx + 2.0, cby - 0.0)), x)
+  let x = @immut/list.List::Cons((typ, (cbx + 1.0, cby - 0.0)), x)
+  let x = @immut/list.List::Cons((typ, (cbx + 0.0, cby - 0.0)), x)
   x
 }
 
@@ -112,15 +112,15 @@ fn generate_airup_stairs(
   cbx : Double,
   cby : Double,
   typ : Int
-) -> List[(Int, (Double, Double))] {
-  let x = List::Nil
-  let x = List::Cons((typ, (cbx + 6.0, cby - 2.0)), x)
-  let x = List::Cons((typ, (cbx + 5.0, cby - 2.0)), x)
-  let x = List::Cons((typ, (cbx + 4.0, cby - 2.0)), x)
-  let x = List::Cons((typ, (cbx + 4.0, cby - 1.0)), x)
-  let x = List::Cons((typ, (cbx + 3.0, cby - 1.0)), x)
-  let x = List::Cons((typ, (cbx + 1.0, cby - 0.0)), x)
-  let x = List::Cons((typ, (cbx + 0.0, cby - 0.0)), x)
+) -> @immut/list.List[(Int, (Double, Double))] {
+  let x = @immut/list.List::Nil
+  let x = @immut/list.List::Cons((typ, (cbx + 6.0, cby - 2.0)), x)
+  let x = @immut/list.List::Cons((typ, (cbx + 5.0, cby - 2.0)), x)
+  let x = @immut/list.List::Cons((typ, (cbx + 4.0, cby - 2.0)), x)
+  let x = @immut/list.List::Cons((typ, (cbx + 4.0, cby - 1.0)), x)
+  let x = @immut/list.List::Cons((typ, (cbx + 3.0, cby - 1.0)), x)
+  let x = @immut/list.List::Cons((typ, (cbx + 1.0, cby - 0.0)), x)
+  let x = @immut/list.List::Cons((typ, (cbx + 0.0, cby - 0.0)), x)
   x
 }
 
@@ -129,15 +129,15 @@ fn generate_airdown_stairs(
   cbx : Double,
   cby : Double,
   typ : Int
-) -> List[(Int, (Double, Double))] {
-  let x = List::Nil
-  let x = List::Cons((typ, (cbx + 6.0, cby + 2.0)), x)
-  let x = List::Cons((typ, (cbx + 5.0, cby + 2.0)), x)
-  let x = List::Cons((typ, (cbx + 3.0, cby + 1.0)), x)
-  let x = List::Cons((typ, (cbx + 2.0, cby + 1.0)), x)
-  let x = List::Cons((typ, (cbx + 2.0, cby + 0.0)), x)
-  let x = List::Cons((typ, (cbx + 1.0, cby + 0.0)), x)
-  let x = List::Cons((typ, (cbx + 0.0, cby + 0.0)), x)
+) -> @immut/list.List[(Int, (Double, Double))] {
+  let x = @immut/list.List::Nil
+  let x = @immut/list.List::Cons((typ, (cbx + 6.0, cby + 2.0)), x)
+  let x = @immut/list.List::Cons((typ, (cbx + 5.0, cby + 2.0)), x)
+  let x = @immut/list.List::Cons((typ, (cbx + 3.0, cby + 1.0)), x)
+  let x = @immut/list.List::Cons((typ, (cbx + 2.0, cby + 1.0)), x)
+  let x = @immut/list.List::Cons((typ, (cbx + 2.0, cby + 0.0)), x)
+  let x = @immut/list.List::Cons((typ, (cbx + 1.0, cby + 0.0)), x)
+  let x = @immut/list.List::Cons((typ, (cbx + 0.0, cby + 0.0)), x)
   x
 }
 
@@ -147,26 +147,26 @@ fn generate_clouds(
   cby : Double,
   typ : Int,
   num : Int
-) -> List[(Int, (Double, Double))] {
+) -> @immut/list.List[(Int, (Double, Double))] {
   if num <= 0 {
-    List::Nil
+    Nil
   } else {
-    List::Cons((typ, (cbx, cby)), generate_clouds(cbx + 1.0, cby, typ, num - 1))
+    Cons((typ, (cbx, cby)), generate_clouds(cbx + 1.0, cby, typ, num - 1))
   }
 }
 
 fn generate_coins(
-  block_coord : List[(Int, (Double, Double))]
-) -> List[(Int, (Double, Double))] {
+  block_coord : @immut/list.List[(Int, (Double, Double))]
+) -> @immut/list.List[(Int, (Double, Double))] {
   // (* let place_coin = Random.int 2 in *)
   let place_coin = random(0, 2)
   match block_coord {
-    List::Nil => List::Nil
-    List::Cons(h, t) =>
+    Nil => Nil
+    Cons(h, t) =>
       if place_coin == 0 {
         let xc = h.1.0
         let yc = h.1.1
-        List::Cons((0, (xc, yc - 16.0)), generate_coins(t))
+        Cons((0, (xc, yc - 16.0)), generate_coins(t))
       } else {
         generate_coins(t)
       }
@@ -188,9 +188,9 @@ fn choose_block_pattern(
   cbx : Double,
   cby : Double,
   prob : Int
-) -> List[(Int, (Double, Double))] {
+) -> @immut/list.List[(Int, (Double, Double))] {
   if cbx > blockw || cby > blockh {
-    List::Nil
+    @immut/list.List::Nil
   } else {
     let block_typ = random(0, 4)
     let stair_typ = random(0, 2)
@@ -199,29 +199,33 @@ fn choose_block_pattern(
     match prob {
       0 =>
         if blockw - cbx > 2.0 {
-          List::[
-            (stair_typ, (cbx, cby)),
-            (middle_block, (cbx + 1.0, cby)),
-            (stair_typ, (cbx + 2.0, cby)),
-          ]
+          @immut/list.from_array(
+            [
+              (stair_typ, (cbx, cby)),
+              (middle_block, (cbx + 1.0, cby)),
+              (stair_typ, (cbx + 2.0, cby)),
+            ],
+          )
         } else if blockw - cbx > 1.0 {
-          List::[(block_typ, (cbx, cby)), (block_typ, (cbx + 1.0, cby))]
+          @immut/list.from_array(
+            [(block_typ, (cbx, cby)), (block_typ, (cbx + 1.0, cby))],
+          )
         } else {
-          List::[(block_typ, (cbx, cby))]
+          @immut/list.from_array([(block_typ, (cbx, cby))])
         }
       1 => {
         let num_clouds = random(0, 5) + 5
         if cby < 5.0 {
           generate_clouds(cbx, cby, 2, num_clouds)
         } else {
-          List::Nil
+          Nil
         }
       }
       2 =>
         if blockh - cby == 1.0 {
           generate_ground_stairs(cbx, cby, stair_typ)
         } else {
-          List::Nil
+          Nil
         }
       3 =>
         if stair_typ == 0 && blockh - cby > 3.0 {
@@ -229,21 +233,25 @@ fn choose_block_pattern(
         } else if blockh - cby > 2.0 {
           generate_airup_stairs(cbx, cby, stair_typ)
         } else {
-          List::[(stair_typ, (cbx, cby))]
+          @immut/list.from_array([(stair_typ, (cbx, cby))])
         }
       4 =>
         if cby + 3.0 - blockh == 2.0 {
-          List::[(stair_typ, (cbx, cby))]
+          @immut/list.from_array([(stair_typ, (cbx, cby))])
         } else if cby + 3.0 - blockh == 1.0 {
-          List::[(stair_typ, (cbx, cby)), (stair_typ, (cbx, cby + 1.0))]
+          @immut/list.from_array(
+            [(stair_typ, (cbx, cby)), (stair_typ, (cbx, cby + 1.0))],
+          )
         } else {
-          List::[
-            (stair_typ, (cbx, cby)),
-            (stair_typ, (cbx, cby + 1.0)),
-            (stair_typ, (cbx, cby + 2.0)),
-          ]
+          @immut/list.from_array(
+            [
+              (stair_typ, (cbx, cby)),
+              (stair_typ, (cbx, cby + 1.0)),
+              (stair_typ, (cbx, cby + 2.0)),
+            ],
+          )
         }
-      5 => List::[(3, (cbx, cby))]
+      5 => @immut/list.List::[(3, (cbx, cby))]
       _ => abort("")
     }
   }
@@ -255,10 +263,10 @@ fn generate_enemies(
   blockh : Double,
   cbx : Double,
   cby : Double,
-  acc : List[(Int, (Double, Double))]
-) -> List[(Int, (Double, Double))] {
+  acc : @immut/list.List[(Int, (Double, Double))]
+) -> @immut/list.List[(Int, (Double, Double))] {
   if cbx > blockw - 32.0 {
-    List::Nil
+    Nil
   } else if cby > blockh - 1.0 || cbx < 15.0 {
     generate_enemies(blockw, blockh, cbx + 1.0, 0.0, acc)
   } else if mem_loc((cbx, cby), acc) || cby == 0.0 {
@@ -267,7 +275,7 @@ fn generate_enemies(
     let prob = random(0, 30)
     let enem_prob = 3
     if prob < enem_prob && blockh - 1.0 == cby {
-      List::Cons(
+      Cons(
         (prob, (cbx * 16.0, cby * 16.0)),
         generate_enemies(blockw, blockh, cbx, cby + 1.0, acc),
       )
@@ -279,8 +287,8 @@ fn generate_enemies(
 
 // (*Generates a list of enemies to be placed upon the block objects.*)
 fn generate_block_enemies(
-  block_coord : List[(Int, (Double, Double))]
-) -> List[(Int, (Double, Double))] {
+  block_coord : @immut/list.List[(Int, (Double, Double))]
+) -> @immut/list.List[(Int, (Double, Double))] {
   let place_enemy = random(0, 20)
   let enemy_typ = random(0, 3)
   match block_coord {
@@ -289,7 +297,7 @@ fn generate_block_enemies(
       if place_enemy == 0 {
         let xc = h.1.0
         let yc = h.1.1
-        List::Cons((enemy_typ, (xc, yc - 16.0)), generate_block_enemies(t))
+        Cons((enemy_typ, (xc, yc - 16.0)), generate_block_enemies(t))
       } else {
         generate_block_enemies(t)
       }
@@ -302,8 +310,8 @@ fn generate_block_locs(
   blockh : Double,
   cbx : Double,
   cby : Double,
-  acc : List[(Int, (Double, Double))]
-) -> List[(Int, (Double, Double))] {
+  acc : @immut/list.List[(Int, (Double, Double))]
+) -> @immut/list.List[(Int, (Double, Double))] {
   if blockw - cbx < 33.0 {
     acc
   } else if cby > blockh - 1.0 {
@@ -336,20 +344,20 @@ fn generate_ground(
   blockw : Double,
   blockh : Double,
   inc : Double,
-  acc : List[(Int, (Double, Double))]
-) -> List[(Int, (Double, Double))] {
+  acc : @immut/list.List[(Int, (Double, Double))]
+) -> @immut/list.List[(Int, (Double, Double))] {
   if inc > blockw {
     acc
   } else if inc > 10.0 {
     let skip = random(0, 10)
-    let newacc = acc + List::[(4, (inc * 16.0, blockh * 16.0))]
+    let newacc = acc + @immut/list.List::[(4, (inc * 16.0, blockh * 16.0))]
     if skip == 7 && blockw - inc > 32.0 {
       generate_ground(blockw, blockh, inc + 1.0, acc)
     } else {
       generate_ground(blockw, blockh, inc + 1.0, newacc)
     }
   } else {
-    let newacc = acc + List::[(4, (inc * 16.0, blockh * 16.0))]
+    let newacc = acc + @immut/list.List::[(4, (inc * 16.0, blockh * 16.0))]
     generate_ground(blockw, blockh, inc + 1.0, newacc)
   }
 }
@@ -357,14 +365,14 @@ fn generate_ground(
 // (*Converts the obj_coord list called by generate_block_locs to a list of objects
 // * with the coordinates given from the obj_coord list. *)
 fn convert_to_block_obj(
-  lst : List[(Int, (Double, Double))]
-) -> List[Collidable] {
+  lst : @immut/list.List[(Int, (Double, Double))]
+) -> @immut/list.List[Collidable] {
   match lst {
     Nil => Nil
     Cons(h, t) => {
       let sblock_typ = choose_sblock_typ(h.0)
       let ob = spawn(Block(sblock_typ), h.1.0, h.1.1)
-      List::[ob] + convert_to_block_obj(t)
+      @immut/list.List::[ob] + convert_to_block_obj(t)
     }
   }
 }
@@ -372,26 +380,28 @@ fn convert_to_block_obj(
 // (*Converts the obj_coord list called by generate_enemies to a list of objects
 // * with the coordinates given from the obj_coord list. *)
 fn convert_to_enemy_obj(
-  lst : List[(Int, (Double, Double))]
-) -> List[Collidable] {
+  lst : @immut/list.List[(Int, (Double, Double))]
+) -> @immut/list.List[Collidable] {
   match lst {
     Nil => Nil
     Cons(h, t) => {
       let senemy_typ = choose_enemy_typ(h.0)
       let ob = spawn(Enemy(senemy_typ), h.1.0, h.1.1)
-      List::[ob] + convert_to_enemy_obj(t)
+      Cons(ob, convert_to_enemy_obj(t))
     }
   }
 }
 
 // (*Converts the list of coordinates into a list of Coin objects*)
-fn convert_to_coin_obj(lst : List[(Int, (Double, Double))]) -> List[Collidable] {
+fn convert_to_coin_obj(
+  lst : @immut/list.List[(Int, (Double, Double))]
+) -> @immut/list.List[Collidable] {
   match lst {
     Nil => Nil
     Cons(h, t) => {
       let sitem_typ = Item::Coin
       let ob = spawn(Item(sitem_typ), h.1.0, h.1.1)
-      List::[ob] + convert_to_coin_obj(t)
+      Cons(ob, convert_to_coin_obj(t))
     }
   }
 }
@@ -399,7 +409,10 @@ fn convert_to_coin_obj(lst : List[(Int, (Double, Double))]) -> List[Collidable] 
 // (*Procedurally generates a list of collidables given canvas width, height and
 // * context. Arguments block width (blockw) and block height (blockh) are in
 // * block form, not pixels.*)
-fn generate_helper(blockw : Double, blockh : Double) -> List[Collidable] {
+fn generate_helper(
+  blockw : Double,
+  blockh : Double
+) -> @immut/list.List[Collidable] {
   let block_locs = generate_block_locs(blockw, blockh, 0.0, 0.0, Nil)
   let converted_block_locs = trim_edges(
     convert_list(block_locs),
@@ -427,7 +440,7 @@ fn generate_helper(blockw : Double, blockh : Double) -> List[Collidable] {
   let obj_enemy_blocks = convert_to_enemy_obj(undup_enemy_block_locs)
   let coin_objects = convert_to_coin_obj(undup_coin_locs)
   let obj_panel = generate_panel(blockw, blockh)
-  all_blocks + obj_converted_enemies + coin_objects + obj_enemy_blocks + List::[
+  all_blocks + obj_converted_enemies + coin_objects + obj_enemy_blocks + @immut/list.List::[
     obj_panel,
   ]
 }
@@ -439,17 +452,18 @@ pub fn generate(
   player_count : Int,
   w : Double,
   h : Double
-) -> (List[Collidable], List[Collidable]) {
+) -> (@immut/list.List[Collidable], @immut/list.List[Collidable]) {
   let blockw = w / 16.0
   let blockh = h / 16.0 - 1.0
   let collide_list = generate_helper(blockw, blockh)
   let mut start = 50.0
-  let players = Array::make(player_count, Spawn::Player(Small, Standing)).to_list().map(
-    fn(s) {
-      let c = spawn(s, start, 0.0)
-      start = start - 30.0
-      c
-    },
-  )
+  let players = Array::make(player_count, Spawn::Player(Small, Standing)).map(
+      fn(s) {
+        let c = spawn(s, start, 0.0)
+        start = start - 30.0
+        c
+      },
+    )
+    |> @immut/list.from_array
   (players, collide_list)
 }
