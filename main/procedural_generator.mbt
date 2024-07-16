@@ -12,7 +12,7 @@ fn mem_loc(
   match loclist {
     Nil => false
     Cons(h, t) =>
-      checkloc.0 == h.1.0 && checkloc.1 == h.1.1 || mem_loc(checkloc, t)
+      (checkloc.0 == h.1.0 && checkloc.1 == h.1.1) || mem_loc(checkloc, t)
   }
 }
 
@@ -251,8 +251,8 @@ fn choose_block_pattern(
             ],
           )
         }
-      5 => @immut/list.List::[(3, (cbx, cby))]
-      _ => abort("")
+      5 => Cons((3, (cbx, cby)), Nil)
+      _ => panic()
     }
   }
 }
@@ -350,14 +350,14 @@ fn generate_ground(
     acc
   } else if inc > 10.0 {
     let skip = random(0, 10)
-    let newacc = acc + @immut/list.List::[(4, (inc * 16.0, blockh * 16.0))]
+    let newacc = acc + Cons((4, (inc * 16.0, blockh * 16.0)), Nil)
     if skip == 7 && blockw - inc > 32.0 {
       generate_ground(blockw, blockh, inc + 1.0, acc)
     } else {
       generate_ground(blockw, blockh, inc + 1.0, newacc)
     }
   } else {
-    let newacc = acc + @immut/list.List::[(4, (inc * 16.0, blockh * 16.0))]
+    let newacc = acc + Cons((4, (inc * 16.0, blockh * 16.0)), Nil)
     generate_ground(blockw, blockh, inc + 1.0, newacc)
   }
 }
@@ -372,7 +372,7 @@ fn convert_to_block_obj(
     Cons(h, t) => {
       let sblock_typ = choose_sblock_typ(h.0)
       let ob = spawn(Block(sblock_typ), h.1.0, h.1.1)
-      @immut/list.List::[ob] + convert_to_block_obj(t)
+      @immut/list.Cons(ob, Nil) + convert_to_block_obj(t)
     }
   }
 }
@@ -440,9 +440,10 @@ fn generate_helper(
   let obj_enemy_blocks = convert_to_enemy_obj(undup_enemy_block_locs)
   let coin_objects = convert_to_coin_obj(undup_coin_locs)
   let obj_panel = generate_panel(blockw, blockh)
-  all_blocks + obj_converted_enemies + coin_objects + obj_enemy_blocks + @immut/list.List::[
+  all_blocks + obj_converted_enemies + coin_objects + obj_enemy_blocks + Cons(
     obj_panel,
-  ]
+    Nil,
+  )
 }
 
 // (*Main function called to procedurally generate the level map. w and h args

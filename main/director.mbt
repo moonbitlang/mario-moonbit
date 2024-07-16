@@ -35,11 +35,11 @@ let pressed_keys : Keys = {
   bbox: 0,
 }
 
-let collid_objs : Ref[@immut/list.List[Collidable]] = @ref.ref(Nil) // (* @immut/list.List of next iteration collidable objects *)
+let collid_objs : Ref[@immut/list.List[Collidable]] = @ref.new(Nil) // (* @immut/list.List of next iteration collidable objects *)
 
-let particles : Ref[@immut/list.List[Particle]] = @ref.ref(Nil) // (* @immut/list.List of next iteration particles *)
+let particles : Ref[@immut/list.List[Particle]] = @ref.new(Nil) // (* @immut/list.List of next iteration particles *)
 
-let last_time : Ref[Double] = @ref.ref(-16.6) // (* Used for calculating fps *)
+let last_time : Ref[Double] = @ref.new(-16.6) // (* Used for calculating fps *)
 
 // (* Calculates fps as the difference between [t0] and [t1] *)
 
@@ -381,7 +381,7 @@ fn run_update_particle(state : St, part : Particle) -> Unit {
   }
 }
 
-let which : Ref[Bool] = @ref.ref(true)
+let which : Ref[Bool] = @ref.new(true)
 
 fn update_helper(
   time : Double,
@@ -419,7 +419,7 @@ fn update_helper(
       }
       Some(p) => {
         let a = get_obj(p).pos
-        let p = players.val.reverse().find(fn(p) { get_obj(p).kill.not() }).unwrap()
+        let p = players.val.rev().find(fn(p) { get_obj(p).kill.not() }).unwrap()
         let b = get_obj(p).pos
         let c = XY::make((a.x + b.x) * 0.5, (a.y + b.y) * 0.5)
         state.vpt = update(state.vpt, c)

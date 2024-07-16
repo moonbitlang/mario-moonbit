@@ -24,7 +24,7 @@ struct ObjectParams {
   speed : Double
 }
 
-let id_counter : Ref[Int] = @ref.ref(0)
+let id_counter : Ref[Int] = @ref.new(0)
 
 struct Object {
   params : ObjectParams
@@ -225,9 +225,9 @@ fn update_player(
   let pl_typ = if player.health <= 1 { PlayerSize::Small } else { Large }
   if prev_jumping.not() && player.jumping {
     Some((pl_typ, Sprite::make(Player(pl_typ, Jumping), player.dir)))
-  } else if prev_dir != player.dir || (prev_vx == 0.0 && @double.abs(
+  } else if prev_dir != player.dir || ((prev_vx == 0.0 && @double.abs(
     player.vel.x,
-  ) > 0.0) && player.jumping.not() {
+  ) > 0.0) && player.jumping.not()) {
     Some((pl_typ, Sprite::make(Player(pl_typ, Running), player.dir)))
   } else if prev_dir != player.dir && player.jumping && prev_jumping {
     Some((pl_typ, Sprite::make(Player(pl_typ, Jumping), player.dir)))
@@ -443,21 +443,22 @@ fn kill(collid : Collidable) -> @immut/list.List[Particle] {
     Enemy(t, _, o) => {
       let pos = { x: o.pos.x, y: o.pos.y }
       let score = if o.score > 0 {
-        @immut/list.List::[make_score(o.score, pos)]
+        @immut/list.Cons(make_score(o.score, pos), Nil)
       } else {
-        @immut/list.List::Nil
+        Nil
       }
       let remains = match t {
         Goomba =>
-          @immut/list.List::[
+          @immut/list.Cons(
             Particle::make(
               { x: 0.0, y: 0.0 },
               { x: 0.0, y: 0.0 },
               GoombaSquish,
               pos,
             ),
-          ]
-        _ => @immut/list.List::Nil
+            Nil,
+          )
+        _ => Nil
       }
       score + remains
     }
@@ -489,16 +490,15 @@ fn kill(collid : Collidable) -> @immut/list.List[Particle] {
             BrickChunkR,
             XY::make(pos.x, pos.y),
           )
-          @immut/list.List::[p1, p2, p3, p4]
+          @immut/list.of([p1, p2, p3, p4])
         }
-        _ => @immut/list.List::Nil
+        _ => Nil
       }
     Item(t, _, o) =>
       match t {
-        Mushroom =>
-          @immut/list.List::[make_score(o.score, XY::make(o.pos.x, o.pos.y))]
-        _ => @immut/list.List::Nil
+        Mushroom => Cons(make_score(o.score, XY::make(o.pos.x, o.pos.y)), Nil)
+        _ => Nil
       }
-    _ => @immut/list.List::Nil
+    _ => Nil
   }
 }

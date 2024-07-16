@@ -226,7 +226,6 @@ function start() {
         fetch("target/wasm-gc/release/build/main/main.wasm"),
         importObject
     ).then((obj) => {
-        obj.instance.exports._start();
         game_win = obj.instance.exports["game_win"];
         game_lose = obj.instance.exports["game_lose"];
         game_update = obj.instance.exports["game_update"];

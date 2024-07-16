@@ -379,7 +379,7 @@ fn SpriteParams::make(spawn : Spawn, dir1d : Dir1d) -> SpriteParams {
 }
 
 fn Sprite::make_(params : SpriteParams) -> Sprite {
-  { params, frame: @ref.ref(0), ticks: @ref.ref(0), img: params.img_src }
+  { params, frame: @ref.new(0), ticks: @ref.new(0), img: params.img_src }
 }
 
 fn Sprite::make(spawn : Spawn, dir1d : Dir1d) -> Sprite {

@@ -8,7 +8,7 @@ let temp : (@immut/list.List[Collidable], @immut/list.List[Collidable]) = genera
   player_count, level_width, level_height,
 )
 
-let players : Ref[@immut/list.List[Collidable]] = @ref.ref(temp.0)
+let players : Ref[@immut/list.List[Collidable]] = @ref.new(temp.0)
 
 let objs : @immut/list.List[Collidable] = temp.1
 
