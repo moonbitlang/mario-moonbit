@@ -35,9 +35,9 @@ let pressed_keys : Keys = {
   bbox: 0,
 }
 
-let collid_objs : Ref[@immut/list.List[Collidable]] = @ref.new(Nil) // (* @immut/list.List of next iteration collidable objects *)
+let collid_objs : Ref[@immut/list.T[Collidable]] = @ref.new(Nil) // (* @immut/list.T of next iteration collidable objects *)
 
-let particles : Ref[@immut/list.List[Particle]] = @ref.new(Nil) // (* @immut/list.List of next iteration particles *)
+let particles : Ref[@immut/list.T[Particle]] = @ref.new(Nil) // (* @immut/list.T of next iteration particles *)
 
 let last_time : Ref[Double] = @ref.new(-16.6) // (* Used for calculating fps *)
 
@@ -168,16 +168,15 @@ fn col_enemy_enemy(
 // (* Run the broad phase object filtering *)
 fn broad_phase(
   collid : Collidable,
-  all_collids : @immut/list.List[Collidable],
+  all_collids : @immut/list.T[Collidable],
   state : St
-) -> @immut/list.List[Collidable] {
+) -> @immut/list.T[Collidable] {
   let obj = get_obj(collid)
   all_collids.filter(
     fn(_c) {
-      in_viewport(state.vpt, obj.pos) || is_player(collid) || out_of_viewport_below(
-        state.vpt,
-        obj.pos.y,
-      )
+      in_viewport(state.vpt, obj.pos) ||
+      is_player(collid) ||
+      out_of_viewport_below(state.vpt, obj.pos.y)
     },
   )
 }
@@ -187,15 +186,15 @@ fn broad_phase(
 // *occurring.*)
 fn narrow_phase(
   c : Collidable,
-  cs : @immut/list.List[Collidable],
+  cs : @immut/list.T[Collidable],
   state : St
-) -> @immut/list.List[Collidable] {
+) -> @immut/list.T[Collidable] {
   fn narrow_helper(
     c : Collidable,
-    cs : @immut/list.List[Collidable],
+    cs : @immut/list.T[Collidable],
     state : St,
-    acc : @immut/list.List[Collidable]
-  ) -> @immut/list.List[Collidable] {
+    acc : @immut/list.T[Collidable]
+  ) -> @immut/list.T[Collidable] {
     match cs {
       Nil => acc
       Cons(h, t) => {
@@ -214,8 +213,8 @@ fn narrow_phase(
           (None, None)
         }
         let acc = match new_objs {
-          (None, Some(o)) => @immut/list.List::Cons(o, acc)
-          (Some(o), None) => @immut/list.List::Cons(o, acc)
+          (None, Some(o)) => @immut/list.T::Cons(o, acc)
+          (Some(o), None) => @immut/list.T::Cons(o, acc)
           (Some(o1), Some(o2)) => Cons(o1, Cons(o2, acc))
           (None, None) => acc
         }
@@ -240,9 +239,9 @@ fn narrow_phase(
 // * *)
 fn check_collisions(
   collid : Collidable,
-  all_collids : @immut/list.List[Collidable],
+  all_collids : @immut/list.T[Collidable],
   state : St
-) -> @immut/list.List[Collidable] {
+) -> @immut/list.T[Collidable] {
   match collid {
     Block(_, _, _) => Nil
     _ => {
@@ -262,16 +261,15 @@ fn check_bbox_enabled() -> Bool {
 fn update_collidable(
   state : St,
   collid : Collidable,
-  all_collids : @immut/list.List[Collidable]
-) -> @immut/list.List[Collidable] {
+  all_collids : @immut/list.T[Collidable]
+) -> @immut/list.T[Collidable] {
   let obj = get_obj(collid)
   let spr = get_sprite(collid)
   obj.invuln = if obj.invuln > 0 { obj.invuln - 1 } else { 0 }
   // (* Prevent position from being updated outside of viewport *)
-  let viewport_filter = in_viewport(state.vpt, obj.pos) || is_player(collid) || out_of_viewport_below(
-      state.vpt,
-      obj.pos.y,
-    )
+  let viewport_filter = in_viewport(state.vpt, obj.pos) ||
+    is_player(collid) ||
+    out_of_viewport_below(state.vpt, obj.pos.y)
   if not(obj.kill) && viewport_filter {
     obj.grounded = false
     process_obj(obj, state.map)
@@ -294,33 +292,33 @@ fn update_collidable(
 
 // (* Converts a keypress to a list of control keys, allowing more than one key
 // * to be processed each frame. *)
-fn translate_keys() -> @immut/list.List[Control] {
-  let mut res = @immut/list.List::Nil
+fn translate_keys() -> @immut/list.T[Control] {
+  let mut res = @immut/list.T::Nil
   if which.val {
     if pressed_keys.up {
-      res = @immut/list.List::Cons(Control::Up, res)
+      res = @immut/list.T::Cons(Control::Up, res)
     }
     if pressed_keys.down {
-      res = @immut/list.List::Cons(Control::Down, res)
+      res = @immut/list.T::Cons(Control::Down, res)
     }
     if pressed_keys.left {
-      res = @immut/list.List::Cons(Control::Left, res)
+      res = @immut/list.T::Cons(Control::Left, res)
     }
     if pressed_keys.right {
-      res = @immut/list.List::Cons(Control::Right, res)
+      res = @immut/list.T::Cons(Control::Right, res)
     }
   } else {
     if pressed_keys.up2 {
-      res = @immut/list.List::Cons(Control::Up, res)
+      res = @immut/list.T::Cons(Control::Up, res)
     }
     if pressed_keys.down2 {
-      res = @immut/list.List::Cons(Control::Down, res)
+      res = @immut/list.T::Cons(Control::Down, res)
     }
     if pressed_keys.left2 {
-      res = @immut/list.List::Cons(Control::Left, res)
+      res = @immut/list.T::Cons(Control::Left, res)
     }
     if pressed_keys.right2 {
-      res = @immut/list.List::Cons(Control::Right, res)
+      res = @immut/list.T::Cons(Control::Right, res)
     }
   }
   res
@@ -333,7 +331,7 @@ fn translate_keys() -> @immut/list.List[Control] {
 fn run_update_collid(
   state : St,
   collid : Collidable,
-  all_collids : @immut/list.List[Collidable]
+  all_collids : @immut/list.T[Collidable]
 ) -> Collidable {
   match collid {
     Player(_, s, o) as p => {
@@ -354,16 +352,9 @@ fn run_update_collid(
       let obj = get_obj(collid)
       let evolved = update_collidable(state, collid, all_collids)
       if not(obj.kill) {
-        collid_objs.val = @immut/list.List::Cons(
-          collid,
-          collid_objs.val + evolved,
-        )
+        collid_objs.val = @immut/list.T::Cons(collid, collid_objs.val + evolved)
       }
-      let new_parts = if obj.kill {
-        kill(collid)
-      } else {
-        @immut/list.List::Nil
-      }
+      let new_parts = if obj.kill { kill(collid) } else { @immut/list.T::Nil }
       particles.val += new_parts
       collid
     }
@@ -377,7 +368,7 @@ fn run_update_particle(state : St, part : Particle) -> Unit {
   let y = part.pos.y - state.vpt.pos.y
   render(part.params.sprite, x, y)
   if not(part.kill) {
-    particles.val = @immut/list.List::Cons(part, particles.val)
+    particles.val = @immut/list.T::Cons(part, particles.val)
   }
 }
 
@@ -386,8 +377,8 @@ let which : Ref[Bool] = @ref.new(true)
 fn update_helper(
   time : Double,
   state : St,
-  objs : @immut/list.List[Collidable],
-  parts : @immut/list.List[Particle]
+  objs : @immut/list.T[Collidable],
+  parts : @immut/list.T[Particle]
 ) -> Unit {
   if state.game_over == true {
     match players.val.find(fn(p) { get_obj(p).kill.not() }) {

@@ -213,7 +213,7 @@ fn normalize_pos(pos : XY, p1 : SpriteParams, p2 : SpriteParams) -> Unit {
 
 fn update_player(
   player : Object,
-  keys : @immut/list.List[Control]
+  keys : @immut/list.T[Control]
 ) -> (PlayerSize, Sprite)? {
   let prev_jumping = player.jumping
   let prev_dir = player.dir
@@ -225,9 +225,11 @@ fn update_player(
   let pl_typ = if player.health <= 1 { PlayerSize::Small } else { Large }
   if prev_jumping.not() && player.jumping {
     Some((pl_typ, Sprite::make(Player(pl_typ, Jumping), player.dir)))
-  } else if prev_dir != player.dir || ((prev_vx == 0.0 && @double.abs(
-    player.vel.x,
-  ) > 0.0) && player.jumping.not()) {
+  } else if prev_dir != player.dir ||
+    (
+      (prev_vx == 0.0 && @double.abs(player.vel.x) > 0.0) &&
+      player.jumping.not()
+    ) {
     Some((pl_typ, Sprite::make(Player(pl_typ, Running), player.dir)))
   } else if prev_dir != player.dir && player.jumping && prev_jumping {
     Some((pl_typ, Sprite::make(Player(pl_typ, Jumping), player.dir)))
@@ -438,7 +440,7 @@ fn check_collision(c1 : Collidable, c2 : Collidable) -> Dir2d? {
 }
 
 // (*"Kills" the matched object by setting certain parameters for each.*)
-fn kill(collid : Collidable) -> @immut/list.List[Particle] {
+fn kill(collid : Collidable) -> @immut/list.T[Particle] {
   match collid {
     Enemy(t, _, o) => {
       let pos = { x: o.pos.x, y: o.pos.y }

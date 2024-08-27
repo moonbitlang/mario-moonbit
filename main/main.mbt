@@ -4,13 +4,13 @@ let level_height : Double = 256.0
 
 let player_count = 2
 
-let temp : (@immut/list.List[Collidable], @immut/list.List[Collidable]) = generate(
+let temp : (@immut/list.T[Collidable], @immut/list.T[Collidable]) = generate(
   player_count, level_width, level_height,
 )
 
-let players : Ref[@immut/list.List[Collidable]] = @ref.new(temp.0)
+let players : Ref[@immut/list.T[Collidable]] = @ref.new(temp.0)
 
-let objs : @immut/list.List[Collidable] = temp.1
+let objs : @immut/list.T[Collidable] = temp.1
 
 let map_dim : XY = { x: 2400.0, y: 256.0 }
 
@@ -31,5 +31,5 @@ let state : St = {
 }
 
 fn init {
-  update_helper(0.0, state, objs, @immut/list.List::Nil)
+  update_helper(0.0, state, objs, @immut/list.Nil)
 }
