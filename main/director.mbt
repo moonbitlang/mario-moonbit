@@ -181,7 +181,7 @@ fn broad_phase(
   all_collids : List[Collidable],
   state : St
 ) -> List[Collidable] {
-  let obj = get_obj(collid)
+  let obj = collid.get_obj()
   all_collids.filter(fn(_c) {
     in_viewport(state.vpt, obj.pos) ||
     collid is Player(_) ||
@@ -207,12 +207,12 @@ fn narrow_phase(
     match cs {
       Empty => acc
       More(h, tail=t) => {
-        let c_obj = get_obj(c)
+        let c_obj = c.get_obj()
         let new_objs = if c != h {
           match check_collision(c, h) {
             None => (Option::None, Option::None)
             Some(dir) =>
-              if get_obj(h).id != c_obj.id {
+              if h.get_obj().id != c_obj.id {
                 process_collision(dir, c, h, state)
               } else {
                 (None, None)
@@ -275,8 +275,8 @@ fn update_collidable(
   collid : Collidable,
   all_collids : List[Collidable]
 ) -> List[Collidable] {
-  let obj = get_obj(collid)
-  let spr = get_sprite(collid)
+  let obj = collid.get_obj()
+  let spr = collid.get_sprite()
   obj.invuln = if obj.invuln > 0 { obj.invuln - 1 } else { 0 }
   // (* Prevent position from being updated outside of viewport *)
   let viewport_filter = in_viewport(state.vpt, obj.pos) ||
@@ -363,7 +363,7 @@ fn run_update_collid(
       player
     }
     _ => {
-      let obj = get_obj(collid)
+      let obj = collid.get_obj()
       let evolved = update_collidable(state, collid, all_collids)
       if not(obj.kill) {
         collid_objs.val = (collid_objs.val + evolved).add(collid)
@@ -378,7 +378,7 @@ fn run_update_collid(
 // (* Primary update function to update and persist a particle *)
 ///|
 fn run_update_particle(state : St, part : Particle) -> Unit {
-  process(part)
+  part.process()
   let x = part.pos.x - state.vpt.pos.x
   let y = part.pos.y - state.vpt.pos.y
   render(part.params.sprite, x, y)
@@ -398,7 +398,7 @@ fn update_helper(
   parts : List[Particle]
 ) -> Unit {
   if state.game_over == true {
-    match players.val.find(fn(p) { not(get_obj(p).kill) }) {
+    match players.val.find(fn(p) { not(p.get_obj().kill) }) {
       None => game_lose()
       Some(_) => game_win()
     }
@@ -418,15 +418,15 @@ fn update_helper(
       which.val = not(which.val)
       run_update_collid(state, p, objs)
     })
-    match players.val.find(fn(p) { not(get_obj(p).kill) }) {
+    match players.val.find(fn(p) { not(p.get_obj().kill) }) {
       None => {
         state.game_over = true
         game_lose()
       }
       Some(p) => {
-        let a = get_obj(p).pos
-        let p = players.val.rev().find(fn(p) { not(get_obj(p).kill) }).unwrap()
-        let b = get_obj(p).pos
+        let a = p.get_obj().pos
+        let p = players.val.rev().find(fn(p) { not(p.get_obj().kill) }).unwrap()
+        let b = p.get_obj().pos
         let c = XY::make((a.x + b.x) * 0.5, (a.y + b.y) * 0.5)
         state.vpt = update(state.vpt, c)
         let _ = objs.map(fn(obj) { run_update_collid(state, obj, objs) })

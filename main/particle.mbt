@@ -59,19 +59,19 @@ fn make_score(score : Int, pos : XY) -> Particle {
 }
 
 ///|
-fn update_vel(self : Particle) -> Unit {
+fn Particle::update_vel(self : Particle) -> Unit {
   self.vel.x = self.vel.x + self.acc.x
   self.vel.y = self.vel.y + self.acc.y
 }
 
 ///|
-fn update_pos(self : Particle) -> Unit {
+fn Particle::update_pos(self : Particle) -> Unit {
   self.pos.x = self.pos.x + self.vel.x
   self.pos.y = self.pos.y + self.vel.y
 }
 
 ///|
-fn process(self : Particle) -> Unit {
+fn Particle::process(self : Particle) -> Unit {
   self.life = self.life - 1
   if self.life == 0 {
     self.kill = true

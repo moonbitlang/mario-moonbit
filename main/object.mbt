@@ -158,7 +158,7 @@ fn spawn(spawnable : Spawn, posx : Double, posy : Double) -> Collidable {
   match spawnable {
     Player(typ, _) => Player(typ, spr, obj)
     Enemy(t) => {
-      set_vel_to_speed(obj)
+      obj.set_vel_to_speed()
       Enemy(t, spr, obj)
     }
     Item(t) => Item(t, spr, obj)
@@ -167,14 +167,14 @@ fn spawn(spawnable : Spawn, posx : Double, posy : Double) -> Collidable {
 }
 
 ///|
-fn get_sprite(self : Collidable) -> Sprite {
+fn Collidable::get_sprite(self : Collidable) -> Sprite {
   match self {
     Player(_, s, _) | Enemy(_, s, _) | Item(_, s, _) | Block(_, s, _) => s
   }
 }
 
 ///|
-fn get_obj(self : Collidable) -> Object {
+fn Collidable::get_obj(self : Collidable) -> Object {
   match self {
     Player(_, _, o) | Enemy(_, _, o) | Item(_, _, o) | Block(_, _, o) => o
   }
@@ -346,7 +346,7 @@ fn evolve_enemy(
       if obj.vel.x != 0.0 {
         obj.vel.x = 0.0
       } else {
-        set_vel_to_speed(obj)
+        obj.set_vel_to_speed()
       }
       None
     }
@@ -393,18 +393,18 @@ fn evolve_block(obj : Object) -> Collidable {
 ///|
 fn spawn_above(player_dir : Dir1d, obj : Object, typ : Item) -> Collidable {
   let item = spawn(Item(typ), obj.pos.x, obj.pos.y)
-  let item_obj = get_obj(item)
-  item_obj.pos.y = item_obj.pos.y - get_sprite(item).params.frame_size.1
+  let item_obj = item.get_obj()
+  item_obj.pos.y = item_obj.pos.y - item.get_sprite().params.frame_size.1
   item_obj.dir = opposite_dir(player_dir)
-  set_vel_to_speed(item_obj)
+  item_obj.set_vel_to_speed()
   item
 }
 
 // (*Used to get the bounding box.*)
 ///|
 fn get_aabb(obj : Collidable) -> AABB {
-  let spr = get_sprite(obj).params
-  let obj = get_obj(obj)
+  let spr = obj.get_sprite().params
+  let obj = obj.get_obj()
   let (offx, offy) = spr.bbox_offset
   let (box, boy) = (obj.pos.x + offx, obj.pos.y + offy)
   let (sx, sy) = spr.bbox_size
@@ -416,8 +416,8 @@ fn get_aabb(obj : Collidable) -> AABB {
 
 ///|
 fn col_bypass(c1 : Collidable, c2 : Collidable) -> Bool {
-  let o1 = get_obj(c1)
-  let o2 = get_obj(c2)
+  let o1 = c1.get_obj()
+  let o2 = c2.get_obj()
   let ctypes = match (c1, c2) {
     (Item(_, _, _), Enemy(_, _, _)) => true
     (Enemy(_, _, _), Item(_, _, _)) | (Item(_, _, _), Item(_, _, _)) => true
@@ -434,7 +434,7 @@ fn col_bypass(c1 : Collidable, c2 : Collidable) -> Bool {
 fn check_collision(c1 : Collidable, c2 : Collidable) -> Dir2d? {
   let b1 = get_aabb(c1)
   let b2 = get_aabb(c2)
-  let o1 = get_obj(c1)
+  let o1 = c1.get_obj()
   if col_bypass(c1, c2) {
     Option::None
   } else {

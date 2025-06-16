@@ -36,7 +36,7 @@ let viewport : Viewport = Viewport::make({ x: cwidth, y: cheight }, map_dim)
 ///|
 let state : St = {
   bgd: make_bgd(),
-  vpt: update(viewport, get_obj(players.val.unsafe_nth(0)).pos),
+  vpt: update(viewport, players.val.unsafe_nth(0).get_obj().pos),
   map: map_dim.y,
   score: 0,
   coins: 0,
