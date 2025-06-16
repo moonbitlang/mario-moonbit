@@ -1,31 +1,43 @@
+///|
 let friction : Double = 0.9
 
+///|
 let gravity : Double = 0.2
 
+///|
 let max_y_vel : Double = 4.5
 
+///|
 let player_speed : Double = 2.8
 
+///|
 let player_jump : Double = 5.7
 
+///|
 let player_max_jump : Double = -6.0
 
+///|
 let dampen_jump : Double = 4.0
 
+///|
 let invuln : Int = 60
 
+///|
 struct AABB {
   center : XY
   half : XY
 }
 
+///|
 struct ObjectParams {
   has_gravity : Bool
   speed : Double
 }
 
+///|
 let id_counter : Ref[Int] = @ref.new(0)
 
+///|
 struct Object {
   params : ObjectParams
   pos : XY
@@ -41,6 +53,7 @@ struct Object {
   mut score : Int
 }
 
+///|
 enum Collidable {
   Player(PlayerSize, Sprite, Object)
   Enemy(Enemy, Sprite, Object)
@@ -48,14 +61,17 @@ enum Collidable {
   Block(Block, Sprite, Object)
 }
 
+///|
 fn setup_objp2(has_gravity : Bool, speed : Double) -> ObjectParams {
   { has_gravity, speed }
 }
 
+///|
 fn setup_objp() -> ObjectParams {
   setup_objp2(true, 1.0)
 }
 
+///|
 fn set_vel_to_speed(self : Object) -> Unit {
   let speed = self.params.speed
   match self.dir {
@@ -64,10 +80,12 @@ fn set_vel_to_speed(self : Object) -> Unit {
   }
 }
 
+///|
 fn makeplayer() -> ObjectParams {
   setup_objp2(true, player_speed)
 }
 
+///|
 fn makeitem(item : Item) -> ObjectParams {
   match item {
     Mushroom => setup_objp()
@@ -75,6 +93,7 @@ fn makeitem(item : Item) -> ObjectParams {
   }
 }
 
+///|
 fn makeenemy(enemy : Enemy) -> ObjectParams {
   match enemy {
     Goomba => setup_objp()
@@ -85,10 +104,12 @@ fn makeenemy(enemy : Enemy) -> ObjectParams {
   }
 }
 
+///|
 fn makeblock() -> ObjectParams {
   setup_objp2(false, 1.0)
 }
 
+///|
 fn make_type(spawn : Spawn) -> ObjectParams {
   match spawn {
     Player(_) => makeplayer()
@@ -98,11 +119,13 @@ fn make_type(spawn : Spawn) -> ObjectParams {
   }
 }
 
+///|
 fn new_id() -> Int {
   id_counter.val += 1
   id_counter.val
 }
 
+///|
 fn makeobj(
   id : Int,
   dir : Dir1d,
@@ -129,6 +152,7 @@ fn makeobj(
   (spr, obj)
 }
 
+///|
 fn spawn(spawnable : Spawn, posx : Double, posy : Double) -> Collidable {
   let (spr, obj) = makeobj(new_id(), Left, spawnable, posx, posy)
   match spawnable {
@@ -142,18 +166,21 @@ fn spawn(spawnable : Spawn, posx : Double, posy : Double) -> Collidable {
   }
 }
 
+///|
 fn get_sprite(self : Collidable) -> Sprite {
   match self {
     Player(_, s, _) | Enemy(_, s, _) | Item(_, s, _) | Block(_, s, _) => s
   }
 }
 
+///|
 fn get_obj(self : Collidable) -> Object {
   match self {
     Player(_, _, o) | Enemy(_, _, o) | Item(_, _, o) | Block(_, _, o) => o
   }
 }
 
+///|
 fn is_player(self : Collidable) -> Bool {
   match self {
     Player(_) => true
@@ -161,6 +188,7 @@ fn is_player(self : Collidable) -> Bool {
   }
 }
 
+///|
 fn is_enemy(self : Collidable) -> Bool {
   match self {
     Enemy(_) => true
@@ -168,29 +196,31 @@ fn is_enemy(self : Collidable) -> Bool {
   }
 }
 
-fn op_equal(self : Collidable, optb : Collidable) -> Bool {
+///|
+impl Eq for Collidable with op_equal(self : Collidable, optb : Collidable) -> Bool {
   return self.get_obj().id == optb.get_obj().id
 }
 
+///|
 fn update_player_keys(player : Object, controls : Control) -> Unit {
   let lr_acc = player.vel.x * 0.2
   match controls {
     Left =>
-      if player.crouch.not() {
+      if not(player.crouch) {
         if player.vel.x > -player.params.speed {
           player.vel.x = player.vel.x - (0.4 - lr_acc)
         }
         player.dir = Left
       }
     Right =>
-      if player.crouch.not() {
+      if not(player.crouch) {
         if player.vel.x < player.params.speed {
           player.vel.x = player.vel.x + (0.4 + lr_acc)
         }
         player.dir = Right
       }
     Up =>
-      if player.jumping.not() && player.grounded {
+      if not(player.jumping) && player.grounded {
         player.jumping = true
         player.grounded = false
         player.vel.y = @math.maximum(
@@ -198,10 +228,11 @@ fn update_player_keys(player : Object, controls : Control) -> Unit {
           player_max_jump,
         )
       }
-    Down => if player.jumping.not() && player.grounded { player.crouch = true }
+    Down => if not(player.jumping) && player.grounded { player.crouch = true }
   }
 }
 
+///|
 fn normalize_pos(pos : XY, p1 : SpriteParams, p2 : SpriteParams) -> Unit {
   let (box1, boy1) = p1.bbox_offset
   let (box2, boy2) = p2.bbox_offset
@@ -211,9 +242,10 @@ fn normalize_pos(pos : XY, p1 : SpriteParams, p2 : SpriteParams) -> Unit {
   pos.y = pos.y - (bh2 + boy2) + (bh1 + boy1)
 }
 
+///|
 fn update_player(
   player : Object,
-  keys : @immut/list.T[Control]
+  keys : List[Control]
 ) -> (PlayerSize, Sprite)? {
   let prev_jumping = player.jumping
   let prev_dir = player.dir
@@ -223,13 +255,10 @@ fn update_player(
   let vel_damped = if @double.abs(v) < 0.1 { 0.0 } else { v }
   player.vel.x = vel_damped
   let pl_typ = if player.health <= 1 { PlayerSize::Small } else { Large }
-  if prev_jumping.not() && player.jumping {
+  if not(prev_jumping) && player.jumping {
     Some((pl_typ, Sprite::make(Player(pl_typ, Jumping), player.dir)))
   } else if prev_dir != player.dir ||
-    (
-      (prev_vx == 0.0 && @double.abs(player.vel.x) > 0.0) &&
-      player.jumping.not()
-    ) {
+    ((prev_vx == 0.0 && @double.abs(player.vel.x) > 0.0) && not(player.jumping)) {
     Some((pl_typ, Sprite::make(Player(pl_typ, Running), player.dir)))
   } else if prev_dir != player.dir && player.jumping && prev_jumping {
     Some((pl_typ, Sprite::make(Player(pl_typ, Jumping), player.dir)))
@@ -242,7 +271,8 @@ fn update_player(
   }
 }
 
-fn update_vel(self : Object) -> Unit {
+///|
+fn Object::update_vel(self : Object) -> Unit {
   if self.grounded {
     self.vel.y = 0.0
   } else if self.params.has_gravity {
@@ -253,13 +283,15 @@ fn update_vel(self : Object) -> Unit {
   }
 }
 
-fn update_pos(self : Object) -> Unit {
+///|
+fn Object::update_pos(self : Object) -> Unit {
   self.pos.x = self.vel.x + self.pos.x
   if self.params.has_gravity {
     self.pos.y = self.vel.y + self.pos.y
   }
 }
 
+///|
 fn process_obj(obj : Object, mapy : Double) -> Unit {
   obj.update_vel()
   obj.update_pos()
@@ -268,6 +300,7 @@ fn process_obj(obj : Object, mapy : Double) -> Unit {
   }
 }
 
+///|
 fn collide_block(check_x : Bool, dir : Dir2d, obj : Object) -> Unit {
   match dir {
     North => obj.vel.y = -0.001
@@ -280,6 +313,7 @@ fn collide_block(check_x : Bool, dir : Dir2d, obj : Object) -> Unit {
   }
 }
 
+///|
 fn opposite_dir(dir : Dir1d) -> Dir1d {
   match dir {
     Left => Right
@@ -287,11 +321,13 @@ fn opposite_dir(dir : Dir1d) -> Dir1d {
   }
 }
 
+///|
 fn reverse_left_right(obj : Object) -> Unit {
   obj.vel.x = -obj.vel.x
   obj.dir = opposite_dir(obj.dir)
 }
 
+///|
 fn evolve_enemy(
   player_dir : Dir1d,
   typ : Enemy,
@@ -337,6 +373,7 @@ fn evolve_enemy(
   }
 }
 
+///|
 fn rev_dir(o : Object, t : Enemy, s : Sprite) -> Unit {
   reverse_left_right(o)
   let old_params = s.params
@@ -344,6 +381,7 @@ fn rev_dir(o : Object, t : Enemy, s : Sprite) -> Unit {
   normalize_pos(o.pos, old_params, s.params)
 }
 
+///|
 fn dec_health(obj : Object) -> Unit {
   let health = obj.health - 1
   if health == 0 {
@@ -354,6 +392,7 @@ fn dec_health(obj : Object) -> Unit {
 }
 
 // (*Used for deleting a block and replacing it with a used block*)
+///|
 fn evolve_block(obj : Object) -> Collidable {
   dec_health(obj)
   let (new_spr, new_obj) = makeobj(
@@ -367,6 +406,7 @@ fn evolve_block(obj : Object) -> Collidable {
 }
 
 // (*Used for spawning items above question mark blocks*)
+///|
 fn spawn_above(player_dir : Dir1d, obj : Object, typ : Item) -> Collidable {
   let item = spawn(Item(typ), obj.pos.x, obj.pos.y)
   let item_obj = get_obj(item)
@@ -377,6 +417,7 @@ fn spawn_above(player_dir : Dir1d, obj : Object, typ : Item) -> Collidable {
 }
 
 // (*Used to get the bounding box.*)
+///|
 fn get_aabb(obj : Collidable) -> AABB {
   let spr = get_sprite(obj).params
   let obj = get_obj(obj)
@@ -389,6 +430,7 @@ fn get_aabb(obj : Collidable) -> AABB {
   }
 }
 
+///|
 fn col_bypass(c1 : Collidable, c2 : Collidable) -> Bool {
   let o1 = get_obj(c1)
   let o2 = get_obj(c2)
@@ -404,6 +446,7 @@ fn col_bypass(c1 : Collidable, c2 : Collidable) -> Bool {
 // (*Used for checking if collisions occur. Compares half-widths and half-heights
 // *and adjusts for when collisions do occur, by changing position so that
 // *a second collision does not occur again immediately. This causes snapping.*)
+///|
 fn check_collision(c1 : Collidable, c2 : Collidable) -> Dir2d? {
   let b1 = get_aabb(c1)
   let b2 = get_aabb(c2)
@@ -440,27 +483,27 @@ fn check_collision(c1 : Collidable, c2 : Collidable) -> Dir2d? {
 }
 
 // (*"Kills" the matched object by setting certain parameters for each.*)
-fn kill(collid : Collidable) -> @immut/list.T[Particle] {
+///|
+fn kill(collid : Collidable) -> List[Particle] {
   match collid {
     Enemy(t, _, o) => {
       let pos = { x: o.pos.x, y: o.pos.y }
       let score = if o.score > 0 {
-        @immut/list.Cons(make_score(o.score, pos), Nil)
+        @list.empty().add(make_score(o.score, pos))
       } else {
-        Nil
+        @list.empty()
       }
       let remains = match t {
         Goomba =>
-          @immut/list.Cons(
+          @list.empty().add(
             Particle::make(
               { x: 0.0, y: 0.0 },
               { x: 0.0, y: 0.0 },
               GoombaSquish,
               pos,
             ),
-            Nil,
           )
-        _ => Nil
+        _ => @list.empty()
       }
       score + remains
     }
@@ -492,15 +535,16 @@ fn kill(collid : Collidable) -> @immut/list.T[Particle] {
             BrickChunkR,
             XY::make(pos.x, pos.y),
           )
-          @immut/list.of([p1, p2, p3, p4])
+          @list.empty().add(p1).add(p2).add(p3).add(p4)
         }
-        _ => Nil
+        _ => @list.empty()
       }
     Item(t, _, o) =>
       match t {
-        Mushroom => Cons(make_score(o.score, XY::make(o.pos.x, o.pos.y)), Nil)
-        _ => Nil
+        Mushroom =>
+          @list.empty().add(make_score(o.score, XY::make(o.pos.x, o.pos.y)))
+        _ => @list.empty()
       }
-    _ => Nil
+    _ => @list.empty()
   }
 }

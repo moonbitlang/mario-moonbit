@@ -1,8 +1,10 @@
+///|
 enum Dir1d {
   Left
   Right
 } derive(Eq)
 
+///|
 enum Dir2d {
   North
   South
@@ -10,11 +12,13 @@ enum Dir2d {
   West
 }
 
+///|
 struct XY {
   mut x : Double
   mut y : Double
 }
 
+///|
 enum Control {
   Left
   Right
@@ -22,16 +26,19 @@ enum Control {
   Down
 }
 
+///|
 enum PlayerSize {
   Small
   Large
 } derive(Eq)
 
+///|
 enum Item {
   Mushroom
   Coin
 }
 
+///|
 enum Enemy {
   Goomba
   GKoopa
@@ -40,6 +47,7 @@ enum Enemy {
   RKoopaShell
 }
 
+///|
 enum Block {
   QBlock(Item)
   QBlockUsed
@@ -50,6 +58,7 @@ enum Block {
   Ground
 }
 
+///|
 enum Player {
   Standing
   Jumping
@@ -57,6 +66,7 @@ enum Player {
   Crouching
 }
 
+///|
 enum Part {
   GoombaSquish
   BrickChunkL
@@ -71,6 +81,7 @@ enum Part {
   Score8000
 }
 
+///|
 enum Spawn {
   Player(PlayerSize, Player)
   Enemy(Enemy)

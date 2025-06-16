@@ -1,3 +1,4 @@
+///|
 struct SpriteParams {
   max_frames : Int
   max_ticks : Int
@@ -9,6 +10,7 @@ struct SpriteParams {
   repeat : Bool
 }
 
+///|
 struct Sprite {
   mut params : SpriteParams
   frame : Ref[Int]
@@ -16,6 +18,7 @@ struct Sprite {
   mut img : Image
 }
 
+///|
 fn setup_sprite(
   repeat : Bool,
   bbox_offset : (Double, Double),
@@ -38,6 +41,7 @@ fn setup_sprite(
   }
 }
 
+///|
 fn setup_sprite_(
   img_src : Image,
   max_frames : Int,
@@ -57,6 +61,7 @@ fn setup_sprite_(
   }
 }
 
+///|
 fn make_small_player(player : Player, dir1d : Dir1d) -> SpriteParams {
   match (player, dir1d) {
     (Standing, Left) =>
@@ -139,6 +144,7 @@ fn make_small_player(player : Player, dir1d : Dir1d) -> SpriteParams {
   }
 }
 
+///|
 fn make_large_player(player : Player, dir1d : Dir1d) -> SpriteParams {
   match (player, dir1d) {
     (Standing, Left) =>
@@ -221,6 +227,7 @@ fn make_large_player(player : Player, dir1d : Dir1d) -> SpriteParams {
   }
 }
 
+///|
 fn make_enemy(enemy : Enemy, dir1d : Dir1d) -> SpriteParams {
   match (enemy, dir1d) {
     (Goomba, _) =>
@@ -303,6 +310,7 @@ fn make_enemy(enemy : Enemy, dir1d : Dir1d) -> SpriteParams {
   }
 }
 
+///|
 fn make_item(item : Item) -> SpriteParams {
   match item {
     Coin =>
@@ -330,6 +338,7 @@ fn make_item(item : Item) -> SpriteParams {
   }
 }
 
+///|
 fn make_block(block : Block) -> SpriteParams {
   match block {
     Brick => setup_sprite_(block_, 5, 10, (16.0, 16.0), (0.0, 0.0))
@@ -342,6 +351,7 @@ fn make_block(block : Block) -> SpriteParams {
   }
 }
 
+///|
 fn make_particle(particle : Part) -> SpriteParams {
   match particle {
     GoombaSquish => setup_sprite_(enemy_, 1, 0, (16.0, 16.0), (0.0, 144.0))
@@ -358,6 +368,7 @@ fn make_particle(particle : Part) -> SpriteParams {
   }
 }
 
+///|
 fn make_player(
   player_size : PlayerSize,
   player : Player,
@@ -369,6 +380,7 @@ fn make_player(
   }
 }
 
+///|
 fn SpriteParams::make(spawn : Spawn, dir1d : Dir1d) -> SpriteParams {
   match spawn {
     Player(x, y) => make_player(x, y, dir1d)
@@ -378,19 +390,23 @@ fn SpriteParams::make(spawn : Spawn, dir1d : Dir1d) -> SpriteParams {
   }
 }
 
+///|
 fn Sprite::make_(params : SpriteParams) -> Sprite {
   { params, frame: @ref.new(0), ticks: @ref.new(0), img: params.img_src }
 }
 
+///|
 fn Sprite::make(spawn : Spawn, dir1d : Dir1d) -> Sprite {
   Sprite::make_(SpriteParams::make(spawn, dir1d))
 }
 
+///|
 fn make_bgd() -> Sprite {
   let params = setup_sprite_(backg_, 1, 0, (512.0, 256.0), (0.0, 0.0))
   Sprite::make_(params)
 }
 
+///|
 fn transform_enemy(enemy_typ : Enemy, spr : Sprite, dir : Dir1d) -> Unit {
   let params = make_enemy(enemy_typ, dir)
   let img = params.img_src
@@ -398,6 +414,7 @@ fn transform_enemy(enemy_typ : Enemy, spr : Sprite, dir : Dir1d) -> Unit {
   spr.img = img
 }
 
+///|
 fn update_animation(spr : Sprite) -> Unit {
   let curr_ticks = spr.ticks.val
   if curr_ticks >= spr.params.max_ticks {

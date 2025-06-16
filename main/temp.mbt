@@ -4,6 +4,7 @@
 // * a new item spawned as a result of the first collidable. None indicates that
 // * no new item should be spawned. Transformations to existing objects occur
 // * mutably, as many changes are side-effectual.*)
+///|
 fn process_collision(
   dir : Dir2d,
   c1 : Collidable,

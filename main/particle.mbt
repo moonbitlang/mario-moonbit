@@ -1,8 +1,10 @@
+///|
 struct ParticleParams {
   sprite : Sprite
   lifetime : Int
 }
 
+///|
 struct Particle {
   params : ParticleParams
   pos : XY
@@ -12,14 +14,17 @@ struct Particle {
   mut life : Int
 }
 
+///|
 fn XY::make(x : Double, y : Double) -> XY {
   { x, y }
 }
 
+///|
 fn make_params(sprite_params : SpriteParams, lifetime : Int) -> ParticleParams {
   { sprite: Sprite::make_(sprite_params), lifetime }
 }
 
+///|
 fn ParticleParams::with_type(part : Part) -> ParticleParams {
   match part {
     BrickChunkL => make_params(make_particle(part), 300)
@@ -28,11 +33,13 @@ fn ParticleParams::with_type(part : Part) -> ParticleParams {
   }
 }
 
+///|
 fn Particle::make(vel : XY, acc : XY, part : Part, pos : XY) -> Particle {
   let params = ParticleParams::with_type(part)
   { params, pos, vel, acc, kill: false, life: params.lifetime }
 }
 
+///|
 fn make_score(score : Int, pos : XY) -> Particle {
   let t = match score {
     100 => Part::Score100
@@ -45,24 +52,25 @@ fn make_score(score : Int, pos : XY) -> Particle {
     8000 => Score8000
     _ => Score100
   }
-  Particle::make(
-    { x: 0.5, y: -0.7 },
-    { x: 0.0, y: 0.0 },
-    t,
-    { x: pos.x, y: pos.y },
-  )
+  Particle::make({ x: 0.5, y: -0.7 }, { x: 0.0, y: 0.0 }, t, {
+    x: pos.x,
+    y: pos.y,
+  })
 }
 
+///|
 fn update_vel(self : Particle) -> Unit {
   self.vel.x = self.vel.x + self.acc.x
   self.vel.y = self.vel.y + self.acc.y
 }
 
+///|
 fn update_pos(self : Particle) -> Unit {
   self.pos.x = self.pos.x + self.vel.x
   self.pos.y = self.pos.y + self.vel.y
 }
 
+///|
 fn process(self : Particle) -> Unit {
   self.life = self.life - 1
   if self.life == 0 {

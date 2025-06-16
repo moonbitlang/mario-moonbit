@@ -1,4 +1,5 @@
 // (* Represents the values of relevant key bindings. *)
+///|
 struct Keys {
   mut up : Bool
   mut up2 : Bool
@@ -11,6 +12,7 @@ struct Keys {
   mut bbox : Int
 }
 
+///|
 struct St {
   bgd : Sprite
   mut vpt : Viewport
@@ -23,6 +25,7 @@ struct St {
 
 // (*pressed_keys instantiates the keys.*)
 
+///|
 let pressed_keys : Keys = {
   up: false,
   up2: false,
@@ -35,24 +38,30 @@ let pressed_keys : Keys = {
   bbox: 0,
 }
 
-let collid_objs : Ref[@immut/list.T[Collidable]] = @ref.new(Nil) // (* @immut/list.T of next iteration collidable objects *)
+///|
+let collid_objs : Ref[List[Collidable]] = @ref.new(@list.empty()) // (*List of next iteration collidable objects *)
 
-let particles : Ref[@immut/list.T[Particle]] = @ref.new(Nil) // (* @immut/list.T of next iteration particles *)
+///|
+let particles : Ref[List[Particle]] = @ref.new(@list.empty()) // (*List of next iteration particles *)
 
+///|
 let last_time : Ref[Double] = @ref.new(-16.6) // (* Used for calculating fps *)
 
 // (* Calculates fps as the difference between [t0] and [t1] *)
 
+///|
 fn calc_fps(t0 : Double, t1 : Double) -> Double {
   let delta = (t1 - t0) / 1000.0
   1.0 / delta
 }
 
 // (* Adds [i] to the score in [state] *)
+///|
 fn update_score(state : St, i : Int) -> Unit {
   state.score = state.score + i
 }
 
+///|
 fn player_attack_enemy(
   o1 : Object,
   typ : Enemy,
@@ -89,6 +98,7 @@ fn player_attack_enemy(
 }
 
 // (*enemy_attack_player is used when an enemy kills a player.*)
+///|
 fn enemy_attack_player(
   o1 : Object,
   t2 : Enemy,
@@ -117,6 +127,7 @@ fn enemy_attack_player(
 // (*In the case that two enemies collide, they are to reverse directions. However,
 // *in the case that one or more of the two enemies is a koopa shell, then
 // *the koopa shell kills the other enemy. *)
+///|
 fn col_enemy_enemy(
   t1 : Enemy,
   s1 : Sprite,
@@ -166,38 +177,38 @@ fn col_enemy_enemy(
 }
 
 // (* Run the broad phase object filtering *)
+///|
 fn broad_phase(
   collid : Collidable,
-  all_collids : @immut/list.T[Collidable],
+  all_collids : List[Collidable],
   state : St
-) -> @immut/list.T[Collidable] {
+) -> List[Collidable] {
   let obj = get_obj(collid)
-  all_collids.filter(
-    fn(_c) {
-      in_viewport(state.vpt, obj.pos) ||
-      is_player(collid) ||
-      out_of_viewport_below(state.vpt, obj.pos.y)
-    },
-  )
+  all_collids.filter(fn(_c) {
+    in_viewport(state.vpt, obj.pos) ||
+    is_player(collid) ||
+    out_of_viewport_below(state.vpt, obj.pos.y)
+  })
 }
 
 // (*narrow_phase of collision is used in order to continuously repeat through
 // *each of the collidable objects to constantly check if collisions are
 // *occurring.*)
+///|
 fn narrow_phase(
   c : Collidable,
-  cs : @immut/list.T[Collidable],
+  cs : List[Collidable],
   state : St
-) -> @immut/list.T[Collidable] {
+) -> List[Collidable] {
   fn narrow_helper(
     c : Collidable,
-    cs : @immut/list.T[Collidable],
+    cs : List[Collidable],
     state : St,
-    acc : @immut/list.T[Collidable]
-  ) -> @immut/list.T[Collidable] {
+    acc : List[Collidable]
+  ) -> List[Collidable] {
     match cs {
-      Nil => acc
-      Cons(h, t) => {
+      Empty => acc
+      More(h, tail=t) => {
         let c_obj = get_obj(c)
         let new_objs = if c != h {
           match check_collision(c, h) {
@@ -213,9 +224,9 @@ fn narrow_phase(
           (None, None)
         }
         let acc = match new_objs {
-          (None, Some(o)) => @immut/list.T::Cons(o, acc)
-          (Some(o), None) => @immut/list.T::Cons(o, acc)
-          (Some(o1), Some(o2)) => Cons(o1, Cons(o2, acc))
+          (None, Some(o)) => acc.add(o)
+          (Some(o), None) => acc.add(o)
+          (Some(o1), Some(o2)) => acc.add(o2).add(o1)
           (None, None) => acc
         }
         narrow_helper(c, t, state, acc)
@@ -223,7 +234,7 @@ fn narrow_phase(
     }
   }
 
-  narrow_helper(c, cs, state, Nil)
+  narrow_helper(c, cs, state, @list.empty())
 }
 
 // (* This is an optimization setp to determine which objects require narrow phase
@@ -237,13 +248,14 @@ fn narrow_phase(
 // * This method returns a list of objects that are created, which should be
 // * added to the list of collidables for the next iteration.
 // * *)
+///|
 fn check_collisions(
   collid : Collidable,
-  all_collids : @immut/list.T[Collidable],
+  all_collids : List[Collidable],
   state : St
-) -> @immut/list.T[Collidable] {
+) -> List[Collidable] {
   match collid {
-    Block(_, _, _) => Nil
+    Block(_, _, _) => @list.empty()
     _ => {
       let broad = broad_phase(collid, all_collids, state)
       narrow_phase(collid, broad, state)
@@ -252,21 +264,26 @@ fn check_collisions(
 }
 
 // (* Returns whether the bounding box should be drawn *)
+///|
 fn check_bbox_enabled() -> Bool {
   pressed_keys.bbox == 1
 }
 
 // (* update_collidable is the primary update method for collidable objects,
 // * checking the collision, updating the object, and drawing to the canvas.*)
+///|
 fn update_collidable(
   state : St,
   collid : Collidable,
-  all_collids : @immut/list.T[Collidable]
-) -> @immut/list.T[Collidable] {
+  all_collids : List[Collidable]
+) -> List[Collidable] {
   let obj = get_obj(collid)
   let spr = get_sprite(collid)
   obj.invuln = if obj.invuln > 0 { obj.invuln - 1 } else { 0 }
   // (* Prevent position from being updated outside of viewport *)
+  let viewport_filter = in_viewport(state.vpt, obj.pos) ||
+    is_player(collid) ||
+    out_of_viewport_below(state.vpt, obj.pos.y)
   let viewport_filter = in_viewport(state.vpt, obj.pos) ||
     is_player(collid) ||
     out_of_viewport_below(state.vpt, obj.pos.y)
@@ -286,39 +303,40 @@ fn update_collidable(
     }
     evolved
   } else {
-    Nil
+    @list.empty()
   }
 }
 
 // (* Converts a keypress to a list of control keys, allowing more than one key
 // * to be processed each frame. *)
-fn translate_keys() -> @immut/list.T[Control] {
-  let mut res = @immut/list.T::Nil
+///|
+fn translate_keys() -> List[Control] {
+  let mut res = @list.empty()
   if which.val {
     if pressed_keys.up {
-      res = @immut/list.T::Cons(Control::Up, res)
+      res = res.add(Up)
     }
     if pressed_keys.down {
-      res = @immut/list.T::Cons(Control::Down, res)
+      res = res.add(Down)
     }
     if pressed_keys.left {
-      res = @immut/list.T::Cons(Control::Left, res)
+      res = res.add(Left)
     }
     if pressed_keys.right {
-      res = @immut/list.T::Cons(Control::Right, res)
+      res = res.add(Right)
     }
   } else {
     if pressed_keys.up2 {
-      res = @immut/list.T::Cons(Control::Up, res)
+      res = res.add(Up)
     }
     if pressed_keys.down2 {
-      res = @immut/list.T::Cons(Control::Down, res)
+      res = res.add(Down)
     }
     if pressed_keys.left2 {
-      res = @immut/list.T::Cons(Control::Left, res)
+      res = res.add(Left)
     }
     if pressed_keys.right2 {
-      res = @immut/list.T::Cons(Control::Right, res)
+      res = res.add(Right)
     }
   }
   res
@@ -328,10 +346,11 @@ fn translate_keys() -> @immut/list.T[Control] {
 // * as a wrapper method. This method is necessary to differentiate between
 // * the player collidable and the remaining collidables, as special operations
 // * such as viewport centering only occur with the player.*)
+///|
 fn run_update_collid(
   state : St,
   collid : Collidable,
-  all_collids : @immut/list.T[Collidable]
+  all_collids : List[Collidable]
 ) -> Collidable {
   match collid {
     Player(_, s, o) as p => {
@@ -352,9 +371,9 @@ fn run_update_collid(
       let obj = get_obj(collid)
       let evolved = update_collidable(state, collid, all_collids)
       if not(obj.kill) {
-        collid_objs.val = @immut/list.T::Cons(collid, collid_objs.val + evolved)
+        collid_objs.val = (collid_objs.val + evolved).add(collid)
       }
-      let new_parts = if obj.kill { kill(collid) } else { @immut/list.T::Nil }
+      let new_parts = if obj.kill { kill(collid) } else { @list.empty() }
       particles.val += new_parts
       collid
     }
@@ -362,32 +381,35 @@ fn run_update_collid(
 }
 
 // (* Primary update function to update and persist a particle *)
+///|
 fn run_update_particle(state : St, part : Particle) -> Unit {
   process(part)
   let x = part.pos.x - state.vpt.pos.x
   let y = part.pos.y - state.vpt.pos.y
   render(part.params.sprite, x, y)
   if not(part.kill) {
-    particles.val = @immut/list.T::Cons(part, particles.val)
+    particles.val = particles.val.add(part)
   }
 }
 
+///|
 let which : Ref[Bool] = @ref.new(true)
 
+///|
 fn update_helper(
   time : Double,
   state : St,
-  objs : @immut/list.T[Collidable],
-  parts : @immut/list.T[Particle]
+  objs : List[Collidable],
+  parts : List[Particle]
 ) -> Unit {
   if state.game_over == true {
-    match players.val.find(fn(p) { get_obj(p).kill.not() }) {
+    match players.val.find(fn(p) { not(get_obj(p).kill) }) {
       None => game_lose()
       Some(_) => game_win()
     }
   } else {
-    collid_objs.val = Nil
-    particles.val = Nil
+    collid_objs.val = @list.empty()
+    particles.val = @list.empty()
     let fps_ = calc_fps(last_time.val, time).to_int()
     last_time.val = time
     clear_canvas()
@@ -397,20 +419,18 @@ fn update_helper(
     let bgd_width = state.bgd.params.frame_size.0.to_int()
     draw_bgd(state.bgd, (vpos_x_int % bgd_width).to_double())
     which.val = false
-    players.val = players.val.map(
-      fn(p) {
-        which.val = which.val.not()
-        run_update_collid(state, p, objs)
-      },
-    )
-    match players.val.find(fn(p) { get_obj(p).kill.not() }) {
+    players.val = players.val.map(fn(p) {
+      which.val = not(which.val)
+      run_update_collid(state, p, objs)
+    })
+    match players.val.find(fn(p) { not(get_obj(p).kill) }) {
       None => {
         state.game_over = true
         game_lose()
       }
       Some(p) => {
         let a = get_obj(p).pos
-        let p = players.val.rev().find(fn(p) { get_obj(p).kill.not() }).unwrap()
+        let p = players.val.rev().find(fn(p) { not(get_obj(p).kill) }).unwrap()
         let b = get_obj(p).pos
         let c = XY::make((a.x + b.x) * 0.5, (a.y + b.y) * 0.5)
         state.vpt = update(state.vpt, c)
@@ -423,74 +443,92 @@ fn update_helper(
   }
 }
 
+///|
 pub fn game_update(t : Double) -> Unit {
   update_helper(t, state, collid_objs.val, particles.val)
 }
 
+///|
 pub fn keydown_B() -> Unit {
-  pressed_keys.bbox = pressed_keys.bbox.lxor(1)
+  pressed_keys.bbox = pressed_keys.bbox ^ 1
 }
 
+///|
 pub fn keydown_up() -> Unit {
   pressed_keys.up = true
 }
 
+///|
 pub fn keydown_up2() -> Unit {
   pressed_keys.up2 = true
 }
 
+///|
 pub fn keydown_down() -> Unit {
   pressed_keys.down = true
 }
 
+///|
 pub fn keydown_down2() -> Unit {
   pressed_keys.down2 = true
 }
 
+///|
 pub fn keydown_left() -> Unit {
   pressed_keys.left = true
 }
 
+///|
 pub fn keydown_left2() -> Unit {
   pressed_keys.left2 = true
 }
 
+///|
 pub fn keydown_right() -> Unit {
   pressed_keys.right = true
 }
 
+///|
 pub fn keydown_right2() -> Unit {
   pressed_keys.right2 = true
 }
 
+///|
 pub fn keyup_up() -> Unit {
   pressed_keys.up = false
 }
 
+///|
 pub fn keyup_up2() -> Unit {
   pressed_keys.up2 = false
 }
 
+///|
 pub fn keyup_down() -> Unit {
   pressed_keys.down = false
 }
 
+///|
 pub fn keyup_down2() -> Unit {
   pressed_keys.down2 = false
 }
 
+///|
 pub fn keyup_left() -> Unit {
   pressed_keys.left = false
 }
 
+///|
 pub fn keyup_left2() -> Unit {
   pressed_keys.left2 = false
 }
 
+///|
 pub fn keyup_right() -> Unit {
   pressed_keys.right = false
 }
 
+///|
 pub fn keyup_right2() -> Unit {
   pressed_keys.right2 = false
 }
