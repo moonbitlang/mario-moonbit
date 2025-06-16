@@ -138,17 +138,15 @@ fn col_enemy_enemy(
   dir : Dir2d
 ) -> (Collidable?, Collidable?) {
   match (t1, t2) {
-    (GKoopaShell, GKoopaShell) | (GKoopaShell, RKoopaShell) => {
+    (GKoopaShell, GKoopaShell)
+    | (GKoopaShell, RKoopaShell)
+    | (RKoopaShell, RKoopaShell)
+    | (RKoopaShell, GKoopaShell) => {
       dec_health(o1)
       dec_health(o2)
       (None, None)
     }
-    (RKoopaShell, RKoopaShell) | (RKoopaShell, GKoopaShell) => {
-      dec_health(o1)
-      dec_health(o2)
-      (None, None)
-    }
-    (RKoopaShell, _) | (GKoopaShell, _) =>
+    (RKoopaShell | GKoopaShell, _) =>
       if o1.vel.x == 0.0 {
         rev_dir(o2, t2, s2)
         (None, None)
@@ -156,7 +154,7 @@ fn col_enemy_enemy(
         dec_health(o2)
         (None, None)
       }
-    (_, RKoopaShell) | (_, GKoopaShell) =>
+    (_, RKoopaShell | GKoopaShell) =>
       if o2.vel.x == 0.0 {
         rev_dir(o1, t1, s1)
         (None, None)
@@ -186,7 +184,7 @@ fn broad_phase(
   let obj = get_obj(collid)
   all_collids.filter(fn(_c) {
     in_viewport(state.vpt, obj.pos) ||
-    is_player(collid) ||
+    collid is Player(_) ||
     out_of_viewport_below(state.vpt, obj.pos.y)
   })
 }
@@ -282,10 +280,7 @@ fn update_collidable(
   obj.invuln = if obj.invuln > 0 { obj.invuln - 1 } else { 0 }
   // (* Prevent position from being updated outside of viewport *)
   let viewport_filter = in_viewport(state.vpt, obj.pos) ||
-    is_player(collid) ||
-    out_of_viewport_below(state.vpt, obj.pos.y)
-  let viewport_filter = in_viewport(state.vpt, obj.pos) ||
-    is_player(collid) ||
+    collid is Player(_) ||
     out_of_viewport_below(state.vpt, obj.pos.y)
   if not(obj.kill) && viewport_filter {
     obj.grounded = false
@@ -298,7 +293,7 @@ fn update_collidable(
     if check_bbox_enabled() {
       render_box(spr, vpt_adj_xy.x, vpt_adj_xy.y)
     }
-    if obj.vel.x != 0.0 || not(is_enemy(collid)) {
+    if obj.vel.x != 0.0 || not(collid is Enemy(_)) {
       update_animation(spr)
     }
     evolved

@@ -181,22 +181,6 @@ fn get_obj(self : Collidable) -> Object {
 }
 
 ///|
-fn is_player(self : Collidable) -> Bool {
-  match self {
-    Player(_) => true
-    _ => false
-  }
-}
-
-///|
-fn is_enemy(self : Collidable) -> Bool {
-  match self {
-    Enemy(_) => true
-    _ => false
-  }
-}
-
-///|
 impl Eq for Collidable with op_equal(self : Collidable, optb : Collidable) -> Bool {
   return self.get_obj().id == optb.get_obj().id
 }
