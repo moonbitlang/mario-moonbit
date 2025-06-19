@@ -1,3 +1,6 @@
 {
-  "name": "mario"
+  "name": "mario",
+  "deps": {
+    "Yoorkin/rabbit-tea": "0.9.5"
+  }
 }

@@ -69,7 +69,7 @@ fn make_small_player(player : Player, dir1d : Dir1d) -> SpriteParams {
         true,
         (3.0, 1.0),
         (11.0, 15.0),
-        small_,
+        small,
         1,
         0,
         (16.0, 16.0),
@@ -80,7 +80,7 @@ fn make_small_player(player : Player, dir1d : Dir1d) -> SpriteParams {
         true,
         (1.0, 1.0),
         (11.0, 15.0),
-        small_,
+        small,
         1,
         0,
         (16.0, 16.0),
@@ -91,7 +91,7 @@ fn make_small_player(player : Player, dir1d : Dir1d) -> SpriteParams {
         true,
         (2.0, 1.0),
         (13.0, 15.0),
-        small_,
+        small,
         2,
         10,
         (16.0, 16.0),
@@ -102,7 +102,7 @@ fn make_small_player(player : Player, dir1d : Dir1d) -> SpriteParams {
         true,
         (2.0, 1.0),
         (13.0, 15.0),
-        small_,
+        small,
         2,
         10,
         (16.0, 16.0),
@@ -113,7 +113,7 @@ fn make_small_player(player : Player, dir1d : Dir1d) -> SpriteParams {
         true,
         (2.0, 1.0),
         (12.0, 15.0),
-        small_,
+        small,
         3,
         5,
         (16.0, 16.0),
@@ -124,7 +124,7 @@ fn make_small_player(player : Player, dir1d : Dir1d) -> SpriteParams {
         true,
         (2.0, 1.0),
         (12.0, 15.0),
-        small_,
+        small,
         3,
         5,
         (16.0, 16.0),
@@ -135,7 +135,7 @@ fn make_small_player(player : Player, dir1d : Dir1d) -> SpriteParams {
         true,
         (1.0, 5.0),
         (14.0, 10.0),
-        small_,
+        small,
         1,
         10,
         (16.0, 16.0),
@@ -152,7 +152,7 @@ fn make_large_player(player : Player, dir1d : Dir1d) -> SpriteParams {
         true,
         (2.0, 1.0),
         (13.0, 25.0),
-        large_,
+        large,
         1,
         0,
         (16.0, 27.0),
@@ -163,7 +163,7 @@ fn make_large_player(player : Player, dir1d : Dir1d) -> SpriteParams {
         true,
         (1.0, 1.0),
         (13.0, 25.0),
-        large_,
+        large,
         1,
         0,
         (16.0, 26.0),
@@ -174,7 +174,7 @@ fn make_large_player(player : Player, dir1d : Dir1d) -> SpriteParams {
         true,
         (2.0, 1.0),
         (12.0, 25.0),
-        large_,
+        large,
         1,
         0,
         (16.0, 26.0),
@@ -185,7 +185,7 @@ fn make_large_player(player : Player, dir1d : Dir1d) -> SpriteParams {
         true,
         (2.0, 1.0),
         (12.0, 25.0),
-        large_,
+        large,
         1,
         0,
         (16.0, 26.0),
@@ -196,7 +196,7 @@ fn make_large_player(player : Player, dir1d : Dir1d) -> SpriteParams {
         true,
         (2.0, 1.0),
         (13.0, 25.0),
-        large_,
+        large,
         4,
         10,
         (16.0, 27.0),
@@ -207,7 +207,7 @@ fn make_large_player(player : Player, dir1d : Dir1d) -> SpriteParams {
         true,
         (2.0, 1.0),
         (13.0, 25.0),
-        large_,
+        large,
         4,
         10,
         (16.0, 27.0),
@@ -218,7 +218,7 @@ fn make_large_player(player : Player, dir1d : Dir1d) -> SpriteParams {
         true,
         (2.0, 10.0),
         (13.0, 17.0),
-        large_,
+        large,
         1,
         0,
         (16.0, 27.0),
@@ -228,14 +228,14 @@ fn make_large_player(player : Player, dir1d : Dir1d) -> SpriteParams {
 }
 
 ///|
-fn make_enemy(enemy : Enemy, dir1d : Dir1d) -> SpriteParams {
-  match (enemy, dir1d) {
+fn make_enemy(enemy_ : Enemy, dir1d : Dir1d) -> SpriteParams {
+  match (enemy_, dir1d) {
     (Goomba, _) =>
       setup_sprite(
         true,
         (1.0, 1.0),
         (14.0, 14.0),
-        enemy_,
+        enemy,
         2,
         10,
         (16.0, 16.0),
@@ -246,7 +246,7 @@ fn make_enemy(enemy : Enemy, dir1d : Dir1d) -> SpriteParams {
         true,
         (4.0, 10.0),
         (11.0, 16.0),
-        enemy_,
+        enemy,
         2,
         10,
         (16.0, 27.0),
@@ -257,7 +257,7 @@ fn make_enemy(enemy : Enemy, dir1d : Dir1d) -> SpriteParams {
         true,
         (4.0, 10.0),
         (11.0, 16.0),
-        enemy_,
+        enemy,
         2,
         10,
         (16.0, 27.0),
@@ -268,7 +268,7 @@ fn make_enemy(enemy : Enemy, dir1d : Dir1d) -> SpriteParams {
         true,
         (1.0, 10.0),
         (11.0, 16.0),
-        enemy_,
+        enemy,
         2,
         10,
         (16.0, 27.0),
@@ -279,7 +279,7 @@ fn make_enemy(enemy : Enemy, dir1d : Dir1d) -> SpriteParams {
         true,
         (1.0, 10.0),
         (11.0, 16.0),
-        enemy_,
+        enemy,
         2,
         10,
         (16.0, 27.0),
@@ -290,7 +290,7 @@ fn make_enemy(enemy : Enemy, dir1d : Dir1d) -> SpriteParams {
         true,
         (2.0, 2.0),
         (12.0, 13.0),
-        enemy_,
+        enemy,
         4,
         10,
         (16.0, 16.0),
@@ -301,7 +301,7 @@ fn make_enemy(enemy : Enemy, dir1d : Dir1d) -> SpriteParams {
         true,
         (2.0, 2.0),
         (12.0, 13.0),
-        enemy_,
+        enemy,
         4,
         10,
         (16.0, 16.0),
@@ -318,7 +318,7 @@ fn make_item(item : Item) -> SpriteParams {
         true,
         (3.0, 0.0),
         (12.0, 16.0),
-        items_,
+        items,
         3,
         15,
         (16.0, 16.0),
@@ -329,7 +329,7 @@ fn make_item(item : Item) -> SpriteParams {
         true,
         (2.0, 0.0),
         (12.0, 16.0),
-        items_,
+        items,
         1,
         0,
         (16.0, 16.0),
@@ -339,14 +339,14 @@ fn make_item(item : Item) -> SpriteParams {
 }
 
 ///|
-fn make_block(block : Block) -> SpriteParams {
-  match block {
-    Brick => setup_sprite_(block_, 5, 10, (16.0, 16.0), (0.0, 0.0))
-    QBlock(_) => setup_sprite_(block_, 4, 15, (16.0, 16.0), (0.0, 16.0))
-    QBlockUsed => setup_sprite_(block_, 1, 0, (16.0, 16.0), (0.0, 32.0))
-    UnBBlock => setup_sprite_(block_, 1, 0, (16.0, 16.0), (0.0, 48.0))
-    Cloud => setup_sprite_(block_, 1, 0, (16.0, 16.0), (0.0, 64.0))
-    Panel => setup_sprite_(panel_, 3, 15, (26.0, 26.0), (0.0, 0.0))
+fn make_block(block_ : Block) -> SpriteParams {
+  match block_ {
+    Brick => setup_sprite_(block, 5, 10, (16.0, 16.0), (0.0, 0.0))
+    QBlock(_) => setup_sprite_(block, 4, 15, (16.0, 16.0), (0.0, 16.0))
+    QBlockUsed => setup_sprite_(block, 1, 0, (16.0, 16.0), (0.0, 32.0))
+    UnBBlock => setup_sprite_(block, 1, 0, (16.0, 16.0), (0.0, 48.0))
+    Cloud => setup_sprite_(block, 1, 0, (16.0, 16.0), (0.0, 64.0))
+    Panel => setup_sprite_(panel, 3, 15, (26.0, 26.0), (0.0, 0.0))
     Ground => setup_sprite_(ground, 1, 0, (16.0, 16.0), (0.0, 32.0))
   }
 }
@@ -354,17 +354,17 @@ fn make_block(block : Block) -> SpriteParams {
 ///|
 fn make_particle(particle : Part) -> SpriteParams {
   match particle {
-    GoombaSquish => setup_sprite_(enemy_, 1, 0, (16.0, 16.0), (0.0, 144.0))
-    BrickChunkL => setup_sprite_(chunk_, 1, 0, (8.0, 8.0), (0.0, 0.0))
-    BrickChunkR => setup_sprite_(chunk_, 1, 0, (8.0, 8.0), (8.0, 0.0))
-    Score100 => setup_sprite_(score_, 1, 0, (12.0, 8.0), (0.0, 0.0))
-    Score200 => setup_sprite_(score_, 1, 0, (12.0, 9.0), (0.0, 9.0))
-    Score400 => setup_sprite_(score_, 1, 0, (12.0, 9.0), (0.0, 18.0))
-    Score800 => setup_sprite_(score_, 1, 0, (12.0, 9.0), (0.0, 27.0))
-    Score1000 => setup_sprite_(score_, 1, 0, (14.0, 9.0), (13.0, 0.0))
-    Score2000 => setup_sprite_(score_, 1, 0, (14.0, 9.0), (13.0, 9.0))
-    Score4000 => setup_sprite_(score_, 1, 0, (14.0, 9.0), (13.0, 18.0))
-    Score8000 => setup_sprite_(score_, 1, 0, (14.0, 9.0), (13.0, 27.0))
+    GoombaSquish => setup_sprite_(enemy, 1, 0, (16.0, 16.0), (0.0, 144.0))
+    BrickChunkL => setup_sprite_(chunk, 1, 0, (8.0, 8.0), (0.0, 0.0))
+    BrickChunkR => setup_sprite_(chunk, 1, 0, (8.0, 8.0), (8.0, 0.0))
+    Score100 => setup_sprite_(score, 1, 0, (12.0, 8.0), (0.0, 0.0))
+    Score200 => setup_sprite_(score, 1, 0, (12.0, 9.0), (0.0, 9.0))
+    Score400 => setup_sprite_(score, 1, 0, (12.0, 9.0), (0.0, 18.0))
+    Score800 => setup_sprite_(score, 1, 0, (12.0, 9.0), (0.0, 27.0))
+    Score1000 => setup_sprite_(score, 1, 0, (14.0, 9.0), (13.0, 0.0))
+    Score2000 => setup_sprite_(score, 1, 0, (14.0, 9.0), (13.0, 9.0))
+    Score4000 => setup_sprite_(score, 1, 0, (14.0, 9.0), (13.0, 18.0))
+    Score8000 => setup_sprite_(score, 1, 0, (14.0, 9.0), (13.0, 27.0))
   }
 }
 
@@ -402,7 +402,7 @@ fn Sprite::make(spawn : Spawn, dir1d : Dir1d) -> Sprite {
 
 ///|
 fn make_bgd() -> Sprite {
-  let params = setup_sprite_(backg_, 1, 0, (512.0, 256.0), (0.0, 0.0))
+  let params = setup_sprite_(backg, 1, 0, (512.0, 256.0), (0.0, 0.0))
   Sprite::make_(params)
 }
 

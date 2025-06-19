@@ -1,75 +1,127 @@
 ///|
-#external
-type Image
+const WIDTH = 512
 
 ///|
-fn get_backg() -> Image = "canvas" "get_backg"
+const HEIGHT = 256
 
 ///|
-fn get_block() -> Image = "canvas" "get_block"
+typealias @dom.HTMLImageElement as Image
 
 ///|
-fn get_items() -> Image = "canvas" "get_items"
+let backg : Image = {
+  let img : Image = @dom.document().create_element("img")
+    |> @js.Value::cast_from
+    |> @js.Value::cast
+  img.set_src("images/background.png")
+  img
+}
 
 ///|
-fn get_enemy() -> Image = "canvas" "get_enemy"
+let block : Image = {
+  let img : Image = @dom.document().create_element("img")
+    |> @js.Value::cast_from
+    |> @js.Value::cast
+  img.set_src("images/blocks.png")
+  img
+}
 
 ///|
-fn get_small() -> Image = "canvas" "get_small"
+let items : Image = {
+  let img : Image = @dom.document().create_element("img")
+    |> @js.Value::cast_from
+    |> @js.Value::cast
+  img.set_src("images/items.png")
+  img
+}
 
 ///|
-fn get_large() -> Image = "canvas" "get_large"
+let enemy : Image = {
+  let img : Image = @dom.document().create_element("img")
+    |> @js.Value::cast_from
+    |> @js.Value::cast
+  img.set_src("images/enemies.png")
+  img
+}
 
 ///|
-fn get_panel() -> Image = "canvas" "get_panel"
+let small : Image = {
+  let img : Image = @dom.document().create_element("img")
+    |> @js.Value::cast_from
+    |> @js.Value::cast
+  img.set_src("images/mario-small.png")
+  img
+}
 
 ///|
-fn get_round() -> Image = "canvas" "get_round"
+let large : Image = {
+  let img : Image = @dom.document().create_element("img")
+    |> @js.Value::cast_from
+    |> @js.Value::cast
+  img.set_src("images/mario-large.png")
+  img
+}
 
 ///|
-fn get_chunk() -> Image = "canvas" "get_chunk"
+let panel : Image = {
+  let img : Image = @dom.document().create_element("img")
+    |> @js.Value::cast_from
+    |> @js.Value::cast
+  img.set_src("images/panel.png")
+  img
+}
 
 ///|
-fn get_score() -> Image = "canvas" "get_score"
+let ground : Image = {
+  let img : Image = @dom.document().create_element("img")
+    |> @js.Value::cast_from
+    |> @js.Value::cast
+  img.set_src("images/ground.png")
+  img
+}
 
 ///|
-let backg_ : Image = get_backg()
+let chunk : Image = {
+  let img : Image = @dom.document().create_element("img")
+    |> @js.Value::cast_from
+    |> @js.Value::cast
+  img.set_src("images/chunks.png")
+  img
+}
 
 ///|
-let block_ : Image = get_block()
+let score : Image = {
+  let img : Image = @dom.document().create_element("img")
+    |> @js.Value::cast_from
+    |> @js.Value::cast
+  img.set_src("images/score.png")
+  img
+}
 
 ///|
-let items_ : Image = get_items()
+fn game_win() -> Unit {
+  context.set_fill_style(@js.Union3::from0("black"))
+  context.fill_rect(0, 0, 512, 256)
+  context.set_fill_style(@js.Union3::from0("white"))
+  context.set_font("20px 'Press Start 2P'")
+  context.fill_text("You win!", 180, 128)
+}
 
 ///|
-let enemy_ : Image = get_enemy()
+fn game_lose() -> Unit {
+  context.set_fill_style(@js.Union3::from0("black"))
+  context.fill_rect(0, 0, 512, 256)
+  context.set_fill_style(@js.Union3::from0("white"))
+  context.set_font("20px 'Press Start 2P'")
+  context.fill_text("GAME OVER. You lose!", 60, 128)
+}
 
 ///|
-let small_ : Image = get_small()
+let rand : @random.Rand = @random.Rand::new()
 
 ///|
-let large_ : Image = get_large()
-
-///|
-let panel_ : Image = get_panel()
-
-///|
-let ground : Image = get_round()
-
-///|
-let chunk_ : Image = get_chunk()
-
-///|
-let score_ : Image = get_score()
-
-///|
-fn game_win() = "canvas" "game_win"
-
-///|
-fn game_lose() = "canvas" "game_lose"
-
-///|
-fn random(l : Int, r : Int) -> Int = "canvas" "random"
+fn random(l : Int, r : Int) -> Int {
+  l + rand.int(limit=r - l)
+}
 
 ///|
 fn render_(
@@ -82,10 +134,25 @@ fn render_(
   dy : Double,
   dw : Double,
   dh : Double
-) = "canvas" "render"
+) -> Unit {
+  context.draw_image_with_src_and_dst_size(
+    img |> @js.Value::cast_from |> @js.Value::cast,
+    sx,
+    sy,
+    sw,
+    sh,
+    dx,
+    dy,
+    dw,
+    dh,
+  )
+}
 
 ///|
-fn render_box_(a : Double, b : Double, c : Double, d : Double) = "canvas" "render_box"
+fn render_box_(a : Double, b : Double, c : Double, d : Double) -> Unit {
+  context.set_stroke_style(@js.Union3::from0("#FF0000"))
+  context.stroke_rect(a, b, c, d)
+}
 
 ///|
 fn render_box(sprite : Sprite, posx : Double, posy : Double) -> Unit {
@@ -107,6 +174,7 @@ fn render(sprite : Sprite, posx : Double, posy : Double) -> Unit {
 // (*Draws two background images, which needs to be done because of the
 // *constantly changing viewport, which is always at most going to be
 // *between two background images.*)
+
 ///|
 fn draw_bgd(bgd : Sprite, off_x : Double) -> Unit {
   render(bgd, -off_x, 0.0)
@@ -114,10 +182,31 @@ fn draw_bgd(bgd : Sprite, off_x : Double) -> Unit {
 }
 
 ///|
-fn clear_canvas() = "canvas" "clear"
+let canvas : @dom.HTMLCanvasElement = @dom.document().get_element_by_id(
+    "canvas",
+  )
+  |> @js.Value::cast_from
+  |> @js.Value::cast
 
 ///|
-fn hud(score : Int, coins : Int) = "canvas" "draw_hud"
+let context : @dom.CanvasRenderingContext2D = canvas.get_context("2d")
+  |> @js.Value::cast_from
+  |> @js.Value::cast
 
 ///|
-fn fps(fps_val : Int) = "canvas" "draw_fps"
+fn clear_canvas() -> Unit {
+  context.clear_rect(0.0, 0.0, WIDTH.to_double(), HEIGHT.to_double())
+}
+
+///|
+fn hud(score : Int, coins : Int) -> Unit {
+  context.set_font("10 px 'Press Start 2P'")
+  context.fill_text("Score: \{score}", WIDTH.to_double() - 140, 18)
+  context.fill_text("Coins: \{coins}", 120, 18)
+}
+
+///|
+fn fps(fps_val : Int) -> Unit {
+  context.set_font("10 px 'Press Start 2P'")
+  context.fill_text("FPS: \{fps_val}", 10, 18)
+}

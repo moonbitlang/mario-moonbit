@@ -1,4 +1,5 @@
 // (* Represents the values of relevant key bindings. *)
+
 ///|
 struct Keys {
   mut up : Bool
@@ -56,6 +57,7 @@ fn calc_fps(t0 : Double, t1 : Double) -> Double {
 }
 
 // (* Adds [i] to the score in [state] *)
+
 ///|
 fn update_score(state : St, i : Int) -> Unit {
   state.score = state.score + i
@@ -98,6 +100,7 @@ fn player_attack_enemy(
 }
 
 // (*enemy_attack_player is used when an enemy kills a player.*)
+
 ///|
 fn enemy_attack_player(
   o1 : Object,
@@ -127,6 +130,7 @@ fn enemy_attack_player(
 // (*In the case that two enemies collide, they are to reverse directions. However,
 // *in the case that one or more of the two enemies is a koopa shell, then
 // *the koopa shell kills the other enemy. *)
+
 ///|
 fn col_enemy_enemy(
   t1 : Enemy,
@@ -175,6 +179,7 @@ fn col_enemy_enemy(
 }
 
 // (* Run the broad phase object filtering *)
+
 ///|
 fn broad_phase(
   collid : Collidable,
@@ -183,15 +188,16 @@ fn broad_phase(
 ) -> List[Collidable] {
   let obj = collid.get_obj()
   all_collids.filter(fn(_c) {
-    in_viewport(state.vpt, obj.pos) ||
+    state.vpt.in_viewport(obj.pos) ||
     collid is Player(_) ||
-    out_of_viewport_below(state.vpt, obj.pos.y)
+    state.vpt.out_of_viewport_below(obj.pos.y)
   })
 }
 
 // (*narrow_phase of collision is used in order to continuously repeat through
 // *each of the collidable objects to constantly check if collisions are
 // *occurring.*)
+
 ///|
 fn narrow_phase(
   c : Collidable,
@@ -246,6 +252,7 @@ fn narrow_phase(
 // * This method returns a list of objects that are created, which should be
 // * added to the list of collidables for the next iteration.
 // * *)
+
 ///|
 fn check_collisions(
   collid : Collidable,
@@ -262,6 +269,7 @@ fn check_collisions(
 }
 
 // (* Returns whether the bounding box should be drawn *)
+
 ///|
 fn check_bbox_enabled() -> Bool {
   pressed_keys.bbox == 1
@@ -269,6 +277,7 @@ fn check_bbox_enabled() -> Bool {
 
 // (* update_collidable is the primary update method for collidable objects,
 // * checking the collision, updating the object, and drawing to the canvas.*)
+
 ///|
 fn update_collidable(
   state : St,
@@ -279,16 +288,16 @@ fn update_collidable(
   let spr = collid.get_sprite()
   obj.invuln = if obj.invuln > 0 { obj.invuln - 1 } else { 0 }
   // (* Prevent position from being updated outside of viewport *)
-  let viewport_filter = in_viewport(state.vpt, obj.pos) ||
+  let viewport_filter = state.vpt.in_viewport(obj.pos) ||
     collid is Player(_) ||
-    out_of_viewport_below(state.vpt, obj.pos.y)
+    state.vpt.out_of_viewport_below(obj.pos.y)
   if not(obj.kill) && viewport_filter {
     obj.grounded = false
     process_obj(obj, state.map)
     // (* Run collision detection if moving object*)
     let evolved = check_collisions(collid, all_collids, state)
     // (* Render and update animation *)
-    let vpt_adj_xy = coord_to_viewport(state.vpt, obj.pos)
+    let vpt_adj_xy = state.vpt.coord_to_viewport(obj.pos)
     render(spr, vpt_adj_xy.x, vpt_adj_xy.y)
     if check_bbox_enabled() {
       render_box(spr, vpt_adj_xy.x, vpt_adj_xy.y)
@@ -304,6 +313,7 @@ fn update_collidable(
 
 // (* Converts a keypress to a list of control keys, allowing more than one key
 // * to be processed each frame. *)
+
 ///|
 fn translate_keys() -> List[Control] {
   let mut res = @list.empty()
@@ -341,6 +351,7 @@ fn translate_keys() -> List[Control] {
 // * as a wrapper method. This method is necessary to differentiate between
 // * the player collidable and the remaining collidables, as special operations
 // * such as viewport centering only occur with the player.*)
+
 ///|
 fn run_update_collid(
   state : St,
@@ -376,6 +387,7 @@ fn run_update_collid(
 }
 
 // (* Primary update function to update and persist a particle *)
+
 ///|
 fn run_update_particle(state : St, part : Particle) -> Unit {
   part.process()
@@ -428,7 +440,7 @@ fn update_helper(
         let p = players.val.rev().find(fn(p) { not(p.get_obj().kill) }).unwrap()
         let b = p.get_obj().pos
         let c = XY::make((a.x + b.x) * 0.5, (a.y + b.y) * 0.5)
-        state.vpt = update(state.vpt, c)
+        state.vpt = state.vpt.update(c)
         let _ = objs.map(fn(obj) { run_update_collid(state, obj, objs) })
         let _ = parts.map(fn(part) { run_update_particle(state, part) })
         fps(fps_)
@@ -439,91 +451,52 @@ fn update_helper(
 }
 
 ///|
-pub fn game_update(t : Double) -> Unit {
+fn init {
+  canvas
+  .to_html_element()
+  .to_element()
+  .to_node()
+  .to_event_target()
+  .add_event_listener("keydown", fn(event) {
+    match event.to_ui_event().unwrap().to_keyboard_event().unwrap().code() {
+      "Space" => {
+        halt.val = false
+        start()
+      }
+      "KeyB" => pressed_keys.bbox = pressed_keys.bbox ^ 1
+      "ArrowUp" => pressed_keys.up = true
+      "ArrowDown" => pressed_keys.down = true
+      "ArrowLeft" => pressed_keys.left = true
+      "ArrowRight" => pressed_keys.right = true
+      "KeyW" => pressed_keys.up2 = true
+      "KeyS" => pressed_keys.down2 = true
+      "KeyA" => pressed_keys.left2 = true
+      "KeyD" => pressed_keys.right2 = true
+      _ => ()
+    }
+  })
+  canvas
+  .to_html_element()
+  .to_element()
+  .to_node()
+  .to_event_target()
+  .add_event_listener("keyup", fn(event) {
+    match event.to_ui_event().unwrap().to_keyboard_event().unwrap().code() {
+      "KeyB" => pressed_keys.bbox = pressed_keys.bbox ^ 1
+      "ArrowUp" => pressed_keys.up = false
+      "ArrowDown" => pressed_keys.down = false
+      "ArrowLeft" => pressed_keys.left = false
+      "ArrowRight" => pressed_keys.right = false
+      "KeyW" => pressed_keys.up2 = false
+      "KeyS" => pressed_keys.down2 = false
+      "KeyA" => pressed_keys.left2 = false
+      "KeyD" => pressed_keys.right2 = false
+      _ => ()
+    }
+  })
+}
+
+///|
+fn game_update(t : Double) -> Unit {
   update_helper(t, state, collid_objs.val, particles.val)
-}
-
-///|
-pub fn keydown_B() -> Unit {
-  pressed_keys.bbox = pressed_keys.bbox ^ 1
-}
-
-///|
-pub fn keydown_up() -> Unit {
-  pressed_keys.up = true
-}
-
-///|
-pub fn keydown_up2() -> Unit {
-  pressed_keys.up2 = true
-}
-
-///|
-pub fn keydown_down() -> Unit {
-  pressed_keys.down = true
-}
-
-///|
-pub fn keydown_down2() -> Unit {
-  pressed_keys.down2 = true
-}
-
-///|
-pub fn keydown_left() -> Unit {
-  pressed_keys.left = true
-}
-
-///|
-pub fn keydown_left2() -> Unit {
-  pressed_keys.left2 = true
-}
-
-///|
-pub fn keydown_right() -> Unit {
-  pressed_keys.right = true
-}
-
-///|
-pub fn keydown_right2() -> Unit {
-  pressed_keys.right2 = true
-}
-
-///|
-pub fn keyup_up() -> Unit {
-  pressed_keys.up = false
-}
-
-///|
-pub fn keyup_up2() -> Unit {
-  pressed_keys.up2 = false
-}
-
-///|
-pub fn keyup_down() -> Unit {
-  pressed_keys.down = false
-}
-
-///|
-pub fn keyup_down2() -> Unit {
-  pressed_keys.down2 = false
-}
-
-///|
-pub fn keyup_left() -> Unit {
-  pressed_keys.left = false
-}
-
-///|
-pub fn keyup_left2() -> Unit {
-  pressed_keys.left2 = false
-}
-
-///|
-pub fn keyup_right() -> Unit {
-  pressed_keys.right = false
-}
-
-///|
-pub fn keyup_right2() -> Unit {
-  pressed_keys.right2 = false
 }
