@@ -3,9 +3,9 @@
 // (*Holds obj typ and its coordinates. (int, (x-coord, y-coord))*)
 // type obj_coord =  int * (float * float)
 
-// (*Checks if the given location checkloc is already part of the list of locations
-// * in loclist.*)
-///|
+///| (*Checks if the given location checkloc is already part of the list of locations
+///  * in loclist.*)
+///
 fn mem_loc(
   checkloc : (Double, Double),
   loclist : List[(Int, (Double, Double))]
@@ -17,17 +17,17 @@ fn mem_loc(
   }
 }
 
-// (*Converts list of locations from blocksize to pixelsize by multiplying (x,y) by
-// * 16.*)
-///|
+///| (*Converts list of locations from blocksize to pixelsize by multiplying (x,y) by
+///  * 16.*)
+///
 fn convert_list(
   list : List[(Int, (Double, Double))]
 ) -> List[(Int, (Double, Double))] {
   list.map(fn(x) { (x.0, (x.1.0 * 16.0, x.1.1 * 16.0)) })
 }
 
-// (*Chooses what type of enemy should be instantiated given typ number*)
-///|
+///| (*Chooses what type of enemy should be instantiated given typ number*)
+///
 fn choose_enemy_typ(typ : Int) -> Enemy {
   match typ {
     0 => RKoopa
@@ -37,8 +37,8 @@ fn choose_enemy_typ(typ : Int) -> Enemy {
   }
 }
 
-// (*Chooses what type of block should be instantiated given typ number*)
-///|
+///| (*Chooses what type of block should be instantiated given typ number*)
+///
 fn choose_sblock_typ(typ : Int) -> Block {
   match typ {
     0 => Brick
@@ -50,9 +50,9 @@ fn choose_sblock_typ(typ : Int) -> Block {
   }
 }
 
-// (*Optimizes lst such that there are no two items in the list that have the same
-// * coordinates. If there is one, it is removed.*)
-///|
+///| (*Optimizes lst such that there are no two items in the list that have the same
+///  * coordinates. If there is one, it is removed.*)
+///
 fn avoid_overlap(
   lst : List[(Int, (Double, Double))],
   currentLst : List[(Int, (Double, Double))]
@@ -68,9 +68,9 @@ fn avoid_overlap(
   }
 }
 
-// (*Gets rid of objects with coordinates in the ending frame, within 128 pixels of
-// * the start, at the very top, and two blocks from the ground.*)
-///|
+///| (*Gets rid of objects with coordinates in the ending frame, within 128 pixels of
+///  * the start, at the very top, and two blocks from the ground.*)
+///
 fn trim_edges(
   lst : List[(Int, (Double, Double))],
   blockw : Double,
@@ -92,9 +92,9 @@ fn trim_edges(
   }
 }
 
-// (*Generates a stair formation with block typ being dependent on typ. This type
-// * of stair formation requires that the first step be on the ground.*)
-///|
+///| (*Generates a stair formation with block typ being dependent on typ. This type
+///  * of stair formation requires that the first step be on the ground.*)
+///
 fn generate_ground_stairs(
   cbx : Double,
   cby : Double,
@@ -113,8 +113,8 @@ fn generate_ground_stairs(
   .add((typ, (cbx + 3.0, cby - 3.0)))
 }
 
-// (*Generates a stair formation going upwards.*)
-///|
+///| (*Generates a stair formation going upwards.*)
+///
 fn generate_airup_stairs(
   cbx : Double,
   cby : Double,
@@ -130,8 +130,8 @@ fn generate_airup_stairs(
   .add((typ, (cbx + 6.0, cby - 2.0)))
 }
 
-// (*Generates a stair formation going downwards*)
-///|
+///| (*Generates a stair formation going downwards*)
+///
 fn generate_airdown_stairs(
   cbx : Double,
   cby : Double,
@@ -147,8 +147,8 @@ fn generate_airdown_stairs(
   .add((typ, (cbx + 6.0, cby + 2.0)))
 }
 
-// (*Generates a cloud block platform with some length num.*)
-///|
+///| (*Generates a cloud block platform with some length num.*)
+///
 fn generate_clouds(
   cbx : Double,
   cby : Double,
@@ -182,16 +182,16 @@ fn generate_coins(
   }
 }
 
-// (*Chooses the form of the blocks to be placed.
-// * When called, leaves a 1 block gap from canvas size.
-// * 1. If current xblock or yblock is greater than canvas width or height
-// *    respectively, return an empty list.
-// * 2. If current xblock or yblock is within 10 blocks of the left and right sides
-// *    of the level map, prevent any objects from being initialized.
-// * 3. Else call helper methods to created block formations and return obj_coord
-// *    list.
-// **)
-///|
+///| (*Chooses the form of the blocks to be placed.
+///  * When called, leaves a 1 block gap from canvas size.
+///  * 1. If current xblock or yblock is greater than canvas width or height
+///  *    respectively, return an empty list.
+///  * 2. If current xblock or yblock is within 10 blocks of the left and right sides
+///  *    of the level map, prevent any objects from being initialized.
+///  * 3. Else call helper methods to created block formations and return obj_coord
+///  *    list.
+/// *)
+///
 fn choose_block_pattern(
   blockw : Double,
   blockh : Double,
@@ -261,8 +261,8 @@ fn choose_block_pattern(
   }
 }
 
-// (*Generates a list of enemies to be placed on the ground.*)
-///|
+///| (*Generates a list of enemies to be placed on the ground.*)
+///
 fn generate_enemies(
   blockw : Double,
   blockh : Double,
@@ -288,8 +288,8 @@ fn generate_enemies(
   }
 }
 
-// (*Generates a list of enemies to be placed upon the block objects.*)
-///|
+///| (*Generates a list of enemies to be placed upon the block objects.*)
+///
 fn generate_block_enemies(
   block_coord : List[(Int, (Double, Double))]
 ) -> List[(Int, (Double, Double))] {
@@ -309,8 +309,8 @@ fn generate_block_enemies(
   }
 }
 
-// (*Generates an obj_coord list (typ, coordinates) of blocks to be placed.*)
-///|
+///| (*Generates an obj_coord list (typ, coordinates) of blocks to be placed.*)
+///
 fn generate_block_locs(
   blockw : Double,
   blockh : Double,
@@ -338,16 +338,16 @@ fn generate_block_locs(
   }
 }
 
-// (*Generates the ending item panel at the end of the level. Games ends upon
-// * collision with player.*)
-///|
+///| (*Generates the ending item panel at the end of the level. Games ends upon
+///  * collision with player.*)
+///
 fn generate_panel(blockw : Double, blockh : Double) -> Collidable {
   spawn(Block(Panel), blockw * 16.0 - 256.0, blockh * 16.0 * 2.0 / 3.0)
 }
 
-// (*Generates the list of brick locations needed to display the ground.
-// * 1/10 chance that a ground block is skipped each call to create holes.*)
-///|
+///| (*Generates the list of brick locations needed to display the ground.
+/// * 1/10 chance that a ground block is skipped each call to create holes.*)
+///
 fn generate_ground(
   blockw : Double,
   blockh : Double,
@@ -370,9 +370,9 @@ fn generate_ground(
   }
 }
 
-// (*Converts the obj_coord list called by generate_block_locs to a list of objects
-// * with the coordinates given from the obj_coord list. *)
-///|
+///| (*Converts the obj_coord list called by generate_block_locs to a list of objects
+///  * with the coordinates given from the obj_coord list. *)
+///
 fn convert_to_block_obj(
   lst : List[(Int, (Double, Double))]
 ) -> List[Collidable] {
@@ -386,9 +386,9 @@ fn convert_to_block_obj(
   }
 }
 
-// (*Converts the obj_coord list called by generate_enemies to a list of objects
-// * with the coordinates given from the obj_coord list. *)
-///|
+///| (*Converts the obj_coord list called by generate_enemies to a list of objects
+///  * with the coordinates given from the obj_coord list. *)
+///
 fn convert_to_enemy_obj(
   lst : List[(Int, (Double, Double))]
 ) -> List[Collidable] {
@@ -402,8 +402,8 @@ fn convert_to_enemy_obj(
   }
 }
 
-// (*Converts the list of coordinates into a list of Coin objects*)
-///|
+///| (*Converts the list of coordinates into a list of Coin objects*)
+///
 fn convert_to_coin_obj(lst : List[(Int, (Double, Double))]) -> List[Collidable] {
   match lst {
     Empty => @list.empty()
@@ -415,10 +415,10 @@ fn convert_to_coin_obj(lst : List[(Int, (Double, Double))]) -> List[Collidable] 
   }
 }
 
-// (*Procedurally generates a list of collidables given canvas width, height and
-// * context. Arguments block width (blockw) and block height (blockh) are in
-// * block form, not pixels.*)
-///|
+///| (*Procedurally generates a list of collidables given canvas width, height and
+///  * context. Arguments block width (blockw) and block height (blockh) are in
+///  * block form, not pixels.*)
+///
 fn generate_helper(blockw : Double, blockh : Double) -> List[Collidable] {
   let block_locs = generate_block_locs(blockw, blockh, 0.0, 0.0, @list.empty())
   let converted_block_locs = trim_edges(
@@ -454,10 +454,10 @@ fn generate_helper(blockw : Double, blockh : Double) -> List[Collidable] {
   @list.empty().add(obj_panel)
 }
 
-// (*Main function called to procedurally generate the level map. w and h args
-// * are in pixel form. Converts to block form to call generate_helper. Spawns
-// * the list of collidables received from generate_helper to display on canvas.*)
-///|
+///| (*Main function called to procedurally generate the level map. w and h args
+///  * are in pixel form. Converts to block form to call generate_helper. Spawns
+///  * the list of collidables received from generate_helper to display on canvas.*)
+///
 fn generate(
   player_count : Int,
   w : Double,

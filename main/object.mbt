@@ -376,6 +376,7 @@ fn dec_health(obj : Object) -> Unit {
 }
 
 // (*Used for deleting a block and replacing it with a used block*)
+
 ///|
 fn evolve_block(obj : Object) -> Collidable {
   dec_health(obj)
@@ -390,6 +391,7 @@ fn evolve_block(obj : Object) -> Collidable {
 }
 
 // (*Used for spawning items above question mark blocks*)
+
 ///|
 fn spawn_above(player_dir : Dir1d, obj : Object, typ : Item) -> Collidable {
   let item = spawn(Item(typ), obj.pos.x, obj.pos.y)
@@ -401,6 +403,7 @@ fn spawn_above(player_dir : Dir1d, obj : Object, typ : Item) -> Collidable {
 }
 
 // (*Used to get the bounding box.*)
+
 ///|
 fn get_aabb(obj : Collidable) -> AABB {
   let spr = obj.get_sprite().params
@@ -430,6 +433,7 @@ fn col_bypass(c1 : Collidable, c2 : Collidable) -> Bool {
 // (*Used for checking if collisions occur. Compares half-widths and half-heights
 // *and adjusts for when collisions do occur, by changing position so that
 // *a second collision does not occur again immediately. This causes snapping.*)
+
 ///|
 fn check_collision(c1 : Collidable, c2 : Collidable) -> Dir2d? {
   let b1 = get_aabb(c1)
@@ -467,6 +471,7 @@ fn check_collision(c1 : Collidable, c2 : Collidable) -> Dir2d? {
 }
 
 // (*"Kills" the matched object by setting certain parameters for each.*)
+
 ///|
 fn kill(collid : Collidable) -> List[Particle] {
   match collid {

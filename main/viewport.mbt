@@ -24,6 +24,7 @@ fn calc_viewport_point(cc : Double, vc : Double, mc : Double) -> Double {
 }
 
 // (* Returns whether a coordinate pair [pos] is inside the viewport [v] *)
+
 ///|
 fn Viewport::in_viewport(v : Viewport, pos : XY) -> Bool {
   let margin = 32.0
@@ -35,6 +36,7 @@ fn Viewport::in_viewport(v : Viewport, pos : XY) -> Bool {
 
 // (* Returns whether an object is outside of the viewport and below it. This is
 // * useful for determining whether to process falling out of screen normally. *)
+
 ///|
 fn Viewport::out_of_viewport_below(v : Viewport, y : Double) -> Bool {
   let v_max_y = v.pos.y + v.v_dim.y
@@ -43,12 +45,14 @@ fn Viewport::out_of_viewport_below(v : Viewport, y : Double) -> Bool {
 
 // (* Converts a x,y [coord] pair in absolute coordinates to coordinates relative
 // * to the viewport *)
+
 ///|
 fn Viewport::coord_to_viewport(viewport : Viewport, coord : XY) -> XY {
   { x: coord.x - viewport.pos.x, y: coord.y - viewport.pos.y }
 }
 
 // (* Update the viewport [vpt] given the new center x,y coordinate pair [ctr] *)
+
 ///|
 fn Viewport::update(vpt : Viewport, ctr : XY) -> Viewport {
   let new_x = calc_viewport_point(ctr.x, vpt.v_dim.x, vpt.m_dim.x)
