@@ -1,0 +1,36 @@
+package "mario/utils"
+
+// Values
+
+// Types and methods
+pub(all) enum Control {
+  Left
+  Right
+  Up
+  Down
+}
+
+pub(all) enum Dir1d {
+  Left
+  Right
+}
+fn Dir1d::opposite_dir(Self) -> Self
+impl Eq for Dir1d
+
+pub(all) enum Dir2d {
+  North
+  South
+  East
+  West
+}
+
+pub(all) struct XY {
+  mut x : Double
+  mut y : Double
+}
+fn XY::make(Double, Double) -> Self
+
+// Type aliases
+
+// Traits
+

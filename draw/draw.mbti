@@ -1,0 +1,32 @@
+package "mario/draw"
+
+import(
+  "Yoorkin/rabbit-tea/dom"
+  "mario/sprite"
+)
+
+// Values
+let canvas : @dom.HTMLCanvasElement
+
+fn clear_canvas() -> Unit
+
+fn draw_bgd(@sprite.Sprite, Double) -> Unit
+
+fn fps(Int) -> Unit
+
+fn game_lose() -> Unit
+
+fn game_win() -> Unit
+
+fn hud(Int, Int) -> Unit
+
+fn render(@sprite.Sprite, Double, Double) -> Unit
+
+fn render_box(@sprite.Sprite, Double, Double) -> Unit
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

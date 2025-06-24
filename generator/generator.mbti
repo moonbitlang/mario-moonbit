@@ -1,0 +1,27 @@
+package "mario/generator"
+
+import(
+  "moonbitlang/core/list"
+)
+
+// Values
+fn avoid_overlap(@list.T[(Int, (Double, Double))], @list.T[(Int, (Double, Double))]) -> @list.T[(Int, (Double, Double))]
+
+fn generate_block_enemies(@list.T[(Int, (Double, Double))]) -> @list.T[(Int, (Double, Double))]
+
+fn generate_block_locs(Double, Double, Double, Double, @list.T[(Int, (Double, Double))]) -> @list.T[(Int, (Double, Double))]
+
+fn generate_coins(@list.T[(Int, (Double, Double))]) -> @list.T[(Int, (Double, Double))]
+
+fn generate_enemies(Double, Double, Double, Double, @list.T[(Int, (Double, Double))]) -> @list.T[(Int, (Double, Double))]
+
+fn generate_ground(Double, Double, Double, @list.T[(Int, (Double, Double))]) -> @list.T[(Int, (Double, Double))]
+
+fn trim_edges(@list.T[(Int, (Double, Double))], Double, Double) -> @list.T[(Int, (Double, Double))]
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

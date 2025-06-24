@@ -1,0 +1,24 @@
+package "mario/viewport"
+
+import(
+  "mario/utils"
+)
+
+// Values
+
+// Types and methods
+pub struct Viewport {
+  pos : @utils.XY
+  v_dim : @utils.XY
+  m_dim : @utils.XY
+}
+fn Viewport::coord_to_viewport(Self, @utils.XY) -> @utils.XY
+fn Viewport::in_viewport(Self, @utils.XY) -> Bool
+fn Viewport::make(@utils.XY, @utils.XY) -> Self
+fn Viewport::out_of_viewport_below(Self, Double) -> Bool
+fn Viewport::update(Self, @utils.XY) -> Self
+
+// Type aliases
+
+// Traits
+

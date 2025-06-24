@@ -1,0 +1,55 @@
+package "mario/sprite"
+
+import(
+  "mario/actors"
+  "mario/utils"
+)
+
+// Values
+fn make_bgd() -> Sprite
+
+// Types and methods
+type Image
+
+pub struct Particle {
+  params : ParticleParams
+  pos : @utils.XY
+  vel : @utils.XY
+  acc : @utils.XY
+  mut kill : Bool
+  mut life : Int
+}
+fn Particle::make(@utils.XY, @utils.XY, @actors.Part, @utils.XY) -> Self
+fn Particle::make_score(Int, @utils.XY) -> Self
+fn Particle::process(Self) -> Unit
+
+pub struct ParticleParams {
+  sprite : Sprite
+  lifetime : Int
+}
+
+pub struct Sprite {
+  mut params : SpriteParams
+  frame : Ref[Int]
+  ticks : Ref[Int]
+  mut img : Image
+}
+fn Sprite::make(@actors.Spawn, @utils.Dir1d) -> Self
+fn Sprite::transform_enemy(Self, @actors.Enemy, @utils.Dir1d) -> Unit
+fn Sprite::update_animation(Self) -> Unit
+
+pub struct SpriteParams {
+  max_frames : Int
+  max_ticks : Int
+  img_src : Image
+  frame_size : (Double, Double)
+  src_offset : (Double, Double)
+  bbox_offset : (Double, Double)
+  bbox_size : (Double, Double)
+  repeat : Bool
+}
+
+// Type aliases
+
+// Traits
+
