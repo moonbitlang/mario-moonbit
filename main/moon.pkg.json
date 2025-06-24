@@ -6,7 +6,8 @@
     "mario/utils",
     "mario/actors",
     "mario/sprite",
-    "mario/viewport"
+    "mario/viewport",
+    "mario/object"
   ],
   "is-main": true
 }

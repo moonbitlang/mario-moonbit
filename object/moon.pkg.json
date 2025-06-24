@@ -1,0 +1,12 @@
+{
+  "import": [
+    "mario/actors",
+    "mario/sprite",
+    "mario/utils",
+    "mario/viewport",
+    "mario/draw",
+    "Yoorkin/rabbit-tea/dom",
+    "rami3l/js-ffi/js",
+    "mario/generator"
+  ]
+}

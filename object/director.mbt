@@ -14,7 +14,7 @@ struct Keys {
 }
 
 ///|
-struct St {
+pub(all) struct St {
   bgd : Sprite
   mut vpt : Viewport
   map : Double
@@ -316,7 +316,7 @@ fn update_collidable(
 
 ///|
 fn translate_keys() -> List[Control] {
-  let mut res = @list.empty()
+  let mut res : List[Control] = @list.empty()
   if which.val {
     if pressed_keys.up {
       res = res.add(Up)
@@ -497,6 +497,6 @@ fn init {
 }
 
 ///|
-fn game_update(t : Double) -> Unit {
+pub fn game_update(t : Double) -> Unit {
   update_helper(t, state, collid_objs.val, particles.val)
 }

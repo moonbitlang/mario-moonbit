@@ -1,0 +1,2 @@
+///|
+typealias @sprite.(Sprite, Image)
