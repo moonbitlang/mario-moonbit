@@ -5,7 +5,8 @@
     "rami3l/js-ffi/js",
     "mario/utils",
     "mario/actors",
-    "mario/sprite"
+    "mario/sprite",
+    "mario/viewport"
   ],
   "is-main": true
 }
