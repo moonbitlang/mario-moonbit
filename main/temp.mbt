@@ -119,7 +119,7 @@ fn process_collision(
           (Option::Some(spawned_item), Option::Some(updated_block))
         }
         Brick =>
-          if t1 == Large {
+          if t1 is Large {
             collide_block(true, dir, o1)
             dec_health(o2)
             (None, None)

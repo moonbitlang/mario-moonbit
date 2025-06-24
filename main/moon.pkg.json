@@ -3,7 +3,8 @@
   "import": [
     "Yoorkin/rabbit-tea/dom",
     "rami3l/js-ffi/js",
-    "mario/utils"
+    "mario/utils",
+    "mario/actors"
   ],
   "is-main": true
 }
