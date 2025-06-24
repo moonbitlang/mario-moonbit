@@ -1,8 +1,8 @@
 ///|
 pub struct Viewport {
   pos : XY
-  v_dim : XY
-  m_dim : XY
+  priv v_dim : XY
+  priv m_dim : XY
 }
 
 ///|

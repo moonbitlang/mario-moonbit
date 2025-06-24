@@ -1,20 +1,20 @@
 ///|
 pub struct SpriteParams {
-  max_frames : Int
-  max_ticks : Int
-  img_src : Image
+  priv max_frames : Int
+  priv max_ticks : Int
+  priv img_src : Image
   frame_size : (Double, Double)
   src_offset : (Double, Double)
   bbox_offset : (Double, Double)
   bbox_size : (Double, Double)
-  repeat : Bool
+  priv repeat : Bool
 }
 
 ///|
 pub struct Sprite {
   mut params : SpriteParams
   frame : Ref[Int]
-  ticks : Ref[Int]
+  priv ticks : Ref[Int]
   mut img : Image
 }
 

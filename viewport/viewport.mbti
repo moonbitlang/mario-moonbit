@@ -9,8 +9,7 @@ import(
 // Types and methods
 pub struct Viewport {
   pos : @utils.XY
-  v_dim : @utils.XY
-  m_dim : @utils.XY
+  // private fields
 }
 fn Viewport::coord_to_viewport(Self, @utils.XY) -> @utils.XY
 fn Viewport::in_viewport(Self, @utils.XY) -> Bool

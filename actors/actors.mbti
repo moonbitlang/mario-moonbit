@@ -51,7 +51,6 @@ pub(all) enum PlayerSize {
   Small
   Large
 }
-impl Eq for PlayerSize
 
 pub(all) enum Spawn {
   Player(PlayerSize, Player)

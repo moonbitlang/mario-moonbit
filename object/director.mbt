@@ -14,7 +14,7 @@ priv struct Keys {
 }
 
 ///|
-pub(all) struct St {
+priv struct St {
   bgd : Sprite
   mut vpt : Viewport
   map : Double
@@ -497,6 +497,6 @@ fn init {
 }
 
 ///|
-pub fn game_update(t : Double) -> Unit {
+fn game_update(t : Double) -> Unit {
   update_helper(t, state, collid_objs.val, particles.val)
 }

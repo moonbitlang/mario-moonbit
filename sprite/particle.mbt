@@ -1,17 +1,17 @@
 ///|
 pub struct ParticleParams {
   sprite : Sprite
-  lifetime : Int
+  priv lifetime : Int
 }
 
 ///|
 pub struct Particle {
   params : ParticleParams
   pos : XY
-  vel : XY
-  acc : XY
+  priv vel : XY
+  priv acc : XY
   mut kill : Bool
-  mut life : Int
+  priv mut life : Int
 }
 
 ///|

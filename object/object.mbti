@@ -1,33 +1,9 @@
 package "mario/object"
 
-import(
-  "mario/actors"
-  "mario/sprite"
-  "mario/viewport"
-  "moonbitlang/core/list"
-)
-
 // Values
-fn game_update(Double) -> Unit
-
-fn generate(Int, Double, Double) -> (@list.T[Collidable], @list.T[Collidable])
-
-fn spawn(@actors.Spawn, Double, Double) -> Collidable
-
 fn start() -> Unit
 
 // Types and methods
-type Collidable
-
-pub(all) struct St {
-  bgd : @sprite.Sprite
-  mut vpt : @viewport.Viewport
-  map : Double
-  mut score : Int
-  mut coins : Int
-  mut multiplier : Int
-  mut game_over : Bool
-}
 
 // Type aliases
 

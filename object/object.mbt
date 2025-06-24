@@ -54,7 +54,7 @@ priv struct Object {
 }
 
 ///|
-struct Collidable {
+priv struct Collidable {
   target : Spawn
   sprite : Sprite
   object : Object
@@ -152,7 +152,7 @@ fn makeobj(
 }
 
 ///|
-pub fn spawn(spawnable : Spawn, posx : Double, posy : Double) -> Collidable {
+fn spawn(spawnable : Spawn, posx : Double, posy : Double) -> Collidable {
   let (sprite, object) = makeobj(new_id(), Left, spawnable, posx, posy)
   match spawnable {
     Player(_) => { target: spawnable, sprite, object }

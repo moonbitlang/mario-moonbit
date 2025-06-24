@@ -2,7 +2,7 @@
 pub(all) enum PlayerSize {
   Small
   Large
-} derive(Eq)
+}
 
 ///|
 pub(all) enum Item {
