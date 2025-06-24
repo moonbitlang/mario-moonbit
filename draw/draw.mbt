@@ -66,7 +66,7 @@ pub fn render(sprite : Sprite, posx : Double, posy : Double) -> Unit {
   let (sw, sh) = sprite.params.frame_size
   let (dx, dy) = (posx, posy)
   let (dw, dh) = sprite.params.frame_size
-  let sx = sx + sprite.frame.val.to_double() * sw
+  let sx = sx + sprite.frame.to_double() * sw
   render_(sprite.img, sx, sy, sw, sh, dx, dy, dw, dh)
 }
 

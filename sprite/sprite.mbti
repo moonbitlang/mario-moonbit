@@ -28,7 +28,7 @@ pub struct ParticleParams {
 
 pub struct Sprite {
   mut params : SpriteParams
-  frame : Ref[Int]
+  mut frame : Int
   mut img : Image
   // private fields
 }

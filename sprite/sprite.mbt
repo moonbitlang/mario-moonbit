@@ -13,8 +13,8 @@ pub struct SpriteParams {
 ///|
 pub struct Sprite {
   mut params : SpriteParams
-  frame : Ref[Int]
-  priv ticks : Ref[Int]
+  mut frame : Int
+  priv mut ticks : Int
   mut img : Image
 }
 
@@ -392,7 +392,7 @@ fn SpriteParams::make(spawn : Spawn, dir1d : Dir1d) -> SpriteParams {
 
 ///|
 fn Sprite::make_(params : SpriteParams) -> Sprite {
-  { params, frame: @ref.new(0), ticks: @ref.new(0), img: params.img_src }
+  { params, frame: 0, ticks: 0, img: params.img_src }
 }
 
 ///|
@@ -416,13 +416,13 @@ pub fn transform_enemy(self : Sprite, enemy_typ : Enemy, dir : Dir1d) -> Unit {
 
 ///|
 pub fn update_animation(self : Sprite) -> Unit {
-  let curr_ticks = self.ticks.val
+  let curr_ticks = self.ticks
   if curr_ticks >= self.params.max_ticks {
-    self.ticks.val = 0
+    self.ticks = 0
     if self.params.repeat {
-      self.frame.val = (self.frame.val + 1) % self.params.max_frames
+      self.frame = (self.frame + 1) % self.params.max_frames
     }
   } else {
-    self.ticks.val = curr_ticks + 1
+    self.ticks = curr_ticks + 1
   }
 }
