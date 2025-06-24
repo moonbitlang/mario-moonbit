@@ -1,7 +1,7 @@
 // (* Represents the values of relevant key bindings. *)
 
 ///|
-struct Keys {
+priv struct Keys {
   mut up : Bool
   mut up2 : Bool
   mut down : Bool

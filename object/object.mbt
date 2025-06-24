@@ -23,13 +23,13 @@ let dampen_jump : Double = 4.0
 let invuln : Int = 60
 
 ///|
-struct AABB {
+priv struct AABB {
   center : XY
   half : XY
 }
 
 ///|
-struct ObjectParams {
+priv struct ObjectParams {
   has_gravity : Bool
   speed : Double
 }
@@ -38,7 +38,7 @@ struct ObjectParams {
 let id_counter : Ref[Int] = @ref.new(0)
 
 ///|
-struct Object {
+priv struct Object {
   params : ObjectParams
   pos : XY
   vel : XY

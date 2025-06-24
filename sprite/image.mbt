@@ -3,16 +3,24 @@ type Image @dom.HTMLImageElement
 
 ///|
 let backg : Image = {
-  let img : Image = @dom.document().create_element("img")
-    |> @js.Value::cast_from
-    |> @js.Value::cast
+  let img : Image = @dom.document()
+    .create_element("img")
+    .to_html_element()
+    .unwrap()
+    .to_html_image_element()
+    .unwrap()
   img.inner().set_src("images/background.png")
   img
 }
 
 ///|
 let block : Image = {
-  let img : Image = @dom.document().create_element("img")
+  let img : Image = @dom.document()
+    .create_element("img")
+    .to_html_element()
+    .unwrap()
+    .to_html_image_element()
+    .unwrap()
     |> @js.Value::cast_from
     |> @js.Value::cast
   img.inner().set_src("images/blocks.png")
@@ -21,7 +29,12 @@ let block : Image = {
 
 ///|
 let items : Image = {
-  let img : Image = @dom.document().create_element("img")
+  let img : Image = @dom.document()
+    .create_element("img")
+    .to_html_element()
+    .unwrap()
+    .to_html_image_element()
+    .unwrap()
     |> @js.Value::cast_from
     |> @js.Value::cast
   img.inner().set_src("images/items.png")
@@ -30,7 +43,12 @@ let items : Image = {
 
 ///|
 let enemy : Image = {
-  let img : Image = @dom.document().create_element("img")
+  let img : Image = @dom.document()
+    .create_element("img")
+    .to_html_element()
+    .unwrap()
+    .to_html_image_element()
+    .unwrap()
     |> @js.Value::cast_from
     |> @js.Value::cast
   img.inner().set_src("images/enemies.png")
@@ -39,7 +57,12 @@ let enemy : Image = {
 
 ///|
 let small : Image = {
-  let img : Image = @dom.document().create_element("img")
+  let img : Image = @dom.document()
+    .create_element("img")
+    .to_html_element()
+    .unwrap()
+    .to_html_image_element()
+    .unwrap()
     |> @js.Value::cast_from
     |> @js.Value::cast
   img.inner().set_src("images/mario-small.png")
@@ -48,7 +71,12 @@ let small : Image = {
 
 ///|
 let large : Image = {
-  let img : Image = @dom.document().create_element("img")
+  let img : Image = @dom.document()
+    .create_element("img")
+    .to_html_element()
+    .unwrap()
+    .to_html_image_element()
+    .unwrap()
     |> @js.Value::cast_from
     |> @js.Value::cast
   img.inner().set_src("images/mario-large.png")
@@ -57,7 +85,12 @@ let large : Image = {
 
 ///|
 let panel : Image = {
-  let img : Image = @dom.document().create_element("img")
+  let img : Image = @dom.document()
+    .create_element("img")
+    .to_html_element()
+    .unwrap()
+    .to_html_image_element()
+    .unwrap()
     |> @js.Value::cast_from
     |> @js.Value::cast
   img.inner().set_src("images/panel.png")
@@ -66,7 +99,12 @@ let panel : Image = {
 
 ///|
 let ground : Image = {
-  let img : Image = @dom.document().create_element("img")
+  let img : Image = @dom.document()
+    .create_element("img")
+    .to_html_element()
+    .unwrap()
+    .to_html_image_element()
+    .unwrap()
     |> @js.Value::cast_from
     |> @js.Value::cast
   img.inner().set_src("images/ground.png")
@@ -75,7 +113,12 @@ let ground : Image = {
 
 ///|
 let chunk : Image = {
-  let img : Image = @dom.document().create_element("img")
+  let img : Image = @dom.document()
+    .create_element("img")
+    .to_html_element()
+    .unwrap()
+    .to_html_image_element()
+    .unwrap()
     |> @js.Value::cast_from
     |> @js.Value::cast
   img.inner().set_src("images/chunks.png")
@@ -84,7 +127,12 @@ let chunk : Image = {
 
 ///|
 let score : Image = {
-  let img : Image = @dom.document().create_element("img")
+  let img : Image = @dom.document()
+    .create_element("img")
+    .to_html_element()
+    .unwrap()
+    .to_html_image_element()
+    .unwrap()
     |> @js.Value::cast_from
     |> @js.Value::cast
   img.inner().set_src("images/score.png")

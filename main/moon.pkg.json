@@ -1,12 +1,6 @@
 {
   "warn-list": "-4",
   "import": [
-    "Yoorkin/rabbit-tea/dom",
-    "rami3l/js-ffi/js",
-    "mario/utils",
-    "mario/actors",
-    "mario/sprite",
-    "mario/viewport",
     "mario/object"
   ],
   "is-main": true
