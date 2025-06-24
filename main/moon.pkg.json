@@ -4,7 +4,8 @@
     "Yoorkin/rabbit-tea/dom",
     "rami3l/js-ffi/js",
     "mario/utils",
-    "mario/actors"
+    "mario/actors",
+    "mario/sprite"
   ],
   "is-main": true
 }

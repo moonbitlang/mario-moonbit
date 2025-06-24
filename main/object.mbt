@@ -338,7 +338,7 @@ fn evolve_enemy(
 fn rev_dir(o : Object, t : Enemy, s : Sprite) -> Unit {
   reverse_left_right(o)
   let old_params = s.params
-  transform_enemy(t, s, o.dir)
+  s.transform_enemy(t, o.dir)
   normalize_pos(o.pos, old_params, s.params)
 }
 
@@ -459,9 +459,9 @@ fn check_collision(c1 : Collidable, c2 : Collidable) -> @utils.Dir2d? {
 fn kill(collid : Collidable) -> List[Particle] {
   match collid {
     { target: Enemy(t), object: o, .. } => {
-      let pos = { x: o.pos.x, y: o.pos.y }
+      let pos = XY::make(o.pos.x, o.pos.y)
       let score = if o.score > 0 {
-        @list.empty().add(make_score(o.score, pos))
+        @list.empty().add(Particle::make_score(o.score, pos))
       } else {
         @list.empty()
       }
@@ -469,8 +469,8 @@ fn kill(collid : Collidable) -> List[Particle] {
         Goomba =>
           @list.empty().add(
             Particle::make(
-              { x: 0.0, y: 0.0 },
-              { x: 0.0, y: 0.0 },
+              XY::make(0.0, 0.0),
+              XY::make(0.0, 0.0),
               GoombaSquish,
               pos,
             ),
@@ -482,7 +482,7 @@ fn kill(collid : Collidable) -> List[Particle] {
     { target: Block(t), object: o, .. } =>
       match t {
         Brick => {
-          let pos = { x: o.pos.x, y: o.pos.y }
+          let pos = XY::make(o.pos.x, o.pos.y)
           let p1 = Particle::make(
             XY::make(-5.0, -5.0),
             XY::make(0.0, 0.2),
@@ -514,7 +514,9 @@ fn kill(collid : Collidable) -> List[Particle] {
     { target: Item(t), object: o, .. } =>
       match t {
         Mushroom =>
-          @list.empty().add(make_score(o.score, XY::make(o.pos.x, o.pos.y)))
+          @list.empty().add(
+            Particle::make_score(o.score, XY::make(o.pos.x, o.pos.y)),
+          )
         _ => @list.empty()
       }
     _ => @list.empty()

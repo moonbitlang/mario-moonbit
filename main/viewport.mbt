@@ -57,6 +57,6 @@ fn Viewport::coord_to_viewport(viewport : Viewport, coord : XY) -> XY {
 fn Viewport::update(vpt : Viewport, ctr : XY) -> Viewport {
   let new_x = calc_viewport_point(ctr.x, vpt.v_dim.x, vpt.m_dim.x)
   let new_y = calc_viewport_point(ctr.y, vpt.v_dim.y, vpt.m_dim.y)
-  let pos = { x: new_x, y: new_y }
+  let pos = XY::make(new_x, new_y)
   { pos, v_dim: vpt.v_dim, m_dim: vpt.m_dim }
 }

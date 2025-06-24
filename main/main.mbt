@@ -17,13 +17,7 @@ let players : Ref[List[Collidable]] = @ref.new(@list.empty())
 let map_dim : XY = { x: 2400.0, y: 256.0 }
 
 ///|
-let cwidth = 512.0
-
-///|
-let cheight = 256.0
-
-///|
-let viewport : Viewport = Viewport::make({ x: cwidth, y: cheight }, map_dim)
+let viewport : Viewport = Viewport::make({ x: WIDTH, y: HEIGHT }, map_dim)
 
 ///|
 let state : St = {

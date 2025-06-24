@@ -1,5 +1,5 @@
 ///|
-struct SpriteParams {
+pub struct SpriteParams {
   max_frames : Int
   max_ticks : Int
   img_src : Image
@@ -11,7 +11,7 @@ struct SpriteParams {
 }
 
 ///|
-struct Sprite {
+pub struct Sprite {
   mut params : SpriteParams
   frame : Ref[Int]
   ticks : Ref[Int]
@@ -62,7 +62,7 @@ fn setup_sprite_(
 }
 
 ///|
-fn make_small_player(player : Player, dir1d : @utils.Dir1d) -> SpriteParams {
+fn make_small_player(player : Player, dir1d : Dir1d) -> SpriteParams {
   match (player, dir1d) {
     (Standing, Left) =>
       setup_sprite(
@@ -145,7 +145,7 @@ fn make_small_player(player : Player, dir1d : @utils.Dir1d) -> SpriteParams {
 }
 
 ///|
-fn make_large_player(player : Player, dir1d : @utils.Dir1d) -> SpriteParams {
+fn make_large_player(player : Player, dir1d : Dir1d) -> SpriteParams {
   match (player, dir1d) {
     (Standing, Left) =>
       setup_sprite(
@@ -372,7 +372,7 @@ fn make_particle(particle : Part) -> SpriteParams {
 fn make_player(
   player_size : PlayerSize,
   player : Player,
-  dir1d : @utils.Dir1d
+  dir1d : Dir1d
 ) -> SpriteParams {
   match player_size {
     Large => make_large_player(player, dir1d)
@@ -381,7 +381,7 @@ fn make_player(
 }
 
 ///|
-fn SpriteParams::make(spawn : Spawn, dir1d : @utils.Dir1d) -> SpriteParams {
+fn SpriteParams::make(spawn : Spawn, dir1d : Dir1d) -> SpriteParams {
   match spawn {
     Player(x, y) => make_player(x, y, dir1d)
     Enemy(x) => make_enemy(x, dir1d)
@@ -396,33 +396,33 @@ fn Sprite::make_(params : SpriteParams) -> Sprite {
 }
 
 ///|
-fn Sprite::make(spawn : Spawn, dir1d : @utils.Dir1d) -> Sprite {
+pub fn Sprite::make(spawn : Spawn, dir1d : Dir1d) -> Sprite {
   Sprite::make_(SpriteParams::make(spawn, dir1d))
 }
 
 ///|
-fn make_bgd() -> Sprite {
+pub fn make_bgd() -> Sprite {
   let params = setup_sprite_(backg, 1, 0, (512.0, 256.0), (0.0, 0.0))
   Sprite::make_(params)
 }
 
 ///|
-fn transform_enemy(enemy_typ : Enemy, spr : Sprite, dir : @utils.Dir1d) -> Unit {
+pub fn transform_enemy(self : Sprite, enemy_typ : Enemy, dir : Dir1d) -> Unit {
   let params = make_enemy(enemy_typ, dir)
   let img = params.img_src
-  spr.params = params
-  spr.img = img
+  self.params = params
+  self.img = img
 }
 
 ///|
-fn update_animation(spr : Sprite) -> Unit {
-  let curr_ticks = spr.ticks.val
-  if curr_ticks >= spr.params.max_ticks {
-    spr.ticks.val = 0
-    if spr.params.repeat {
-      spr.frame.val = (spr.frame.val + 1) % spr.params.max_frames
+pub fn update_animation(self : Sprite) -> Unit {
+  let curr_ticks = self.ticks.val
+  if curr_ticks >= self.params.max_ticks {
+    self.ticks.val = 0
+    if self.params.repeat {
+      self.frame.val = (self.frame.val + 1) % self.params.max_frames
     }
   } else {
-    spr.ticks.val = curr_ticks + 1
+    self.ticks.val = curr_ticks + 1
   }
 }

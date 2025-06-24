@@ -19,3 +19,14 @@ pub(all) enum Dir2d {
   East
   West
 }
+
+///|
+pub(all) struct XY {
+  mut x : Double
+  mut y : Double
+}
+
+///|
+pub fn XY::make(x : Double, y : Double) -> XY {
+  { x, y }
+}

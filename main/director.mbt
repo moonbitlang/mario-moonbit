@@ -303,7 +303,7 @@ fn update_collidable(
       render_box(spr, vpt_adj_xy.x, vpt_adj_xy.y)
     }
     if obj.vel.x != 0.0 || not(collid.target is Enemy(_)) {
-      update_animation(spr)
+      spr.update_animation()
     }
     evolved
   } else {

@@ -1,101 +1,8 @@
 ///|
-const WIDTH = 512
+const WIDTH = 512.0
 
 ///|
-const HEIGHT = 256
-
-///|
-typealias @dom.HTMLImageElement as Image
-
-///|
-let backg : Image = {
-  let img : Image = @dom.document().create_element("img")
-    |> @js.Value::cast_from
-    |> @js.Value::cast
-  img.set_src("images/background.png")
-  img
-}
-
-///|
-let block : Image = {
-  let img : Image = @dom.document().create_element("img")
-    |> @js.Value::cast_from
-    |> @js.Value::cast
-  img.set_src("images/blocks.png")
-  img
-}
-
-///|
-let items : Image = {
-  let img : Image = @dom.document().create_element("img")
-    |> @js.Value::cast_from
-    |> @js.Value::cast
-  img.set_src("images/items.png")
-  img
-}
-
-///|
-let enemy : Image = {
-  let img : Image = @dom.document().create_element("img")
-    |> @js.Value::cast_from
-    |> @js.Value::cast
-  img.set_src("images/enemies.png")
-  img
-}
-
-///|
-let small : Image = {
-  let img : Image = @dom.document().create_element("img")
-    |> @js.Value::cast_from
-    |> @js.Value::cast
-  img.set_src("images/mario-small.png")
-  img
-}
-
-///|
-let large : Image = {
-  let img : Image = @dom.document().create_element("img")
-    |> @js.Value::cast_from
-    |> @js.Value::cast
-  img.set_src("images/mario-large.png")
-  img
-}
-
-///|
-let panel : Image = {
-  let img : Image = @dom.document().create_element("img")
-    |> @js.Value::cast_from
-    |> @js.Value::cast
-  img.set_src("images/panel.png")
-  img
-}
-
-///|
-let ground : Image = {
-  let img : Image = @dom.document().create_element("img")
-    |> @js.Value::cast_from
-    |> @js.Value::cast
-  img.set_src("images/ground.png")
-  img
-}
-
-///|
-let chunk : Image = {
-  let img : Image = @dom.document().create_element("img")
-    |> @js.Value::cast_from
-    |> @js.Value::cast
-  img.set_src("images/chunks.png")
-  img
-}
-
-///|
-let score : Image = {
-  let img : Image = @dom.document().create_element("img")
-    |> @js.Value::cast_from
-    |> @js.Value::cast
-  img.set_src("images/score.png")
-  img
-}
+const HEIGHT = 256.0
 
 ///|
 fn game_win() -> Unit {
@@ -195,14 +102,14 @@ let context : @dom.CanvasRenderingContext2D = canvas.get_context("2d")
 
 ///|
 fn clear_canvas() -> Unit {
-  context.clear_rect(0.0, 0.0, WIDTH.to_double(), HEIGHT.to_double())
+  context.clear_rect(0.0, 0.0, WIDTH, HEIGHT)
 }
 
 ///|
 fn hud(score : Int, coins : Int) -> Unit {
   context.set_fill_style(@js.Union3::from0("black"))
   context.set_font("10px 'Press Start 2P'")
-  context.fill_text("Score: \{score}", WIDTH.to_double() - 140, 18)
+  context.fill_text("Score: \{score}", WIDTH - 140, 18)
   context.fill_text("Coins: \{coins}", 120, 18)
 }
 

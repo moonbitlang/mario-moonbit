@@ -1,22 +1,17 @@
 ///|
-struct ParticleParams {
+pub struct ParticleParams {
   sprite : Sprite
   lifetime : Int
 }
 
 ///|
-struct Particle {
+pub struct Particle {
   params : ParticleParams
   pos : XY
   vel : XY
   acc : XY
   mut kill : Bool
   mut life : Int
-}
-
-///|
-fn XY::make(x : Double, y : Double) -> XY {
-  { x, y }
 }
 
 ///|
@@ -34,13 +29,13 @@ fn ParticleParams::with_type(part : Part) -> ParticleParams {
 }
 
 ///|
-fn Particle::make(vel : XY, acc : XY, part : Part, pos : XY) -> Particle {
+pub fn Particle::make(vel : XY, acc : XY, part : Part, pos : XY) -> Particle {
   let params = ParticleParams::with_type(part)
   { params, pos, vel, acc, kill: false, life: params.lifetime }
 }
 
 ///|
-fn make_score(score : Int, pos : XY) -> Particle {
+pub fn Particle::make_score(score : Int, pos : XY) -> Particle {
   let t = match score {
     100 => Part::Score100
     200 => Score200
@@ -71,7 +66,7 @@ fn Particle::update_pos(self : Particle) -> Unit {
 }
 
 ///|
-fn Particle::process(self : Particle) -> Unit {
+pub fn Particle::process(self : Particle) -> Unit {
   self.life = self.life - 1
   if self.life == 0 {
     self.kill = true
