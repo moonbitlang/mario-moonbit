@@ -13,14 +13,36 @@ fn process_collision(
   state : St
 ) -> (Collidable?, Collidable?) {
   match (c1, c2, dir) {
-    (Player(_, _, o1), Enemy(typ, s2, o2), South)
-    | (Enemy(typ, s2, o2), Player(_, _, o1), North) =>
-      player_attack_enemy(o1, typ, s2, o2, state)
-    (Player(_, _, o1), Enemy(t2, s2, o2), _)
-    | (Enemy(t2, s2, o2), Player(_, _, o1), _) =>
-      enemy_attack_player(o1, t2, s2, o2)
-    (Player(_, _, o1), Item(t2, _, o2), _)
-    | (Item(t2, _, o2), Player(_, _, o1), _) =>
+    (
+      { target: Player(_), object: o1, .. },
+      { target: Enemy(typ), sprite: s2, object: o2 },
+      South,
+    )
+    | (
+      { target: Enemy(typ), sprite: s2, object: o2 },
+      { target: Player(_), sprite: _, object: o1 },
+      North,
+    ) => player_attack_enemy(o1, typ, s2, o2, state)
+    (
+      { target: Player(_), sprite: _, object: o1 },
+      { target: Enemy(t2), sprite: s2, object: o2 },
+      _,
+    )
+    | (
+      { target: Enemy(t2), sprite: s2, object: o2 },
+      { target: Player(_), sprite: _, object: o1 },
+      _,
+    ) => enemy_attack_player(o1, t2, s2, o2)
+    (
+      { target: Player(_), sprite: _, object: o1 },
+      { target: Item(t2), sprite: _, object: o2 },
+      _,
+    )
+    | (
+      { target: Item(t2), sprite: _, object: o2 },
+      { target: Player(_), sprite: _, object: o1 },
+      _,
+    ) =>
       match t2 {
         Mushroom => {
           dec_health(o2)
@@ -42,10 +64,21 @@ fn process_collision(
           (None, None)
         }
       }
-    (Enemy(t1, s1, o1), Enemy(t2, s2, o2), dir) =>
-      col_enemy_enemy(t1, s1, o1, t2, s2, o2, dir)
-    (Enemy(t1, s1, o1), Block(t2, _, o2), East)
-    | (Enemy(t1, s1, o1), Block(t2, _, o2), West) =>
+    (
+      { target: Enemy(t1), sprite: s1, object: o1 },
+      { target: Enemy(t2), sprite: s2, object: o2 },
+      dir,
+    ) => col_enemy_enemy(t1, s1, o1, t2, s2, o2, dir)
+    (
+      { target: Enemy(t1), sprite: s1, object: o1 },
+      { target: Block(t2), sprite: _, object: o2 },
+      East,
+    )
+    | (
+      { target: Enemy(t1), sprite: s1, object: o1 },
+      { target: Block(t2), sprite: _, object: o2 },
+      West,
+    ) =>
       match (t1, t2) {
         (RKoopaShell, Brick) | (GKoopaShell, Brick) => {
           dec_health(o2)
@@ -63,15 +96,21 @@ fn process_collision(
           (None, None)
         }
       }
-    (Item(_, _, o1), Block(_), East) | (Item(_, _, o1), Block(_), West) => {
+    ({ target: Item(_), object: o1, .. }, { target: Block(_), .. }, East)
+    | ({ target: Item(_), object: o1, .. }, { target: Block(_), .. }, West) => {
       reverse_left_right(o1)
       (None, None)
     }
-    (Enemy(_, _, o1), Block(_), _) | (Item(_, _, o1), Block(_), _) => {
+    ({ target: Enemy(_), object: o1, .. }, { target: Block(_), .. }, _)
+    | ({ target: Item(_), object: o1, .. }, { target: Block(_), .. }, _) => {
       collide_block(true, dir, o1)
       (None, None)
     }
-    (Player(t1, _, o1), Block(t, _, o2), North) =>
+    (
+      { target: Player(t1, _), object: o1, .. },
+      { target: Block(t), object: o2, .. },
+      North,
+    ) =>
       match t {
         QBlock(typ) => {
           let updated_block = evolve_block(o2)
@@ -98,7 +137,7 @@ fn process_collision(
           (None, None)
         }
       }
-    (Player(_, _, o1), Block(t, _, _), _) =>
+    ({ target: Player(_), object: o1, .. }, { target: Block(t), .. }, _) =>
       match t {
         Panel => {
           state.game_over = true

@@ -186,10 +186,10 @@ fn broad_phase(
   all_collids : List[Collidable],
   state : St
 ) -> List[Collidable] {
-  let obj = collid.get_obj()
+  let obj = collid.object
   all_collids.filter(fn(_c) {
     state.vpt.in_viewport(obj.pos) ||
-    collid is Player(_) ||
+    collid.target is Player(_) ||
     state.vpt.out_of_viewport_below(obj.pos.y)
   })
 }
@@ -213,12 +213,12 @@ fn narrow_phase(
     match cs {
       Empty => acc
       More(h, tail=t) => {
-        let c_obj = c.get_obj()
+        let c_obj = c.object
         let new_objs = if c != h {
           match check_collision(c, h) {
             None => (Option::None, Option::None)
             Some(dir) =>
-              if h.get_obj().id != c_obj.id {
+              if h.object.id != c_obj.id {
                 process_collision(dir, c, h, state)
               } else {
                 (None, None)
@@ -259,8 +259,8 @@ fn check_collisions(
   all_collids : List[Collidable],
   state : St
 ) -> List[Collidable] {
-  match collid {
-    Block(_, _, _) => @list.empty()
+  match collid.target {
+    Block(_) => @list.empty()
     _ => {
       let broad = broad_phase(collid, all_collids, state)
       narrow_phase(collid, broad, state)
@@ -284,12 +284,12 @@ fn update_collidable(
   collid : Collidable,
   all_collids : List[Collidable]
 ) -> List[Collidable] {
-  let obj = collid.get_obj()
-  let spr = collid.get_sprite()
+  let obj = collid.object
+  let spr = collid.sprite
   obj.invuln = if obj.invuln > 0 { obj.invuln - 1 } else { 0 }
   // (* Prevent position from being updated outside of viewport *)
   let viewport_filter = state.vpt.in_viewport(obj.pos) ||
-    collid is Player(_) ||
+    collid.target is Player(_) ||
     state.vpt.out_of_viewport_below(obj.pos.y)
   if not(obj.kill) && viewport_filter {
     obj.grounded = false
@@ -302,7 +302,7 @@ fn update_collidable(
     if check_bbox_enabled() {
       render_box(spr, vpt_adj_xy.x, vpt_adj_xy.y)
     }
-    if obj.vel.x != 0.0 || not(collid is Enemy(_)) {
+    if obj.vel.x != 0.0 || not(collid.target is Enemy(_)) {
       update_animation(spr)
     }
     evolved
@@ -359,14 +359,14 @@ fn run_update_collid(
   all_collids : List[Collidable]
 ) -> Collidable {
   match collid {
-    Player(_, s, o) as p => {
+    { target: Player(_, typ), sprite: s, object: o } as p => {
       let keys = translate_keys()
       o.crouch = false
       let player = match update_player(o, keys) {
         None => p
         Some((new_typ, new_spr)) => {
           normalize_pos(o.pos, s.params, new_spr.params)
-          Player(new_typ, new_spr, o)
+          { target: Player(new_typ, typ), sprite: new_spr, object: o }
         }
       }
       let evolved = update_collidable(state, player, all_collids)
@@ -374,7 +374,7 @@ fn run_update_collid(
       player
     }
     _ => {
-      let obj = collid.get_obj()
+      let obj = collid.object
       let evolved = update_collidable(state, collid, all_collids)
       if not(obj.kill) {
         collid_objs.val = (collid_objs.val + evolved).add(collid)
@@ -410,7 +410,7 @@ fn update_helper(
   parts : List[Particle]
 ) -> Unit {
   if state.game_over == true {
-    match players.val.find(fn(p) { not(p.get_obj().kill) }) {
+    match players.val.find(fn(p) { not(p.object.kill) }) {
       None => game_lose()
       Some(_) => game_win()
     }
@@ -430,15 +430,15 @@ fn update_helper(
       which.val = not(which.val)
       run_update_collid(state, p, objs)
     })
-    match players.val.find(fn(p) { not(p.get_obj().kill) }) {
+    match players.val.find(fn(p) { not(p.object.kill) }) {
       None => {
         state.game_over = true
         game_lose()
       }
       Some(p) => {
-        let a = p.get_obj().pos
-        let p = players.val.rev().find(fn(p) { not(p.get_obj().kill) }).unwrap()
-        let b = p.get_obj().pos
+        let a = p.object.pos
+        let p = players.val.rev().find(fn(p) { not(p.object.kill) }).unwrap()
+        let b = p.object.pos
         let c = XY::make((a.x + b.x) * 0.5, (a.y + b.y) * 0.5)
         state.vpt = state.vpt.update(c)
         let _ = objs.map(fn(obj) { run_update_collid(state, obj, objs) })

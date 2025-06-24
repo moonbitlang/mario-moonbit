@@ -69,7 +69,7 @@ fn start() -> Unit {
     player_count, level_width, level_height,
   )
   players.val = players_list
-  state.vpt = viewport.update(players.val.unsafe_nth(0).get_obj().pos)
+  state.vpt = viewport.update(players.val.unsafe_nth(0).object.pos)
   state.score = 0
   state.coins = 0
   state.multiplier = 1

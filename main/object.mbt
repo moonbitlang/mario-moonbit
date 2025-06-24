@@ -54,11 +54,10 @@ struct Object {
 }
 
 ///|
-enum Collidable {
-  Player(PlayerSize, Sprite, Object)
-  Enemy(Enemy, Sprite, Object)
-  Item(Item, Sprite, Object)
-  Block(Block, Sprite, Object)
+struct Collidable {
+  target : Spawn
+  sprite : Sprite
+  object : Object
 }
 
 ///|
@@ -154,35 +153,21 @@ fn makeobj(
 
 ///|
 fn spawn(spawnable : Spawn, posx : Double, posy : Double) -> Collidable {
-  let (spr, obj) = makeobj(new_id(), Left, spawnable, posx, posy)
+  let (sprite, object) = makeobj(new_id(), Left, spawnable, posx, posy)
   match spawnable {
-    Player(typ, _) => Player(typ, spr, obj)
-    Enemy(t) => {
-      obj.set_vel_to_speed()
-      Enemy(t, spr, obj)
+    Player(_) => { target: spawnable, sprite, object }
+    Enemy(_) => {
+      object.set_vel_to_speed()
+      { target: spawnable, sprite, object }
     }
-    Item(t) => Item(t, spr, obj)
-    Block(t) => Block(t, spr, obj)
-  }
-}
-
-///|
-fn Collidable::get_sprite(self : Collidable) -> Sprite {
-  match self {
-    Player(_, s, _) | Enemy(_, s, _) | Item(_, s, _) | Block(_, s, _) => s
-  }
-}
-
-///|
-fn Collidable::get_obj(self : Collidable) -> Object {
-  match self {
-    Player(_, _, o) | Enemy(_, _, o) | Item(_, _, o) | Block(_, _, o) => o
+    Item(_) => { target: spawnable, sprite, object }
+    Block(_) => { target: spawnable, sprite, object }
   }
 }
 
 ///|
 impl Eq for Collidable with op_equal(self : Collidable, optb : Collidable) -> Bool {
-  return self.get_obj().id == optb.get_obj().id
+  return self.object.id == optb.object.id
 }
 
 ///|
@@ -328,7 +313,7 @@ fn evolve_enemy(
         obj.pos.y,
       )
       normalize_pos(new_obj.pos, spr.params, new_spr.params)
-      Some(Enemy(GKoopaShell, new_spr, new_obj))
+      Some({ target: Enemy(GKoopaShell), sprite: new_spr, object: new_obj })
     }
     RKoopa => {
       let (new_spr, new_obj) = makeobj(
@@ -339,7 +324,7 @@ fn evolve_enemy(
         obj.pos.y,
       )
       normalize_pos(new_obj.pos, spr.params, new_spr.params)
-      Some(Enemy(RKoopaShell, new_spr, new_obj))
+      Some({ target: Enemy(RKoopaShell), sprite: new_spr, object: new_obj })
     }
     GKoopaShell | RKoopaShell => {
       obj.dir = player_dir
@@ -387,7 +372,7 @@ fn evolve_block(obj : Object) -> Collidable {
     obj.pos.x,
     obj.pos.y,
   )
-  Block(QBlockUsed, new_spr, new_obj)
+  { target: Block(QBlockUsed), sprite: new_spr, object: new_obj }
 }
 
 // (*Used for spawning items above question mark blocks*)
@@ -395,8 +380,8 @@ fn evolve_block(obj : Object) -> Collidable {
 ///|
 fn spawn_above(player_dir : Dir1d, obj : Object, typ : Item) -> Collidable {
   let item = spawn(Item(typ), obj.pos.x, obj.pos.y)
-  let item_obj = item.get_obj()
-  item_obj.pos.y = item_obj.pos.y - item.get_sprite().params.frame_size.1
+  let item_obj = item.object
+  item_obj.pos.y = item_obj.pos.y - item.sprite.params.frame_size.1
   item_obj.dir = opposite_dir(player_dir)
   item_obj.set_vel_to_speed()
   item
@@ -406,8 +391,8 @@ fn spawn_above(player_dir : Dir1d, obj : Object, typ : Item) -> Collidable {
 
 ///|
 fn get_aabb(obj : Collidable) -> AABB {
-  let spr = obj.get_sprite().params
-  let obj = obj.get_obj()
+  let spr = obj.sprite.params
+  let obj = obj.object
   let (offx, offy) = spr.bbox_offset
   let (box, boy) = (obj.pos.x + offx, obj.pos.y + offy)
   let (sx, sy) = spr.bbox_size
@@ -419,12 +404,14 @@ fn get_aabb(obj : Collidable) -> AABB {
 
 ///|
 fn col_bypass(c1 : Collidable, c2 : Collidable) -> Bool {
-  let o1 = c1.get_obj()
-  let o2 = c2.get_obj()
+  let o1 = c1.object
+  let o2 = c2.object
   let ctypes = match (c1, c2) {
-    (Item(_, _, _), Enemy(_, _, _)) => true
-    (Enemy(_, _, _), Item(_, _, _)) | (Item(_, _, _), Item(_, _, _)) => true
-    (Player(_, _, o1), Enemy(_, _, _)) => o1.invuln > 0
+    ({ target: Item(_), .. }, { target: Enemy(_), .. }) => true
+    ({ target: Enemy(_), .. }, { target: Item(_), .. })
+    | ({ target: Item(_), .. }, { target: Item(_), .. }) => true
+    ({ target: Player(_), .. }, { target: Enemy(_), .. }) =>
+      c1.object.invuln > 0
     _ => false
   }
   o1.kill || o2.kill || ctypes
@@ -438,7 +425,7 @@ fn col_bypass(c1 : Collidable, c2 : Collidable) -> Bool {
 fn check_collision(c1 : Collidable, c2 : Collidable) -> Dir2d? {
   let b1 = get_aabb(c1)
   let b2 = get_aabb(c2)
-  let o1 = c1.get_obj()
+  let o1 = c1.object
   if col_bypass(c1, c2) {
     Option::None
   } else {
@@ -475,7 +462,7 @@ fn check_collision(c1 : Collidable, c2 : Collidable) -> Dir2d? {
 ///|
 fn kill(collid : Collidable) -> List[Particle] {
   match collid {
-    Enemy(t, _, o) => {
+    { target: Enemy(t), object: o, .. } => {
       let pos = { x: o.pos.x, y: o.pos.y }
       let score = if o.score > 0 {
         @list.empty().add(make_score(o.score, pos))
@@ -496,7 +483,7 @@ fn kill(collid : Collidable) -> List[Particle] {
       }
       score + remains
     }
-    Block(t, _, o) =>
+    { target: Block(t), object: o, .. } =>
       match t {
         Brick => {
           let pos = { x: o.pos.x, y: o.pos.y }
@@ -528,7 +515,7 @@ fn kill(collid : Collidable) -> List[Particle] {
         }
         _ => @list.empty()
       }
-    Item(t, _, o) =>
+    { target: Item(t), object: o, .. } =>
       match t {
         Mushroom =>
           @list.empty().add(make_score(o.score, XY::make(o.pos.x, o.pos.y)))
