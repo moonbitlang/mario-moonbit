@@ -200,13 +200,15 @@ fn clear_canvas() -> Unit {
 
 ///|
 fn hud(score : Int, coins : Int) -> Unit {
-  context.set_font("10 px 'Press Start 2P'")
+  context.set_fill_style(@js.Union3::from0("black"))
+  context.set_font("10px 'Press Start 2P'")
   context.fill_text("Score: \{score}", WIDTH.to_double() - 140, 18)
   context.fill_text("Coins: \{coins}", 120, 18)
 }
 
 ///|
 fn fps(fps_val : Int) -> Unit {
-  context.set_font("10 px 'Press Start 2P'")
+  context.set_fill_style(@js.Union3::from0("black"))
+  context.set_font("10px 'Press Start 2P'")
   context.fill_text("FPS: \{fps_val}", 10, 18)
 }
