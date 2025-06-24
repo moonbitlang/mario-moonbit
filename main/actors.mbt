@@ -1,18 +1,4 @@
 ///|
-enum Dir1d {
-  Left
-  Right
-} derive(Eq)
-
-///|
-enum Dir2d {
-  North
-  South
-  East
-  West
-}
-
-///|
 struct XY {
   mut x : Double
   mut y : Double

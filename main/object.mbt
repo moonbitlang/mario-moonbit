@@ -45,7 +45,7 @@ struct Object {
   id : Int
   mut jumping : Bool
   mut grounded : Bool
-  mut dir : Dir1d
+  mut dir : @utils.Dir1d
   mut invuln : Int
   mut kill : Bool
   mut health : Int
@@ -127,7 +127,7 @@ fn new_id() -> Int {
 ///|
 fn makeobj(
   id : Int,
-  dir : Dir1d,
+  dir : @utils.Dir1d,
   spawn : Spawn,
   posx : Double,
   posy : Double
@@ -270,7 +270,7 @@ fn process_obj(obj : Object, mapy : Double) -> Unit {
 }
 
 ///|
-fn collide_block(check_x : Bool, dir : Dir2d, obj : Object) -> Unit {
+fn collide_block(check_x : Bool, dir : @utils.Dir2d, obj : Object) -> Unit {
   match dir {
     North => obj.vel.y = -0.001
     South => {
@@ -283,22 +283,14 @@ fn collide_block(check_x : Bool, dir : Dir2d, obj : Object) -> Unit {
 }
 
 ///|
-fn opposite_dir(dir : Dir1d) -> Dir1d {
-  match dir {
-    Left => Right
-    Right => Left
-  }
-}
-
-///|
 fn reverse_left_right(obj : Object) -> Unit {
   obj.vel.x = -obj.vel.x
-  obj.dir = opposite_dir(obj.dir)
+  obj.dir = obj.dir.opposite_dir()
 }
 
 ///|
 fn evolve_enemy(
-  player_dir : Dir1d,
+  player_dir : @utils.Dir1d,
   typ : Enemy,
   spr : Sprite,
   obj : Object
@@ -378,11 +370,15 @@ fn evolve_block(obj : Object) -> Collidable {
 // (*Used for spawning items above question mark blocks*)
 
 ///|
-fn spawn_above(player_dir : Dir1d, obj : Object, typ : Item) -> Collidable {
+fn spawn_above(
+  player_dir : @utils.Dir1d,
+  obj : Object,
+  typ : Item
+) -> Collidable {
   let item = spawn(Item(typ), obj.pos.x, obj.pos.y)
   let item_obj = item.object
   item_obj.pos.y = item_obj.pos.y - item.sprite.params.frame_size.1
-  item_obj.dir = opposite_dir(player_dir)
+  item_obj.dir = player_dir.opposite_dir()
   item_obj.set_vel_to_speed()
   item
 }
@@ -422,7 +418,7 @@ fn col_bypass(c1 : Collidable, c2 : Collidable) -> Bool {
 // *a second collision does not occur again immediately. This causes snapping.*)
 
 ///|
-fn check_collision(c1 : Collidable, c2 : Collidable) -> Dir2d? {
+fn check_collision(c1 : Collidable, c2 : Collidable) -> @utils.Dir2d? {
   let b1 = get_aabb(c1)
   let b2 = get_aabb(c2)
   let o1 = c1.object
@@ -439,17 +435,17 @@ fn check_collision(c1 : Collidable, c2 : Collidable) -> Dir2d? {
       if ox >= oy {
         if vy > 0.0 {
           o1.pos.y = o1.pos.y + oy
-          Option::Some(Dir2d::North)
+          Option::Some(North)
         } else {
           o1.pos.y = o1.pos.y - oy
-          Option::Some(Dir2d::South)
+          Option::Some(South)
         }
       } else if vx > 0.0 {
         o1.pos.x = o1.pos.x + ox
-        Option::Some(Dir2d::West)
+        Option::Some(West)
       } else {
         o1.pos.x = o1.pos.x - ox
-        Option::Some(Dir2d::East)
+        Option::Some(East)
       }
     } else {
       Option::None

@@ -62,7 +62,7 @@ fn setup_sprite_(
 }
 
 ///|
-fn make_small_player(player : Player, dir1d : Dir1d) -> SpriteParams {
+fn make_small_player(player : Player, dir1d : @utils.Dir1d) -> SpriteParams {
   match (player, dir1d) {
     (Standing, Left) =>
       setup_sprite(
@@ -145,7 +145,7 @@ fn make_small_player(player : Player, dir1d : Dir1d) -> SpriteParams {
 }
 
 ///|
-fn make_large_player(player : Player, dir1d : Dir1d) -> SpriteParams {
+fn make_large_player(player : Player, dir1d : @utils.Dir1d) -> SpriteParams {
   match (player, dir1d) {
     (Standing, Left) =>
       setup_sprite(
@@ -228,7 +228,7 @@ fn make_large_player(player : Player, dir1d : Dir1d) -> SpriteParams {
 }
 
 ///|
-fn make_enemy(enemy_ : Enemy, dir1d : Dir1d) -> SpriteParams {
+fn make_enemy(enemy_ : Enemy, dir1d : @utils.Dir1d) -> SpriteParams {
   match (enemy_, dir1d) {
     (Goomba, _) =>
       setup_sprite(
@@ -372,7 +372,7 @@ fn make_particle(particle : Part) -> SpriteParams {
 fn make_player(
   player_size : PlayerSize,
   player : Player,
-  dir1d : Dir1d
+  dir1d : @utils.Dir1d
 ) -> SpriteParams {
   match player_size {
     Large => make_large_player(player, dir1d)
@@ -381,7 +381,7 @@ fn make_player(
 }
 
 ///|
-fn SpriteParams::make(spawn : Spawn, dir1d : Dir1d) -> SpriteParams {
+fn SpriteParams::make(spawn : Spawn, dir1d : @utils.Dir1d) -> SpriteParams {
   match spawn {
     Player(x, y) => make_player(x, y, dir1d)
     Enemy(x) => make_enemy(x, dir1d)
@@ -396,7 +396,7 @@ fn Sprite::make_(params : SpriteParams) -> Sprite {
 }
 
 ///|
-fn Sprite::make(spawn : Spawn, dir1d : Dir1d) -> Sprite {
+fn Sprite::make(spawn : Spawn, dir1d : @utils.Dir1d) -> Sprite {
   Sprite::make_(SpriteParams::make(spawn, dir1d))
 }
 
@@ -407,7 +407,7 @@ fn make_bgd() -> Sprite {
 }
 
 ///|
-fn transform_enemy(enemy_typ : Enemy, spr : Sprite, dir : Dir1d) -> Unit {
+fn transform_enemy(enemy_typ : Enemy, spr : Sprite, dir : @utils.Dir1d) -> Unit {
   let params = make_enemy(enemy_typ, dir)
   let img = params.img_src
   spr.params = params

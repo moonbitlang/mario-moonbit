@@ -2,7 +2,8 @@
   "warn-list": "-4",
   "import": [
     "Yoorkin/rabbit-tea/dom",
-    "rami3l/js-ffi/js"
+    "rami3l/js-ffi/js",
+    "mario/utils"
   ],
   "is-main": true
 }

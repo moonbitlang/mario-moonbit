@@ -7,7 +7,7 @@
 
 ///|
 fn process_collision(
-  dir : Dir2d,
+  dir : @utils.Dir2d,
   c1 : Collidable,
   c2 : Collidable,
   state : St

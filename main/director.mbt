@@ -139,7 +139,7 @@ fn col_enemy_enemy(
   t2 : Enemy,
   s2 : Sprite,
   o2 : Object,
-  dir : Dir2d
+  dir : @utils.Dir2d
 ) -> (Collidable?, Collidable?) {
   match (t1, t2) {
     (GKoopaShell, GKoopaShell)
