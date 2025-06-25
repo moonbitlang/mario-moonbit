@@ -44,14 +44,11 @@ fn generate_panel(blockw : Double, blockh : Double) -> Collidable {
 fn convert_to_block_obj(
   lst : List[(Int, (Double, Double))]
 ) -> List[Collidable] {
-  match lst {
-    Empty => @list.empty()
-    More(h, tail=t) => {
-      let sblock_typ = choose_sblock_typ(h.0)
-      let ob = spawn(Block(sblock_typ), h.1.0, h.1.1)
-      @list.empty().add(ob) + convert_to_block_obj(t)
-    }
-  }
+  lst.map(h => {
+    let sblock_typ = choose_sblock_typ(h.0)
+    let ob = spawn(Block(sblock_typ), h.1.0, h.1.1)
+    ob
+  })
 }
 
 ///| (*Converts the obj_coord list called by generate_enemies to a list of objects
@@ -60,27 +57,21 @@ fn convert_to_block_obj(
 fn convert_to_enemy_obj(
   lst : List[(Int, (Double, Double))]
 ) -> List[Collidable] {
-  match lst {
-    Empty => @list.empty()
-    More(h, tail=t) => {
-      let senemy_typ = choose_enemy_typ(h.0)
-      let ob = spawn(Enemy(senemy_typ), h.1.0, h.1.1)
-      @list.empty().add(ob) + convert_to_enemy_obj(t)
-    }
-  }
+  lst.map(h => {
+    let senemy_typ = choose_enemy_typ(h.0)
+    let ob = spawn(Enemy(senemy_typ), h.1.0, h.1.1)
+    ob
+  })
 }
 
 ///| (*Converts the list of coordinates into a list of Coin objects*)
 ///
 fn convert_to_coin_obj(lst : List[(Int, (Double, Double))]) -> List[Collidable] {
-  match lst {
-    Empty => @list.empty()
-    More(h, tail=t) => {
-      let sitem_typ = Item::Coin
-      let ob = spawn(Item(sitem_typ), h.1.0, h.1.1)
-      @list.empty().add(ob) + convert_to_coin_obj(t)
-    }
-  }
+  lst.map(h => {
+    let sitem_typ = Item::Coin
+    let ob = spawn(Item(sitem_typ), h.1.0, h.1.1)
+    ob
+  })
 }
 
 ///| (*Procedurally generates a list of collidables given canvas width, height and
