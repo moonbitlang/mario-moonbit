@@ -88,18 +88,24 @@ fn convert_to_coin_obj(lst : List[(Int, (Double, Double))]) -> List[Collidable] 
 ///  * block form, not pixels.*)
 ///
 fn generate_helper(blockw : Double, blockh : Double) -> List[Collidable] {
-  let block_locs = generate_block_locs(blockw, blockh, 0.0, 0.0, @list.empty())
+  let block_locs = generate_block_locs(blockw, blockh, 0.0, 0.0)
   let converted_block_locs = trim_edges(
     convert_list(block_locs),
     blockw,
     blockh,
   )
   let obj_converted_block_locs = convert_to_block_obj(converted_block_locs)
-  let ground_blocks = generate_ground(blockw, blockh, 0.0, @list.empty())
+  let ground_blocks = generate_ground(blockw, blockh, 0.0)
   let obj_converted_ground_blocks = convert_to_block_obj(ground_blocks)
   let block_locations = block_locs + ground_blocks
   let all_blocks = obj_converted_block_locs + obj_converted_ground_blocks
-  let enemy_locs = generate_enemies(blockw, blockh, 0.0, 0.0, block_locations)
+  let enemy_locs = generate_enemies(
+    blockw,
+    blockh,
+    0.0,
+    0.0,
+    acc=block_locations,
+  )
   let obj_converted_enemies = convert_to_enemy_obj(enemy_locs)
   let coin_locs = generate_coins(converted_block_locs)
   let undup_coin_locs = trim_edges(

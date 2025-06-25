@@ -30,11 +30,3 @@ pub(all) struct XY {
 pub fn XY::make(x : Double, y : Double) -> XY {
   { x, y }
 }
-
-///|
-pub(all) enum Control {
-  Left
-  Right
-  Up
-  Down
-}

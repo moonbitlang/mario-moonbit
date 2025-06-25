@@ -1,3 +1,11 @@
+///|
+priv enum Control {
+  Left
+  Right
+  Up
+  Down
+}
+
 // (* Represents the values of relevant key bindings. *)
 
 ///|

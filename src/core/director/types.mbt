@@ -5,7 +5,7 @@ typealias @actors.(Enemy, Item, PlayerSize, Spawn, Block)
 typealias @sprite.(Sprite, SpriteParams, Particle)
 
 ///|
-typealias @utils.(XY, Control)
+typealias @utils.XY
 
 ///|
 typealias @viewport.Viewport

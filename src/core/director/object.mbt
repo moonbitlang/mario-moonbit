@@ -61,13 +61,11 @@ priv struct Collidable {
 }
 
 ///|
-fn setup_objp2(has_gravity : Bool, speed : Double) -> ObjectParams {
+fn setup_objp(
+  has_gravity~ : Bool = true,
+  speed~ : Double = 1.0
+) -> ObjectParams {
   { has_gravity, speed }
-}
-
-///|
-fn setup_objp() -> ObjectParams {
-  setup_objp2(true, 1.0)
 }
 
 ///|
@@ -81,14 +79,14 @@ fn set_vel_to_speed(self : Object) -> Unit {
 
 ///|
 fn makeplayer() -> ObjectParams {
-  setup_objp2(true, player_speed)
+  setup_objp(speed=player_speed)
 }
 
 ///|
 fn makeitem(item : Item) -> ObjectParams {
   match item {
     Mushroom => setup_objp()
-    Coin => setup_objp2(false, 1.0)
+    Coin => setup_objp(has_gravity=false)
   }
 }
 
@@ -98,14 +96,14 @@ fn makeenemy(enemy : Enemy) -> ObjectParams {
     Goomba => setup_objp()
     GKoopa => setup_objp()
     RKoopa => setup_objp()
-    GKoopaShell => setup_objp2(true, 3.0)
-    RKoopaShell => setup_objp2(true, 3.0)
+    GKoopaShell => setup_objp(speed=3.0)
+    RKoopaShell => setup_objp(speed=3.0)
   }
 }
 
 ///|
 fn makeblock() -> ObjectParams {
-  setup_objp2(false, 1.0)
+  setup_objp(has_gravity=false)
 }
 
 ///|

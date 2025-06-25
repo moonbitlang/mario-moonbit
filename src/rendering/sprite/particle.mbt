@@ -1,4 +1,19 @@
 ///|
+pub(all) enum Part {
+  GoombaSquish
+  BrickChunkL
+  BrickChunkR
+  Score100
+  Score200
+  Score400
+  Score800
+  Score1000
+  Score2000
+  Score4000
+  Score8000
+}
+
+///|
 pub struct ParticleParams {
   sprite : Sprite
   priv lifetime : Int
