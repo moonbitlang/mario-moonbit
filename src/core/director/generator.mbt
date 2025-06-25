@@ -1,17 +1,19 @@
 ///| (*Converts list of locations from blocksize to pixelsize by multiplying (x,y) by
 ///  * 16.*)
 ///
-fn[T] convert_list(
-  list : List[(T, (Double, Double))]
-) -> List[(T, (Double, Double))] {
-  list.map(fn(x) { (x.0, (x.1.0 * 16.0, x.1.1 * 16.0)) })
+fn[T] convert_list(list : List[(T, (Int, Int))]) -> List[(T, (Double, Double))] {
+  list.map(fn(x) { (x.0, (x.1.0.to_double() * 16.0, x.1.1.to_double() * 16.0)) })
 }
 
 ///| (*Generates the ending item panel at the end of the level. Games ends upon
 ///  * collision with player.*)
 ///
-fn generate_panel(blockw : Double, blockh : Double) -> Collidable {
-  spawn(Block(Panel), blockw * 16.0 - 256.0, blockh * 16.0 * 2.0 / 3.0)
+fn generate_panel(blockw : Int, blockh : Int) -> Collidable {
+  spawn(
+    Block(Panel),
+    blockw.to_double() * 16.0 - 256.0,
+    blockh.to_double() * 16.0 * 2.0 / 3.0,
+  )
 }
 
 ///| (*Converts the obj_coord list called by generate_block_locs to a list of objects
@@ -44,23 +46,26 @@ fn convert_to_coin_obj(
 ///  * context. Arguments block width (blockw) and block height (blockh) are in
 ///  * block form, not pixels.*)
 ///
-fn generate_helper(blockw : Double, blockh : Double) -> List[Collidable] {
+fn generate_helper(blockw : Int, blockh : Int) -> List[Collidable] {
   // blocks
-  let block_locs = generate_block_locs(blockw, blockh, 0.0, 0.0)
-  let converted_block_locs = block_locs
+  let block_locs = generate_block_locs(blockw, blockh, 0, 0)
+  let converted_block_locs = block_locs |> trim_edges(blockw, blockh)
+  let obj_converted_block_locs = converted_block_locs
     |> convert_list()
-    |> trim_edges(blockw, blockh)
-  let obj_converted_block_locs = convert_to_block_obj(converted_block_locs)
+    |> convert_to_block_obj()
 
   // ground
-  let ground_blocks = generate_ground(blockw, blockh, 0.0)
-  let obj_converted_ground_blocks = convert_to_block_obj(ground_blocks)
+  let ground_blocks = generate_ground(blockw, blockh, 0)
+  let obj_converted_ground_blocks = ground_blocks
+    |> convert_list()
+    |> convert_to_block_obj()
   let block_locations = block_locs + ground_blocks
 
   // enemies
   let obj_converted_enemies = generate_enemies(
-      blockw, blockh, 0.0, 0.0, block_locations,
+      blockw, blockh, 0, 0, block_locations,
     )
+    |> convert_list()
     |> convert_to_enemy_obj()
 
   // coins
@@ -68,6 +73,7 @@ fn generate_helper(blockw : Double, blockh : Double) -> List[Collidable] {
   let coin_objects = coin_locs
     |> avoid_overlap(converted_block_locs)
     |> trim_edges(blockw, blockh)
+    |> convert_list()
     |> convert_to_coin_obj()
 
   // enemies on blocks
@@ -75,6 +81,7 @@ fn generate_helper(blockw : Double, blockh : Double) -> List[Collidable] {
     |> generate_block_enemies
     |> avoid_overlap(converted_block_locs)
     |> avoid_overlap(coin_locs)
+    |> convert_list()
     |> convert_to_enemy_obj()
 
   // panel
@@ -96,8 +103,8 @@ fn generate(
   w : Double,
   h : Double
 ) -> (@list.T[Collidable], @list.T[Collidable]) {
-  let blockw = w / 16.0
-  let blockh = h / 16.0 - 1.0
+  let blockw = (w / 16.0).to_int()
+  let blockh = (h / 16.0 - 1.0).to_int()
   let collide_list = generate_helper(blockw, blockh)
   let mut start = 50.0
   let players = Array::make(player_count, Spawn::Player(Small, Standing)).map(fn(
