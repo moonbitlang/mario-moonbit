@@ -14,31 +14,55 @@ fn random(l : Int, r : Int) -> Int {
 ///| (*Checks if the given location checkloc is already part of the list of locations
 ///  * in loclist.*)
 ///
-fn mem_loc(
+fn[T] mem_loc(
   checkloc : (Double, Double),
-  loclist : List[(Int, (Double, Double))]
+  loclist : List[(T, (Double, Double))]
 ) -> Bool {
   loclist.any(h => checkloc == h.1)
+}
+
+///| (*Chooses what type of block should be instantiated given typ number*)
+///
+fn choose_sblock_typ(typ : Int) -> Block {
+  match typ {
+    0 => Brick
+    1 => UnBBlock
+    2 => Cloud
+    3 => QBlock(Mushroom)
+    4 => Ground
+    _ => abort("Shouldn't reach here")
+  }
+}
+
+///| (*Chooses what type of enemy should be instantiated given typ number*)
+///
+fn choose_enemy_typ(typ : Int) -> Enemy {
+  match typ {
+    0 => RKoopa
+    1 => GKoopa
+    2 => Goomba
+    _ => abort("Shouldn't reach here")
+  }
 }
 
 ///| (*Optimizes lst such that there are no two items in the list that have the same
 ///  * coordinates. If there is one, it is removed.*)
 ///
-pub fn avoid_overlap(
-  lst : List[(Int, (Double, Double))],
-  currentLst : List[(Int, (Double, Double))]
-) -> List[(Int, (Double, Double))] {
+pub fn[T1, T2] avoid_overlap(
+  lst : List[(T1, (Double, Double))],
+  currentLst : List[(T2, (Double, Double))]
+) -> List[(T1, (Double, Double))] {
   lst.filter(h => not(mem_loc(h.1, currentLst)))
 }
 
 ///| (*Gets rid of objects with coordinates in the ending frame, within 128 pixels of
 ///  * the start, at the very top, and two blocks from the ground.*)
 ///
-pub fn trim_edges(
-  lst : List[(Int, (Double, Double))],
+pub fn[T] trim_edges(
+  lst : List[(T, (Double, Double))],
   blockw : Double,
   blockh : Double
-) -> List[(Int, (Double, Double))] {
+) -> List[(T, (Double, Double))] {
   lst.filter(h => {
     let cx = h.1.0
     let cy = h.1.1
@@ -54,8 +78,8 @@ pub fn trim_edges(
 fn generate_ground_stairs(
   cbx : Double,
   cby : Double,
-  typ : Int
-) -> List[(Int, (Double, Double))] {
+  typ : Block
+) -> List[(Block, (Double, Double))] {
   @list.empty()
   .add((typ, (cbx + 0.0, cby - 0.0)))
   .add((typ, (cbx + 1.0, cby - 0.0)))
@@ -74,8 +98,8 @@ fn generate_ground_stairs(
 fn generate_airup_stairs(
   cbx : Double,
   cby : Double,
-  typ : Int
-) -> List[(Int, (Double, Double))] {
+  typ : Block
+) -> List[(Block, (Double, Double))] {
   @list.empty()
   .add((typ, (cbx + 0.0, cby - 0.0)))
   .add((typ, (cbx + 1.0, cby - 0.0)))
@@ -91,8 +115,8 @@ fn generate_airup_stairs(
 fn generate_airdown_stairs(
   cbx : Double,
   cby : Double,
-  typ : Int
-) -> List[(Int, (Double, Double))] {
+  typ : Block
+) -> List[(Block, (Double, Double))] {
   @list.empty()
   .add((typ, (cbx + 0.0, cby + 0.0)))
   .add((typ, (cbx + 1.0, cby + 0.0)))
@@ -108,33 +132,26 @@ fn generate_airdown_stairs(
 fn generate_clouds(
   cbx : Double,
   cby : Double,
-  typ : Int,
   num : Int
-) -> List[(Int, (Double, Double))] {
+) -> List[(Block, (Double, Double))] {
   if num <= 0 {
     @list.empty()
   } else {
-    generate_clouds(cbx + 1.0, cby, typ, num - 1).add((typ, (cbx, cby)))
+    generate_clouds(cbx + 1.0, cby, num - 1).add((Block::Cloud, (cbx, cby)))
   }
 }
 
 ///|
 pub fn generate_coins(
-  block_coord : List[(Int, (Double, Double))]
-) -> List[(Int, (Double, Double))] {
-  // (* let place_coin = Random.int 2 in *)
-  let place_coin = random(0, 2)
-  match block_coord {
-    Empty => @list.empty()
-    More(h, tail=t) =>
-      if place_coin == 0 {
-        let xc = h.1.0
-        let yc = h.1.1
-        @list.empty().add((0, (xc, yc - 16.0))) + generate_coins(t)
-      } else {
-        generate_coins(t)
-      }
-  }
+  block_coord : List[(Block, (Double, Double))]
+) -> List[(Item, (Double, Double))] {
+  block_coord.filter_map(h => if random(0, 2) == 0 {
+    let xc = h.1.0
+    let yc = h.1.1
+    Some((Coin, (xc, yc - 16.0)))
+  } else {
+    None
+  })
 }
 
 ///| (*Chooses the form of the blocks to be placed.
@@ -153,14 +170,17 @@ fn choose_block_pattern(
   cbx : Double,
   cby : Double,
   prob : Int
-) -> List[(Int, (Double, Double))] {
+) -> List[(Block, (Double, Double))] {
   if cbx > blockw || cby > blockh {
     @list.empty()
   } else {
-    let block_typ = random(0, 4)
-    let stair_typ = random(0, 2)
-    let life_block_chance = random(0, 5)
-    let middle_block = if life_block_chance == 0 { 3 } else { stair_typ }
+    let block_typ = random(0, 4) |> choose_sblock_typ
+    let stair_typ = random(0, 2) |> choose_sblock_typ
+    let middle_block = if random(0, 5) == 0 {
+      Block::QBlock(Mushroom)
+    } else {
+      stair_typ
+    }
     match prob {
       0 =>
         if blockw - cbx > 2.0 {
@@ -178,7 +198,7 @@ fn choose_block_pattern(
       1 => {
         let num_clouds = random(0, 5) + 5
         if cby < 5.0 {
-          generate_clouds(cbx, cby, 2, num_clouds)
+          generate_clouds(cbx, cby, num_clouds)
         } else {
           @list.empty()
         }
@@ -190,7 +210,7 @@ fn choose_block_pattern(
           @list.empty()
         }
       3 =>
-        if stair_typ == 0 && blockh - cby > 3.0 {
+        if stair_typ is Brick && blockh - cby > 3.0 {
           generate_airdown_stairs(cbx, cby, stair_typ)
         } else if blockh - cby > 2.0 {
           generate_airup_stairs(cbx, cby, stair_typ)
@@ -210,7 +230,7 @@ fn choose_block_pattern(
           .add((stair_typ, (cbx, cby + 1.0)))
           .add((stair_typ, (cbx, cby + 2.0)))
         }
-      5 => @list.empty().add((3, (cbx, cby)))
+      5 => @list.empty().add((Block::QBlock(Mushroom), (cbx, cby)))
       _ => panic()
     }
   }
@@ -223,23 +243,23 @@ pub fn generate_enemies(
   blockh : Double,
   cbx : Double,
   cby : Double,
-  acc~ : List[(Int, (Double, Double))] = @list.empty()
-) -> List[(Int, (Double, Double))] {
+  acc : List[(Block, (Double, Double))]
+) -> List[(Enemy, (Double, Double))] {
   if cbx > blockw - 32.0 {
     @list.empty()
   } else if cby > blockh - 1.0 || cbx < 15.0 {
-    generate_enemies(blockw, blockh, cbx + 1.0, 0.0, acc~)
+    generate_enemies(blockw, blockh, cbx + 1.0, 0.0, acc)
   } else if mem_loc((cbx, cby), acc) || cby == 0.0 {
-    generate_enemies(blockw, blockh, cbx, cby + 1.0, acc~)
+    generate_enemies(blockw, blockh, cbx, cby + 1.0, acc)
   } else {
     let prob = random(0, 30)
     let enem_prob = 3
     if prob < enem_prob && blockh - 1.0 == cby {
-      generate_enemies(blockw, blockh, cbx, cby + 1.0, acc~).add(
-        (prob, (cbx * 16.0, cby * 16.0)),
+      generate_enemies(blockw, blockh, cbx, cby + 1.0, acc).add(
+        (choose_enemy_typ(prob), (cbx * 16.0, cby * 16.0)),
       )
     } else {
-      generate_enemies(blockw, blockh, cbx, cby + 1.0, acc~)
+      generate_enemies(blockw, blockh, cbx, cby + 1.0, acc)
     }
   }
 }
@@ -247,22 +267,15 @@ pub fn generate_enemies(
 ///| (*Generates a list of enemies to be placed upon the block objects.*)
 ///
 pub fn generate_block_enemies(
-  block_coord : List[(Int, (Double, Double))]
-) -> List[(Int, (Double, Double))] {
-  let place_enemy = random(0, 20)
-  let enemy_typ = random(0, 3)
-  match block_coord {
-    Empty => @list.empty()
-    More(h, tail=t) =>
-      if place_enemy == 0 {
-        let xc = h.1.0
-        let yc = h.1.1
-        @list.empty().add((enemy_typ, (xc, yc - 16.0))) +
-        generate_block_enemies(t)
-      } else {
-        generate_block_enemies(t)
-      }
-  }
+  block_coord : List[(Block, (Double, Double))]
+) -> List[(Enemy, (Double, Double))] {
+  block_coord.filter_map(h => if random(0, 20) == 0 {
+    let xc = h.1.0
+    let yc = h.1.1
+    Some((random(0, 3) |> choose_enemy_typ, (xc, yc - 16.0)))
+  } else {
+    None
+  })
 }
 
 ///| (*Generates an obj_coord list (typ, coordinates) of blocks to be placed.*)
@@ -272,7 +285,7 @@ pub fn generate_block_locs(
   blockh : Double,
   cbx : Double,
   cby : Double
-) -> List[(Int, (Double, Double))] {
+) -> List[(Block, (Double, Double))] {
   let mut acc = @list.empty()
   for cbx = cbx, cby = cby; cbx <= blockw - 33; {
     if cby > blockh - 1.0 {
@@ -303,13 +316,13 @@ pub fn generate_ground(
   blockw : Double,
   blockh : Double,
   inc : Double
-) -> List[(Int, (Double, Double))] {
+) -> List[(Block, (Double, Double))] {
   let mut acc = @list.empty()
   for inc = inc; inc <= blockw; inc = inc + 1 {
     if inc > 10 && random(0, 10) == 7 && blockw - inc > 32 {
       continue
     }
-    acc = acc + @list.empty().add((4, (inc * 16.0, blockh * 16.0)))
+    acc = acc + @list.empty().add((Block::Ground, (inc * 16.0, blockh * 16.0)))
   }
   acc
 }

@@ -1,1 +1,5 @@
-{}
+{
+  "import": [
+    "mario/game/actors"
+  ]
+}
