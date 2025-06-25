@@ -7,7 +7,7 @@ const HEIGHT = 256.0
 ///|
 pub fn game_win() -> Unit {
   context.set_fill_style(@js.Union3::from0("black"))
-  context.fill_rect(0, 0, 512, 256)
+  context.fill_rect(0, 0, WIDTH, HEIGHT)
   context.set_fill_style(@js.Union3::from0("white"))
   context.set_font("20px 'Press Start 2P'")
   context.fill_text("You win!", 180, 128)
@@ -16,7 +16,7 @@ pub fn game_win() -> Unit {
 ///|
 pub fn game_lose() -> Unit {
   context.set_fill_style(@js.Union3::from0("black"))
-  context.fill_rect(0, 0, 512, 256)
+  context.fill_rect(0, 0, WIDTH, HEIGHT)
   context.set_fill_style(@js.Union3::from0("white"))
   context.set_font("20px 'Press Start 2P'")
   context.fill_text("GAME OVER. You lose!", 60, 128)

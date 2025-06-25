@@ -1,7 +1,7 @@
 {
   "import": [
-    "mario/actors",
-    "mario/utils",
+    "mario/game/actors",
+    "mario/core/utils",
     "Yoorkin/rabbit-tea/dom",
     "rami3l/js-ffi/js"
   ]

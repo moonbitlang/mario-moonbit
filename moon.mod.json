@@ -1,5 +1,6 @@
 {
   "name": "mario",
+  "source": "src",
   "deps": {
     "Yoorkin/rabbit-tea": "0.9.5"
   }

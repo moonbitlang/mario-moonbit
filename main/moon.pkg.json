@@ -1,7 +1,0 @@
-{
-  "warn-list": "-4",
-  "import": [
-    "mario/object"
-  ],
-  "is-main": true
-}

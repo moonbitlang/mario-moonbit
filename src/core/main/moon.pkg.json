@@ -1,0 +1,10 @@
+{
+  "warn-list": "-4",
+  "import": [
+    {
+      "path": "mario/core/director",
+      "alias": "object"
+    }
+  ],
+  "is-main": true
+}
