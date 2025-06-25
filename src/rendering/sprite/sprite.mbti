@@ -1,8 +1,8 @@
-package "mario/sprite"
+package "mario/rendering/sprite"
 
 import(
-  "mario/actors"
-  "mario/utils"
+  "mario/core/utils"
+  "mario/game/actors"
 )
 
 // Values
@@ -11,13 +11,27 @@ fn make_bgd() -> Sprite
 // Types and methods
 type Image
 
+pub(all) enum Part {
+  GoombaSquish
+  BrickChunkL
+  BrickChunkR
+  Score100
+  Score200
+  Score400
+  Score800
+  Score1000
+  Score2000
+  Score4000
+  Score8000
+}
+
 pub struct Particle {
   params : ParticleParams
   pos : @utils.XY
   mut kill : Bool
   // private fields
 }
-fn Particle::make(@utils.XY, @utils.XY, @actors.Part, @utils.XY) -> Self
+fn Particle::make(@utils.XY, @utils.XY, Part, @utils.XY) -> Self
 fn Particle::make_score(Int, @utils.XY) -> Self
 fn Particle::process(Self) -> Unit
 

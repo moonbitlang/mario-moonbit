@@ -1,4 +1,4 @@
-package "mario/object"
+package "mario/core/director"
 
 // Values
 fn start() -> Unit

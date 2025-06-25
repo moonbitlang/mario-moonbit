@@ -1,15 +1,8 @@
-package "mario/utils"
+package "mario/core/utils"
 
 // Values
 
 // Types and methods
-pub(all) enum Control {
-  Left
-  Right
-  Up
-  Down
-}
-
 pub(all) enum Dir1d {
   Left
   Right

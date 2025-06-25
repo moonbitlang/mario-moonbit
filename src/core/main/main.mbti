@@ -1,4 +1,4 @@
-package "mario/main"
+package "mario/core/main"
 
 // Values
 

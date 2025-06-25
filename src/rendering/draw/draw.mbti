@@ -1,8 +1,8 @@
-package "mario/draw"
+package "mario/rendering/draw"
 
 import(
   "Yoorkin/rabbit-tea/dom"
-  "mario/sprite"
+  "mario/rendering/sprite"
 )
 
 // Values

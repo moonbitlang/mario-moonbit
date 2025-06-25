@@ -1,0 +1,28 @@
+package "mario/game/world"
+
+import(
+  "mario/game/actors"
+  "moonbitlang/core/list"
+)
+
+// Values
+fn[T1, T2] avoid_overlap(@list.T[(T1, (Double, Double))], @list.T[(T2, (Double, Double))]) -> @list.T[(T1, (Double, Double))]
+
+fn generate_block_enemies(@list.T[(@actors.Block, (Double, Double))]) -> @list.T[(@actors.Enemy, (Double, Double))]
+
+fn generate_block_locs(Double, Double, Double, Double) -> @list.T[(@actors.Block, (Double, Double))]
+
+fn generate_coins(@list.T[(@actors.Block, (Double, Double))]) -> @list.T[(@actors.Item, (Double, Double))]
+
+fn generate_enemies(Double, Double, Double, Double, @list.T[(@actors.Block, (Double, Double))]) -> @list.T[(@actors.Enemy, (Double, Double))]
+
+fn generate_ground(Double, Double, Double) -> @list.T[(@actors.Block, (Double, Double))]
+
+fn[T] trim_edges(@list.T[(T, (Double, Double))], Double, Double) -> @list.T[(T, (Double, Double))]
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
