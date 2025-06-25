@@ -45,31 +45,42 @@ fn convert_to_coin_obj(
 ///  * block form, not pixels.*)
 ///
 fn generate_helper(blockw : Double, blockh : Double) -> List[Collidable] {
+  // blocks
   let block_locs = generate_block_locs(blockw, blockh, 0.0, 0.0)
   let converted_block_locs = block_locs
     |> convert_list()
     |> trim_edges(blockw, blockh)
   let obj_converted_block_locs = convert_to_block_obj(converted_block_locs)
+
+  // ground
   let ground_blocks = generate_ground(blockw, blockh, 0.0)
   let obj_converted_ground_blocks = convert_to_block_obj(ground_blocks)
   let block_locations = block_locs + ground_blocks
-  let all_blocks = obj_converted_block_locs + obj_converted_ground_blocks
-  let enemy_locs = generate_enemies(blockw, blockh, 0.0, 0.0, block_locations)
-  let obj_converted_enemies = convert_to_enemy_obj(enemy_locs)
+
+  // enemies
+  let obj_converted_enemies = generate_enemies(
+      blockw, blockh, 0.0, 0.0, block_locations,
+    )
+    |> convert_to_enemy_obj()
+
+  // coins
   let coin_locs = generate_coins(converted_block_locs)
-  let undup_coin_locs = trim_edges(
-    avoid_overlap(coin_locs, converted_block_locs),
-    blockw,
-    blockh,
-  )
-  let enemy_block_locs = generate_block_enemies(converted_block_locs)
-  let undup_enemy_block_locs = enemy_block_locs
+  let coin_objects = coin_locs
+    |> avoid_overlap(converted_block_locs)
+    |> trim_edges(blockw, blockh)
+    |> convert_to_coin_obj()
+
+  // enemies on blocks
+  let obj_enemy_blocks = converted_block_locs
+    |> generate_block_enemies
     |> avoid_overlap(converted_block_locs)
     |> avoid_overlap(coin_locs)
-  let obj_enemy_blocks = convert_to_enemy_obj(undup_enemy_block_locs)
-  let coin_objects = convert_to_coin_obj(undup_coin_locs)
+    |> convert_to_enemy_obj()
+
+  // panel
   let obj_panel = generate_panel(blockw, blockh)
-  all_blocks +
+  obj_converted_block_locs +
+  obj_converted_ground_blocks +
   obj_converted_enemies +
   coin_objects +
   obj_enemy_blocks +
