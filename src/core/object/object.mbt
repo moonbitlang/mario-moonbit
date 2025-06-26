@@ -54,7 +54,7 @@ pub(all) struct Object {
 }
 
 ///|
-pub(all) struct Collidable {
+pub struct Collidable {
   target : Spawn
   sprite : Sprite
   object : Object
@@ -200,7 +200,7 @@ fn update_player_keys(player : Object, controls : Control) -> Unit {
 }
 
 ///|
-pub fn normalize_pos(pos : XY, p1 : SpriteParams, p2 : SpriteParams) -> Unit {
+fn normalize_pos(pos : XY, p1 : SpriteParams, p2 : SpriteParams) -> Unit {
   let (box1, boy1) = p1.bbox_offset
   let (box2, boy2) = p2.bbox_offset
   let (bw1, bh1) = p1.bbox_size
@@ -211,9 +211,15 @@ pub fn normalize_pos(pos : XY, p1 : SpriteParams, p2 : SpriteParams) -> Unit {
 
 ///|
 pub fn update_player(
-  player : Object,
+  current_collid : Collidable,
   keys : List[Control]
-) -> (PlayerSize, Sprite)? {
+) -> Collidable? {
+  guard current_collid
+    is {
+      object: player,
+      sprite: current_sprite,
+      target: Player(_, original_player_type),
+    }
   let prev_jumping = player.jumping
   let prev_dir = player.dir
   let prev_vx = @double.abs(player.vel.x)
@@ -222,19 +228,30 @@ pub fn update_player(
   let vel_damped = if @double.abs(v) < 0.1 { 0.0 } else { v }
   player.vel.x = vel_damped
   let pl_typ = if player.health <= 1 { PlayerSize::Small } else { Large }
-  if not(prev_jumping) && player.jumping {
-    Some((pl_typ, Sprite::make(Player(pl_typ, Jumping), player.dir)))
+  let new_sprite = if not(prev_jumping) && player.jumping {
+    Some(Sprite::make(Player(pl_typ, Jumping), player.dir))
   } else if prev_dir != player.dir ||
     ((prev_vx == 0.0 && @double.abs(player.vel.x) > 0.0) && not(player.jumping)) {
-    Some((pl_typ, Sprite::make(Player(pl_typ, Running), player.dir)))
+    Some(Sprite::make(Player(pl_typ, Running), player.dir))
   } else if prev_dir != player.dir && player.jumping && prev_jumping {
-    Some((pl_typ, Sprite::make(Player(pl_typ, Jumping), player.dir)))
+    Some(Sprite::make(Player(pl_typ, Jumping), player.dir))
   } else if player.vel.y == 0.0 && player.crouch {
-    Some((pl_typ, Sprite::make(Player(pl_typ, Crouching), player.dir)))
+    Some(Sprite::make(Player(pl_typ, Crouching), player.dir))
   } else if player.vel.y == 0.0 && player.vel.x == 0.0 {
-    Some((pl_typ, Sprite::make(Player(pl_typ, Standing), player.dir)))
+    Some(Sprite::make(Player(pl_typ, Standing), player.dir))
   } else {
     None
+  }
+  match new_sprite {
+    Some(new_spr) => {
+      normalize_pos(player.pos, current_sprite.params, new_spr.params)
+      Some({
+        target: Player(pl_typ, original_player_type),
+        sprite: new_spr,
+        object: player,
+      })
+    }
+    None => None
   }
 }
 

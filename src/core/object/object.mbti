@@ -24,8 +24,6 @@ let invuln : Int
 
 fn kill(Collidable) -> @list.T[@sprite.Particle]
 
-fn normalize_pos(@utils.XY, @sprite.SpriteParams, @sprite.SpriteParams) -> Unit
-
 fn process_obj(Object, Double) -> Unit
 
 fn rev_dir(Object, @actors.Enemy, @sprite.Sprite) -> Unit
@@ -36,10 +34,10 @@ fn spawn(@actors.Spawn, Double, Double) -> Collidable
 
 fn spawn_above(@utils.Dir1d, Object, @actors.Item) -> Collidable
 
-fn update_player(Object, @list.T[Control]) -> (@actors.PlayerSize, @sprite.Sprite)?
+fn update_player(Collidable, @list.T[Control]) -> Collidable?
 
 // Types and methods
-pub(all) struct Collidable {
+pub struct Collidable {
   target : @actors.Spawn
   sprite : @sprite.Sprite
   object : Object

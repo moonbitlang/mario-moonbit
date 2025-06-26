@@ -359,15 +359,12 @@ fn run_update_collid(
   all_collids : List[Collidable]
 ) -> Collidable {
   match collid {
-    { target: Player(_, typ), sprite: s, object: o } as p => {
+    { target: Player(_, _), .. } as p => {
       let keys = translate_keys()
-      o.crouch = false
-      let player = match update_player(o, keys) {
+      p.object.crouch = false
+      let player = match update_player(p, keys) {
         None => p
-        Some((new_typ, new_spr)) => {
-          normalize_pos(o.pos, s.params, new_spr.params)
-          { target: Player(new_typ, typ), sprite: new_spr, object: o }
-        }
+        Some(updated_collid) => updated_collid
       }
       let evolved = update_collidable(state, player, all_collids)
       collid_objs.val += evolved

@@ -42,7 +42,6 @@ fnalias @object.(
   check_collision,
   process_obj,
   update_player,
-  normalize_pos,
   kill,
   reverse_left_right,
   evolve_block,
