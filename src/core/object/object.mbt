@@ -17,12 +17,6 @@ let player_jump : Double = 5.7
 let player_max_jump : Double = -6.0
 
 ///|
-pub let dampen_jump : Double = 4.0
-
-///|
-pub let invuln : Int = 60
-
-///|
 priv struct AABB {
   center : XY
   half : XY

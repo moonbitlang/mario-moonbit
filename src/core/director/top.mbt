@@ -1,4 +1,10 @@
 ///|
+let dampen_jump : Double = 4.0
+
+///|
+let invuln : Int = 60
+
+///|
 const WIDTH = 512.0
 
 ///|

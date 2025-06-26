@@ -12,15 +12,11 @@ fn check_collision(Collidable, Collidable) -> @utils.Dir2d?
 
 fn collide_block(Bool, @utils.Dir2d, Object) -> Unit
 
-let dampen_jump : Double
-
 fn dec_health(Object) -> Unit
 
 fn evolve_block(Object) -> Collidable
 
 fn evolve_enemy(@utils.Dir1d, @actors.Enemy, @sprite.Sprite, Object) -> Collidable?
-
-let invuln : Int
 
 fn kill(Collidable) -> @list.T[@sprite.Particle]
 

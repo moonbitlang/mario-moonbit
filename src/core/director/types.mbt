@@ -50,10 +50,4 @@ fnalias @object.(
 )
 
 ///|
-let dampen_jump = @object.dampen_jump
-
-///|
-let invuln = @object.invuln
-
-///|
 let canvas = @draw.canvas
