@@ -1,5 +1,6 @@
 {
   "import": [
-    "mario/game/actors"
+    "mario/game/actors",
+    "mario/core/object"
   ]
 }

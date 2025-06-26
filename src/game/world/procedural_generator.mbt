@@ -45,7 +45,7 @@ fn choose_enemy_typ(typ : Int) -> Enemy {
 ///| (*Optimizes lst such that there are no two items in the list that have the same
 ///  * coordinates. If there is one, it is removed.*)
 ///
-pub fn[T1, T2] avoid_overlap(
+fn[T1, T2] avoid_overlap(
   lst : List[(T1, (Int, Int))],
   currentLst : List[(T2, (Int, Int))]
 ) -> List[(T1, (Int, Int))] {
@@ -55,7 +55,7 @@ pub fn[T1, T2] avoid_overlap(
 ///| (*Gets rid of objects with coordinates in the ending frame, within 8 blocks of
 ///  * the start, at the very top, and two blocks from the ground.*)
 ///
-pub fn[T] trim_edges(
+fn[T] trim_edges(
   lst : List[(T, (Int, Int))],
   blockw : Int,
   blockh : Int
@@ -137,7 +137,7 @@ fn generate_clouds(
 }
 
 ///|
-pub fn generate_coins(
+fn generate_coins(
   block_coord : List[(Block, (Int, Int))]
 ) -> List[(Item, (Int, Int))] {
   block_coord.filter_map(h => if random(0, 2) == 0 {
@@ -233,7 +233,7 @@ fn choose_block_pattern(
 
 ///| (*Generates a list of enemies to be placed on the ground.*)
 ///
-pub fn generate_enemies(
+fn generate_enemies(
   blockw : Int,
   blockh : Int,
   cbx : Int,
@@ -261,7 +261,7 @@ pub fn generate_enemies(
 
 ///| (*Generates a list of enemies to be placed upon the block objects.*)
 ///
-pub fn generate_block_enemies(
+fn generate_block_enemies(
   block_coord : List[(Block, (Int, Int))]
 ) -> List[(Enemy, (Int, Int))] {
   block_coord.filter_map(h => if random(0, 20) == 0 {
@@ -275,7 +275,7 @@ pub fn generate_block_enemies(
 
 ///| (*Generates an obj_coord list (typ, coordinates) of blocks to be placed.*)
 ///
-pub fn generate_block_locs(
+fn generate_block_locs(
   blockw : Int,
   blockh : Int,
   cbx : Int,
@@ -307,7 +307,7 @@ pub fn generate_block_locs(
 /// Generates the list of brick locations needed to display the ground.
 /// 1/10 chance that a ground block is skipped each call to create holes.
 ///
-pub fn generate_ground(
+fn generate_ground(
   blockw : Int,
   blockh : Int,
   inc : Int

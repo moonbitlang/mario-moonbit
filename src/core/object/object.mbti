@@ -1,0 +1,76 @@
+package "mario/core/object"
+
+import(
+  "mario/core/utils"
+  "mario/game/actors"
+  "mario/rendering/sprite"
+  "moonbitlang/core/list"
+)
+
+// Values
+fn check_collision(Collidable, Collidable) -> @utils.Dir2d?
+
+fn collide_block(Bool, @utils.Dir2d, Object) -> Unit
+
+let dampen_jump : Double
+
+fn dec_health(Object) -> Unit
+
+fn evolve_block(Object) -> Collidable
+
+fn evolve_enemy(@utils.Dir1d, @actors.Enemy, @sprite.Sprite, Object) -> Collidable?
+
+let invuln : Int
+
+fn kill(Collidable) -> @list.T[@sprite.Particle]
+
+fn normalize_pos(@utils.XY, @sprite.SpriteParams, @sprite.SpriteParams) -> Unit
+
+fn process_obj(Object, Double) -> Unit
+
+fn rev_dir(Object, @actors.Enemy, @sprite.Sprite) -> Unit
+
+fn reverse_left_right(Object) -> Unit
+
+fn spawn(@actors.Spawn, Double, Double) -> Collidable
+
+fn spawn_above(@utils.Dir1d, Object, @actors.Item) -> Collidable
+
+fn update_player(Object, @list.T[Control]) -> (@actors.PlayerSize, @sprite.Sprite)?
+
+// Types and methods
+pub(all) struct Collidable {
+  target : @actors.Spawn
+  sprite : @sprite.Sprite
+  object : Object
+}
+impl Eq for Collidable
+
+pub(all) enum Control {
+  Left
+  Right
+  Up
+  Down
+}
+
+pub(all) struct Object {
+  params : ObjectParams
+  pos : @utils.XY
+  vel : @utils.XY
+  id : Int
+  mut jumping : Bool
+  mut grounded : Bool
+  mut dir : @utils.Dir1d
+  mut invuln : Int
+  mut kill : Bool
+  mut health : Int
+  mut crouch : Bool
+  mut score : Int
+}
+
+type ObjectParams
+
+// Type aliases
+
+// Traits
+

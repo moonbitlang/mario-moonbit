@@ -98,7 +98,7 @@ fn generate_helper(blockw : Int, blockh : Int) -> List[Collidable] {
 ///  * are in pixel form. Converts to block form to call generate_helper. Spawns
 ///  * the list of collidables received from generate_helper to display on canvas.*)
 ///
-fn generate(
+pub fn generate(
   player_count : Int,
   w : Double,
   h : Double

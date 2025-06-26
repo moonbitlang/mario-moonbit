@@ -1,2 +1,2 @@
 ///|
-fnalias @object.start
+fnalias @director.start

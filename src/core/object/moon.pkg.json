@@ -1,0 +1,7 @@
+{
+  "import": [
+    "mario/game/actors",
+    "mario/rendering/sprite",
+    "mario/core/utils"
+  ]
+}

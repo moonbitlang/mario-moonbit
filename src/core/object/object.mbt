@@ -17,10 +17,10 @@ let player_jump : Double = 5.7
 let player_max_jump : Double = -6.0
 
 ///|
-let dampen_jump : Double = 4.0
+pub let dampen_jump : Double = 4.0
 
 ///|
-let invuln : Int = 60
+pub let invuln : Int = 60
 
 ///|
 priv struct AABB {
@@ -29,7 +29,7 @@ priv struct AABB {
 }
 
 ///|
-priv struct ObjectParams {
+struct ObjectParams {
   has_gravity : Bool
   speed : Double
 }
@@ -38,14 +38,14 @@ priv struct ObjectParams {
 let id_counter : Ref[Int] = @ref.new(0)
 
 ///|
-priv struct Object {
+pub(all) struct Object {
   params : ObjectParams
   pos : XY
   vel : XY
   id : Int
   mut jumping : Bool
   mut grounded : Bool
-  mut dir : @utils.Dir1d
+  mut dir : Dir1d
   mut invuln : Int
   mut kill : Bool
   mut health : Int
@@ -54,7 +54,7 @@ priv struct Object {
 }
 
 ///|
-priv struct Collidable {
+pub(all) struct Collidable {
   target : Spawn
   sprite : Sprite
   object : Object
@@ -125,7 +125,7 @@ fn new_id() -> Int {
 ///|
 fn makeobj(
   id : Int,
-  dir : @utils.Dir1d,
+  dir : Dir1d,
   spawn : Spawn,
   posx : Double,
   posy : Double
@@ -150,7 +150,7 @@ fn makeobj(
 }
 
 ///|
-fn spawn(spawnable : Spawn, posx : Double, posy : Double) -> Collidable {
+pub fn spawn(spawnable : Spawn, posx : Double, posy : Double) -> Collidable {
   let (sprite, object) = makeobj(new_id(), Left, spawnable, posx, posy)
   match spawnable {
     Player(_) => { target: spawnable, sprite, object }
@@ -164,7 +164,7 @@ fn spawn(spawnable : Spawn, posx : Double, posy : Double) -> Collidable {
 }
 
 ///|
-impl Eq for Collidable with op_equal(self : Collidable, optb : Collidable) -> Bool {
+pub impl Eq for Collidable with op_equal(self : Collidable, optb : Collidable) -> Bool {
   return self.object.id == optb.object.id
 }
 
@@ -200,7 +200,7 @@ fn update_player_keys(player : Object, controls : Control) -> Unit {
 }
 
 ///|
-fn normalize_pos(pos : XY, p1 : SpriteParams, p2 : SpriteParams) -> Unit {
+pub fn normalize_pos(pos : XY, p1 : SpriteParams, p2 : SpriteParams) -> Unit {
   let (box1, boy1) = p1.bbox_offset
   let (box2, boy2) = p2.bbox_offset
   let (bw1, bh1) = p1.bbox_size
@@ -210,7 +210,7 @@ fn normalize_pos(pos : XY, p1 : SpriteParams, p2 : SpriteParams) -> Unit {
 }
 
 ///|
-fn update_player(
+pub fn update_player(
   player : Object,
   keys : List[Control]
 ) -> (PlayerSize, Sprite)? {
@@ -259,7 +259,7 @@ fn Object::update_pos(self : Object) -> Unit {
 }
 
 ///|
-fn process_obj(obj : Object, mapy : Double) -> Unit {
+pub fn process_obj(obj : Object, mapy : Double) -> Unit {
   obj.update_vel()
   obj.update_pos()
   if obj.pos.y > mapy {
@@ -268,7 +268,7 @@ fn process_obj(obj : Object, mapy : Double) -> Unit {
 }
 
 ///|
-fn collide_block(check_x : Bool, dir : @utils.Dir2d, obj : Object) -> Unit {
+pub fn collide_block(check_x : Bool, dir : Dir2d, obj : Object) -> Unit {
   match dir {
     North => obj.vel.y = -0.001
     South => {
@@ -281,14 +281,14 @@ fn collide_block(check_x : Bool, dir : @utils.Dir2d, obj : Object) -> Unit {
 }
 
 ///|
-fn reverse_left_right(obj : Object) -> Unit {
+pub fn reverse_left_right(obj : Object) -> Unit {
   obj.vel.x = -obj.vel.x
   obj.dir = obj.dir.opposite_dir()
 }
 
 ///|
-fn evolve_enemy(
-  player_dir : @utils.Dir1d,
+pub fn evolve_enemy(
+  player_dir : Dir1d,
   typ : Enemy,
   spr : Sprite,
   obj : Object
@@ -333,7 +333,7 @@ fn evolve_enemy(
 }
 
 ///|
-fn rev_dir(o : Object, t : Enemy, s : Sprite) -> Unit {
+pub fn rev_dir(o : Object, t : Enemy, s : Sprite) -> Unit {
   reverse_left_right(o)
   let old_params = s.params
   s.transform_enemy(t, o.dir)
@@ -341,7 +341,7 @@ fn rev_dir(o : Object, t : Enemy, s : Sprite) -> Unit {
 }
 
 ///|
-fn dec_health(obj : Object) -> Unit {
+pub fn dec_health(obj : Object) -> Unit {
   let health = obj.health - 1
   if health == 0 {
     obj.kill = true
@@ -353,7 +353,7 @@ fn dec_health(obj : Object) -> Unit {
 // (*Used for deleting a block and replacing it with a used block*)
 
 ///|
-fn evolve_block(obj : Object) -> Collidable {
+pub fn evolve_block(obj : Object) -> Collidable {
   dec_health(obj)
   let (new_spr, new_obj) = makeobj(
     new_id(),
@@ -368,11 +368,7 @@ fn evolve_block(obj : Object) -> Collidable {
 // (*Used for spawning items above question mark blocks*)
 
 ///|
-fn spawn_above(
-  player_dir : @utils.Dir1d,
-  obj : Object,
-  typ : Item
-) -> Collidable {
+pub fn spawn_above(player_dir : Dir1d, obj : Object, typ : Item) -> Collidable {
   let item = spawn(Item(typ), obj.pos.x, obj.pos.y)
   let item_obj = item.object
   item_obj.pos.y = item_obj.pos.y - item.sprite.params.frame_size.1
@@ -416,7 +412,7 @@ fn col_bypass(c1 : Collidable, c2 : Collidable) -> Bool {
 // *a second collision does not occur again immediately. This causes snapping.*)
 
 ///|
-fn check_collision(c1 : Collidable, c2 : Collidable) -> @utils.Dir2d? {
+pub fn check_collision(c1 : Collidable, c2 : Collidable) -> Dir2d? {
   let b1 = get_aabb(c1)
   let b2 = get_aabb(c2)
   let o1 = c1.object
@@ -454,7 +450,7 @@ fn check_collision(c1 : Collidable, c2 : Collidable) -> @utils.Dir2d? {
 // (*"Kills" the matched object by setting certain parameters for each.*)
 
 ///|
-fn kill(collid : Collidable) -> List[Particle] {
+pub fn kill(collid : Collidable) -> List[Particle] {
   match collid {
     { target: Enemy(t), object: o, .. } => {
       let pos = XY::make(o.pos.x, o.pos.y)
@@ -518,167 +514,5 @@ fn kill(collid : Collidable) -> List[Particle] {
         _ => @list.empty()
       }
     _ => @list.empty()
-  }
-}
-
-///|
-/// Process collision is called to match each of the possible collisions that
-/// may occur. Returns a pair of collidable options, representing objects that
-/// were created from the existing ones. That is, the first element represents
-/// a new item spawned as a result of the first collidable. None indicates that
-/// no new item should be spawned. Transformations to existing objects occur
-/// mutably, as many changes are side-effectual.
-fn process_collision(
-  dir : @utils.Dir2d,
-  c1 : Collidable,
-  c2 : Collidable,
-  state : St
-) -> (Collidable?, Collidable?) {
-  match (c1, c2, dir) {
-    (
-      { target: Player(_), object: o1, .. },
-      { target: Enemy(typ), sprite: s2, object: o2 },
-      South,
-    )
-    | (
-      { target: Enemy(typ), sprite: s2, object: o2 },
-      { target: Player(_), sprite: _, object: o1 },
-      North,
-    ) => player_attack_enemy(o1, typ, s2, o2, state)
-    (
-      { target: Player(_), sprite: _, object: o1 },
-      { target: Enemy(t2), sprite: s2, object: o2 },
-      _,
-    )
-    | (
-      { target: Enemy(t2), sprite: s2, object: o2 },
-      { target: Player(_), sprite: _, object: o1 },
-      _,
-    ) => enemy_attack_player(o1, t2, s2, o2)
-    (
-      { target: Player(_), sprite: _, object: o1 },
-      { target: Item(t2), sprite: _, object: o2 },
-      _,
-    )
-    | (
-      { target: Item(t2), sprite: _, object: o2 },
-      { target: Player(_), sprite: _, object: o1 },
-      _,
-    ) =>
-      match t2 {
-        Mushroom => {
-          dec_health(o2)
-          if o1.health == 2 {
-            ()
-          } else {
-            o1.health = o1.health + 1
-          }
-          o1.vel.x = 0.0
-          o1.vel.y = 0.0
-          update_score(state, 1000)
-          o2.score = 1000
-          (None, None)
-        }
-        Coin => {
-          state.coins = state.coins + 1
-          dec_health(o2)
-          update_score(state, 100)
-          (None, None)
-        }
-      }
-    (
-      { target: Enemy(t1), sprite: s1, object: o1 },
-      { target: Enemy(t2), sprite: s2, object: o2 },
-      dir,
-    ) => col_enemy_enemy(t1, s1, o1, t2, s2, o2, dir)
-    (
-      { target: Enemy(t1), sprite: s1, object: o1 },
-      { target: Block(t2), sprite: _, object: o2 },
-      East,
-    )
-    | (
-      { target: Enemy(t1), sprite: s1, object: o1 },
-      { target: Block(t2), sprite: _, object: o2 },
-      West,
-    ) =>
-      match (t1, t2) {
-        (RKoopaShell, Brick) | (GKoopaShell, Brick) => {
-          dec_health(o2)
-          reverse_left_right(o1)
-          (None, None)
-        }
-        (RKoopaShell, QBlock(typ)) | (GKoopaShell, QBlock(typ)) => {
-          let updated_block = evolve_block(o2)
-          let spawned_item = spawn_above(o1.dir, o2, typ)
-          rev_dir(o1, t1, s1)
-          (Some(updated_block), Some(spawned_item))
-        }
-        (_, _) => {
-          rev_dir(o1, t1, s1)
-          (None, None)
-        }
-      }
-    ({ target: Item(_), object: o1, .. }, { target: Block(_), .. }, East)
-    | ({ target: Item(_), object: o1, .. }, { target: Block(_), .. }, West) => {
-      reverse_left_right(o1)
-      (None, None)
-    }
-    ({ target: Enemy(_), object: o1, .. }, { target: Block(_), .. }, _)
-    | ({ target: Item(_), object: o1, .. }, { target: Block(_), .. }, _) => {
-      collide_block(true, dir, o1)
-      (None, None)
-    }
-    (
-      { target: Player(t1, _), object: o1, .. },
-      { target: Block(t), object: o2, .. },
-      North,
-    ) =>
-      match t {
-        QBlock(typ) => {
-          let updated_block = evolve_block(o2)
-          let spawned_item = spawn_above(o1.dir, o2, typ)
-          collide_block(true, dir, o1)
-          (Option::Some(spawned_item), Option::Some(updated_block))
-        }
-        Brick =>
-          if t1 is Large {
-            collide_block(true, dir, o1)
-            dec_health(o2)
-            (None, None)
-          } else {
-            collide_block(true, dir, o1)
-            (None, None)
-          }
-        Panel => {
-          state.game_over = true
-          game_win()
-          (None, None)
-        }
-        _ => {
-          collide_block(true, dir, o1)
-          (None, None)
-        }
-      }
-    ({ target: Player(_), object: o1, .. }, { target: Block(t), .. }, _) =>
-      match t {
-        Panel => {
-          state.game_over = true
-          game_win()
-          (None, None)
-        }
-        _ =>
-          match dir {
-            South => {
-              state.multiplier = 1
-              collide_block(true, dir, o1)
-              (None, None)
-            }
-            _ => {
-              collide_block(true, dir, o1)
-              (None, None)
-            }
-          }
-      }
-    _ => (None, None)
   }
 }
