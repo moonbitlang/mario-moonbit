@@ -1,10 +1,4 @@
 ///|
-let dampen_jump : Double = 4.0
-
-///|
-let invuln : Int = 60
-
-///|
 let level_width : Double = 2400.0
 
 ///|

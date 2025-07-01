@@ -5,14 +5,7 @@
     "mario/core/utils",
     "mario/rendering/viewport",
     "mario/rendering/draw",
-    "Yoorkin/rabbit-tea/dom",
-    "rami3l/js-ffi/js",
-    {
-      "alias": "generator",
-      "path": "mario/game/world"
-    },
     "mario/core/object",
-    "mario/core/state",
-    "mario/core/collision"
+    "mario/core/state"
   ]
 }

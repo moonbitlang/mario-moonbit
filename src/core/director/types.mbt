@@ -1,14 +1,11 @@
 ///|
-typealias @actors.Enemy
+typealias @sprite.Particle
 
 ///|
-typealias @sprite.(Sprite, Particle)
+typealias @utils.XY
 
 ///|
-typealias @utils.(XY, Dir2d)
-
-///|
-typealias @object.(Collidable, Control, Object)
+typealias @object.(Collidable, Control)
 
 ///|
 typealias @list.T as List
@@ -29,19 +26,10 @@ fnalias @draw.(
 fnalias @generator.generate
 
 ///|
-fnalias @object.(
-  evolve_enemy,
-  dec_health,
-  rev_dir,
-  check_collision,
-  process_obj,
-  update_player,
-  kill,
-  reverse_left_right,
-  evolve_block,
-  spawn_above,
-  collide_block
-)
+fnalias @collision.check_collisions
+
+///|
+fnalias @object.(process_obj, update_player, kill)
 
 ///|
 typealias @state.St

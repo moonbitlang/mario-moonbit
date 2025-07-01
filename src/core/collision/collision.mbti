@@ -1,0 +1,17 @@
+package "mario/core/collision"
+
+import(
+  "mario/core/object"
+  "mario/core/state"
+  "moonbitlang/core/list"
+)
+
+// Values
+fn check_collisions(@object.Collidable, @list.T[@object.Collidable], @state.St) -> @list.T[@object.Collidable]
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
