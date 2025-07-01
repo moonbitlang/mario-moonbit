@@ -11,6 +11,7 @@
       "alias": "generator",
       "path": "mario/game/world"
     },
-    "mario/core/object"
+    "mario/core/object",
+    "mario/core/state"
   ]
 }

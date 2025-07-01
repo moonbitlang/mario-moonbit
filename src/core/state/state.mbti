@@ -1,0 +1,33 @@
+package "mario/core/state"
+
+import(
+  "mario/core/utils"
+  "mario/rendering/sprite"
+  "mario/rendering/viewport"
+)
+
+// Values
+
+// Types and methods
+pub struct St {
+  bgd : @sprite.Sprite
+  mut vpt : @viewport.Viewport
+  map : Double
+  mut score : Int
+  mut coins : Int
+  mut multiplier : Int
+  mut game_over : Bool
+}
+fn St::double_multiplier(Self) -> Unit
+fn St::game_over(Self) -> Unit
+fn St::increase_coin(Self) -> Unit
+fn St::increase_score(Self, Int) -> Unit
+fn St::new() -> Self
+fn St::reset(Self, @utils.XY) -> Unit
+fn St::reset_multiplier(Self) -> Unit
+fn St::update_viewport(Self, @utils.XY) -> Unit
+
+// Type aliases
+
+// Traits
+

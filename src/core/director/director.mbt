@@ -13,17 +13,6 @@ priv struct Keys {
   mut bbox : Int
 }
 
-///|
-priv struct St {
-  bgd : Sprite
-  mut vpt : Viewport
-  map : Double
-  mut score : Int
-  mut coins : Int
-  mut multiplier : Int
-  mut game_over : Bool
-}
-
 // (*pressed_keys instantiates the keys.*)
 
 ///|
@@ -56,13 +45,6 @@ fn calc_fps(t0 : Double, t1 : Double) -> Double {
   1.0 / delta
 }
 
-// (* Adds [i] to the score in [state] *)
-
-///|
-fn update_score(state : St, i : Int) -> Unit {
-  state.score = state.score + i
-}
-
 ///|
 fn player_attack_enemy(
   o1 : Object,
@@ -85,14 +67,14 @@ fn player_attack_enemy(
       dec_health(o2)
       o1.vel.y = -dampen_jump
       if state.multiplier == 8 {
-        update_score(state, 800)
+        state.increase_score(800)
         o2.score = 800
         (None, evolve_enemy(o1.dir, typ, s2, o2))
       } else {
         let score = 100 * state.multiplier
-        update_score(state, score)
+        state.increase_score(score)
         o2.score = score
-        state.multiplier = state.multiplier * 2
+        state.double_multiplier()
         (None, evolve_enemy(o1.dir, typ, s2, o2))
       }
     }
@@ -429,7 +411,7 @@ fn update_helper(
     })
     match players.val.find(fn(p) { not(p.object.kill) }) {
       None => {
-        state.game_over = true
+        state.game_over()
         game_lose()
       }
       Some(p) => {
@@ -437,7 +419,7 @@ fn update_helper(
         let p = players.val.rev().find(fn(p) { not(p.object.kill) }).unwrap()
         let b = p.object.pos
         let c = XY::make((a.x + b.x) * 0.5, (a.y + b.y) * 0.5)
-        state.vpt = state.vpt.update(c)
+        state.update_viewport(c)
         let _ = objs.map(fn(obj) { run_update_collid(state, obj, objs) })
         let _ = parts.map(fn(part) { run_update_particle(state, part) })
         fps(fps_)

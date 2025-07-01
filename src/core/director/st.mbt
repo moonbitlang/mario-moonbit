@@ -52,14 +52,14 @@ fn process_collision(
           }
           o1.vel.x = 0.0
           o1.vel.y = 0.0
-          update_score(state, 1000)
+          state.increase_score(1000)
           o2.score = 1000
           (None, None)
         }
         Coin => {
-          state.coins = state.coins + 1
+          state.increase_coin()
           dec_health(o2)
-          update_score(state, 100)
+          state.increase_score(100)
           (None, None)
         }
       }
@@ -127,7 +127,7 @@ fn process_collision(
             (None, None)
           }
         Panel => {
-          state.game_over = true
+          state.game_over()
           game_win()
           (None, None)
         }
@@ -139,14 +139,14 @@ fn process_collision(
     ({ target: Player(_), object: o1, .. }, { target: Block(t), .. }, _) =>
       match t {
         Panel => {
-          state.game_over = true
+          state.game_over()
           game_win()
           (None, None)
         }
         _ =>
           match dir {
             South => {
-              state.multiplier = 1
+              state.reset_multiplier()
               collide_block(true, dir, o1)
               (None, None)
             }

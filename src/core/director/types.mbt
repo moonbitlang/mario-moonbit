@@ -8,9 +8,6 @@ typealias @sprite.(Sprite, Particle)
 typealias @utils.(XY, Dir2d)
 
 ///|
-typealias @viewport.Viewport
-
-///|
 typealias @object.(Collidable, Control, Object)
 
 ///|
@@ -29,9 +26,6 @@ fnalias @draw.(
 )
 
 ///|
-fnalias @sprite.make_bgd
-
-///|
 fnalias @generator.generate
 
 ///|
@@ -48,6 +42,9 @@ fnalias @object.(
   spawn_above,
   collide_block
 )
+
+///|
+typealias @state.St
 
 ///|
 let canvas = @draw.canvas

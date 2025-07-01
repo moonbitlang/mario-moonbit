@@ -1,0 +1,7 @@
+{
+  "import": [
+    "mario/rendering/sprite",
+    "mario/rendering/viewport",
+    "mario/core/utils"
+  ]
+}
