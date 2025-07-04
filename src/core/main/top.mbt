@@ -65,15 +65,15 @@ fn main {
         halt.val = false
         start()
       }
-      "KeyB" => pressed_keys.bbox = pressed_keys.bbox ^ 1
-      "ArrowUp" => pressed_keys.up = true
-      "ArrowDown" => pressed_keys.down = true
-      "ArrowLeft" => pressed_keys.left = true
-      "ArrowRight" => pressed_keys.right = true
-      "KeyW" => pressed_keys.up2 = true
-      "KeyS" => pressed_keys.down2 = true
-      "KeyA" => pressed_keys.left2 = true
-      "KeyD" => pressed_keys.right2 = true
+      "KeyB" => pressed_keys.bbox = not(pressed_keys.bbox)
+      "ArrowUp" => pressed_keys.control[0].up = true
+      "ArrowDown" => pressed_keys.control[0].down = true
+      "ArrowLeft" => pressed_keys.control[0].left = true
+      "ArrowRight" => pressed_keys.control[0].right = true
+      "KeyW" => pressed_keys.control[1].up = true
+      "KeyS" => pressed_keys.control[1].down = true
+      "KeyA" => pressed_keys.control[1].left = true
+      "KeyD" => pressed_keys.control[1].right = true
       _ => ()
     }
   })
@@ -84,15 +84,15 @@ fn main {
   .to_event_target()
   .add_event_listener("keyup", fn(event) {
     match event.to_ui_event().unwrap().to_keyboard_event().unwrap().code() {
-      "KeyB" => pressed_keys.bbox = pressed_keys.bbox ^ 1
-      "ArrowUp" => pressed_keys.up = false
-      "ArrowDown" => pressed_keys.down = false
-      "ArrowLeft" => pressed_keys.left = false
-      "ArrowRight" => pressed_keys.right = false
-      "KeyW" => pressed_keys.up2 = false
-      "KeyS" => pressed_keys.down2 = false
-      "KeyA" => pressed_keys.left2 = false
-      "KeyD" => pressed_keys.right2 = false
+      "KeyB" => pressed_keys.bbox = not(pressed_keys.bbox)
+      "ArrowUp" => pressed_keys.control[0].up = false
+      "ArrowDown" => pressed_keys.control[0].down = false
+      "ArrowLeft" => pressed_keys.control[0].left = false
+      "ArrowRight" => pressed_keys.control[0].right = false
+      "KeyW" => pressed_keys.control[1].up = false
+      "KeyS" => pressed_keys.control[1].down = false
+      "KeyA" => pressed_keys.control[1].left = false
+      "KeyD" => pressed_keys.control[1].right = false
       _ => ()
     }
   })

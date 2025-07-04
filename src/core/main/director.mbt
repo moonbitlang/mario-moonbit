@@ -1,31 +1,25 @@
 // (* Represents the values of relevant key bindings. *)
 
 ///|
-priv struct Keys {
+priv struct DirKey {
   mut up : Bool
-  mut up2 : Bool
   mut down : Bool
-  mut down2 : Bool
   mut left : Bool
-  mut left2 : Bool
   mut right : Bool
-  mut right2 : Bool
-  mut bbox : Int
+} derive(Default)
+
+///|
+priv struct Keys {
+  control : Array[DirKey]
+  mut bbox : Bool
 }
 
 // (*pressed_keys instantiates the keys.*)
 
 ///|
 let pressed_keys : Keys = {
-  up: false,
-  up2: false,
-  down: false,
-  down2: false,
-  left: false,
-  left2: false,
-  right: false,
-  right2: false,
-  bbox: 0,
+  control: Array::makei(player_count, _ => DirKey::default()),
+  bbox: false,
 }
 
 ///|
@@ -45,11 +39,10 @@ fn calc_fps(t0 : Double, t1 : Double) -> Double {
   1.0 / delta
 }
 
-// (* Returns whether the bounding box should be drawn *)
-
 ///|
+/// (* Returns whether the bounding box should be drawn *)
 fn check_bbox_enabled() -> Bool {
-  pressed_keys.bbox == 1
+  pressed_keys.bbox
 }
 
 // (* update_collidable is the primary update method for collidable objects,
@@ -88,56 +81,41 @@ fn update_collidable(
   }
 }
 
-// (* Converts a keypress to a list of control keys, allowing more than one key
-// * to be processed each frame. *)
-
 ///|
-fn translate_keys() -> List[Control] {
+/// (* Converts a keypress to a list of control keys, allowing more than one key
+/// * to be processed each frame. *)
+fn translate_keys(index : Int) -> List[Control] {
   let mut res : List[Control] = @list.empty()
-  if which.val {
-    if pressed_keys.up {
-      res = res.add(Up)
-    }
-    if pressed_keys.down {
-      res = res.add(Down)
-    }
-    if pressed_keys.left {
-      res = res.add(Left)
-    }
-    if pressed_keys.right {
-      res = res.add(Right)
-    }
-  } else {
-    if pressed_keys.up2 {
-      res = res.add(Up)
-    }
-    if pressed_keys.down2 {
-      res = res.add(Down)
-    }
-    if pressed_keys.left2 {
-      res = res.add(Left)
-    }
-    if pressed_keys.right2 {
-      res = res.add(Right)
-    }
+  if pressed_keys.control[index].up {
+    res = res.add(Up)
+  }
+  if pressed_keys.control[index].down {
+    res = res.add(Down)
+  }
+  if pressed_keys.control[index].left {
+    res = res.add(Left)
+  }
+  if pressed_keys.control[index].right {
+    res = res.add(Right)
   }
   res
 }
 
-// (* run_update is used to update all of the collidables at once. Primarily used
-// * as a wrapper method. This method is necessary to differentiate between
-// * the player collidable and the remaining collidables, as special operations
-// * such as viewport centering only occur with the player.*)
-
 ///|
+/// (* run_update is used to update all of the collidables at once. Primarily used
+/// * as a wrapper method. This method is necessary to differentiate between
+/// * the player collidable and the remaining collidables, as special operations
+/// * such as viewport centering only occur with the player.*)
 fn run_update_collid(
   state : St,
   collid : Collidable,
-  all_collids : List[Collidable]
+  all_collids : List[Collidable],
+  player_index? : Int
 ) -> Collidable {
   match collid {
     { target: Player(_, _), .. } as p => {
-      let keys = translate_keys()
+      guard player_index is Some(player_index)
+      let keys = translate_keys(player_index)
       p.object.crouch = false
       let player = match update_player(p, keys) {
         None => p
@@ -174,9 +152,6 @@ fn run_update_particle(state : St, part : Particle) -> Unit {
 }
 
 ///|
-let which : Ref[Bool] = @ref.new(true)
-
-///|
 fn update_helper(
   time : Double,
   state : St,
@@ -199,10 +174,8 @@ fn update_helper(
     let vpos_x_int = (state.vpt.pos.x / 5.0).to_int()
     let bgd_width = state.bgd.params.frame_size.0.to_int()
     draw_bgd(state.bgd, (vpos_x_int % bgd_width).to_double())
-    which.val = false
-    players.val = players.val.map(fn(p) {
-      which.val = not(which.val)
-      run_update_collid(state, p, objs)
+    players.val = players.val.mapi(fn(i, p) {
+      run_update_collid(state, p, objs, player_index=i)
     })
     match players.val.find(fn(p) { not(p.object.kill) }) {
       None => {
