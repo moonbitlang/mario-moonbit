@@ -106,41 +106,41 @@ fn translate_keys(index : Int) -> List[Control] {
 /// * as a wrapper method. This method is necessary to differentiate between
 /// * the player collidable and the remaining collidables, as special operations
 /// * such as viewport centering only occur with the player.*)
-fn run_update_collid(
+fn run_update_player_collid(
   state : St,
   collid : Collidable,
   all_collids : List[Collidable],
-  player_index? : Int
+  player_index : Int
 ) -> Collidable {
-  match collid {
-    { target: Player(_, _), .. } as p => {
-      guard player_index is Some(player_index)
-      let keys = translate_keys(player_index)
-      p.object.crouch = false
-      let player = match update_player(p, keys) {
-        None => p
-        Some(updated_collid) => updated_collid
-      }
-      let evolved = update_collidable(state, player, all_collids)
-      collid_objs.val += evolved
-      player
-    }
-    _ => {
-      let obj = collid.object
-      let evolved = update_collidable(state, collid, all_collids)
-      if not(obj.kill) {
-        collid_objs.val = (collid_objs.val + evolved).add(collid)
-      }
-      let new_parts = if obj.kill { kill(collid) } else { @list.empty() }
-      particles.val += new_parts
-      collid
-    }
+  guard collid.target is Player(_, _)
+  let keys = translate_keys(player_index)
+  collid.object.crouch = false
+  let player = match update_player(collid, keys) {
+    None => collid
+    Some(updated_collid) => updated_collid
+  }
+  let evolved = update_collidable(state, player, all_collids)
+  collid_objs.val += evolved
+  player
+}
+
+///|
+fn run_update_obj_collid(
+  state : St,
+  collid : Collidable,
+  all_collids : List[Collidable]
+) -> Unit {
+  let obj = collid.object
+  let evolved = update_collidable(state, collid, all_collids)
+  if obj.kill {
+    particles.val += kill(collid)
+  } else {
+    collid_objs.val = (collid_objs.val + evolved).add(collid)
   }
 }
 
-// (* Primary update function to update and persist a particle *)
-
 ///|
+/// (* Primary update function to update and persist a particle *)
 fn run_update_particle(state : St, part : Particle) -> Unit {
   part.process()
   let x = part.pos.x - state.vpt.pos.x
@@ -159,9 +159,10 @@ fn update_helper(
   parts : List[Particle]
 ) -> Unit {
   if state.game_over == true {
-    match players.val.find(fn(p) { not(p.object.kill) }) {
-      None => game_lose()
-      Some(_) => game_win()
+    if players.val.any(fn(p) { not(p.object.kill) }) {
+      game_win()
+    } else {
+      game_lose()
     }
   } else {
     collid_objs.val = @list.empty()
@@ -175,7 +176,7 @@ fn update_helper(
     let bgd_width = state.bgd.params.frame_size.0.to_int()
     draw_bgd(state.bgd, (vpos_x_int % bgd_width).to_double())
     players.val = players.val.mapi(fn(i, p) {
-      run_update_collid(state, p, objs, player_index=i)
+      run_update_player_collid(state, p, objs, i)
     })
     match players.val.find(fn(p) { not(p.object.kill) }) {
       None => {
@@ -188,8 +189,8 @@ fn update_helper(
         let b = p.object.pos
         let c = XY::make((a.x + b.x) * 0.5, (a.y + b.y) * 0.5)
         state.update_viewport(c)
-        let _ = objs.map(fn(obj) { run_update_collid(state, obj, objs) })
-        let _ = parts.map(fn(part) { run_update_particle(state, part) })
+        objs.each(fn(obj) { run_update_obj_collid(state, obj, objs) })
+        parts.each(fn(part) { run_update_particle(state, part) })
         fps(fps_)
         hud(state.score, state.coins)
       }
