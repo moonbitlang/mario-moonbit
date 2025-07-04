@@ -21,6 +21,3 @@ fnalias @object.(
   spawn_above,
   collide_block
 )
-
-///|
-fnalias @draw.game_win

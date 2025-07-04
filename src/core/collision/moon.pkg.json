@@ -3,7 +3,6 @@
     "mario/game/actors",
     "mario/core/utils",
     "mario/rendering/viewport",
-    "mario/rendering/draw",
     "mario/core/object",
     "mario/core/state"
   ]

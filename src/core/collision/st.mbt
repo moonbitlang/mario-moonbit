@@ -106,7 +106,6 @@ fn process_collision(
           }
         Panel => {
           state.game_over()
-          game_win()
           (None, None)
         }
         _ => {
@@ -118,7 +117,6 @@ fn process_collision(
       match t {
         Panel => {
           state.game_over()
-          game_win()
           (None, None)
         }
         _ =>
