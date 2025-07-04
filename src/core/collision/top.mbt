@@ -6,35 +6,34 @@ let invuln : Int = 60
 
 ///|
 fn player_attack_enemy(
-  o1 : Object,
-  typ : Enemy,
-  s2 : Sprite,
-  o2 : Object,
+  player : Collidable,
+  enemy : Collidable,
   state : St
 ) -> (Collidable?, Collidable?) {
-  o1.invuln = 10
-  o1.jumping = false
-  o1.grounded = true
+  player.object.invuln = 10
+  player.object.jumping = false
+  player.object.grounded = true
+  guard enemy.target is Enemy(typ)
   match typ {
     GKoopaShell | RKoopaShell => {
-      let r2 = evolve_enemy(o1.dir, typ, s2, o2)
-      o1.vel.y = -dampen_jump
-      o1.pos.y = o1.pos.y - 5.0
+      let r2 = evolve_enemy(player.object.dir, enemy)
+      player.object.vel.y = -dampen_jump
+      player.object.pos.y = player.object.pos.y - 5.0
       (None, r2)
     }
     _ => {
-      dec_health(o2)
-      o1.vel.y = -dampen_jump
+      dec_health(enemy)
+      player.object.vel.y = -dampen_jump
       if state.multiplier == 8 {
         state.increase_score(800)
-        o2.score = 800
-        (None, evolve_enemy(o1.dir, typ, s2, o2))
+        enemy.object.score = 800
+        (None, evolve_enemy(player.object.dir, enemy))
       } else {
         let score = 100 * state.multiplier
         state.increase_score(score)
-        o2.score = score
+        enemy.object.score = score
         state.double_multiplier()
-        (None, evolve_enemy(o1.dir, typ, s2, o2))
+        (None, evolve_enemy(player.object.dir, enemy))
       }
     }
   }
@@ -44,74 +43,69 @@ fn player_attack_enemy(
 
 ///|
 fn enemy_attack_player(
-  o1 : Object,
-  t2 : Enemy,
-  s2 : Sprite,
-  o2 : Object
+  player : Collidable,
+  enemy : Collidable
 ) -> (Collidable?, Collidable?) {
+  guard enemy.target is Enemy(t2)
   match t2 {
     GKoopaShell | RKoopaShell => {
-      let r2 = if o2.vel.x == 0.0 {
-        evolve_enemy(o1.dir, t2, s2, o2)
+      let r2 = if enemy.object.vel.x == 0.0 {
+        evolve_enemy(player.object.dir, enemy)
       } else {
-        dec_health(o1)
-        o1.invuln = invuln
+        dec_health(player)
+        player.object.invuln = invuln
         None
       }
       (None, r2)
     }
     _ => {
-      dec_health(o1)
-      o1.invuln = invuln
+      dec_health(player)
+      player.object.invuln = invuln
       (None, None)
     }
   }
 }
 
-// (*In the case that two enemies collide, they are to reverse directions. However,
-// *in the case that one or more of the two enemies is a koopa shell, then
-// *the koopa shell kills the other enemy. *)
-
 ///|
+/// (*In the case that two enemies collide, they are to reverse directions. However,
+/// *in the case that one or more of the two enemies is a koopa shell, then
+/// *the koopa shell kills the other enemy. *)
 fn col_enemy_enemy(
-  t1 : Enemy,
-  s1 : Sprite,
-  o1 : Object,
-  t2 : Enemy,
-  s2 : Sprite,
-  o2 : Object,
+  enemy1 : Collidable,
+  enemy2 : Collidable,
   dir : @utils.Dir2d
 ) -> (Collidable?, Collidable?) {
+  guard enemy1.target is Enemy(t1) && enemy2.target is Enemy(t2)
   match (t1, t2) {
     (GKoopaShell, GKoopaShell)
     | (GKoopaShell, RKoopaShell)
     | (RKoopaShell, RKoopaShell)
     | (RKoopaShell, GKoopaShell) => {
-      dec_health(o1)
-      dec_health(o2)
+      dec_health(enemy1)
+      dec_health(enemy2)
       (None, None)
     }
     (RKoopaShell | GKoopaShell, _) =>
-      if o1.vel.x == 0.0 {
-        rev_dir(o2, t2, s2)
+      if enemy1.object.vel.x == 0.0 {
+        rev_dir(enemy2)
         (None, None)
       } else {
-        dec_health(o2)
+        dec_health(enemy2)
         (None, None)
       }
     (_, RKoopaShell | GKoopaShell) =>
-      if o2.vel.x == 0.0 {
-        rev_dir(o1, t1, s1)
+      if enemy2.object.vel.x == 0.0 {
+        rev_dir(enemy1)
         (None, None)
       } else {
-        dec_health(o1)
+        dec_health(enemy1)
         (None, None)
       }
     _ =>
       match dir {
         West | East => {
-          rev_dir(o1, t1, s1)
-          rev_dir(o2, t2, s2)
+          rev_dir(enemy1)
+          rev_dir(enemy2)
           (None, None)
         }
         _ => (None, None)

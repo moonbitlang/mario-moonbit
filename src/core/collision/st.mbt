@@ -12,18 +12,14 @@ fn process_collision(
   state : St
 ) -> (Collidable?, Collidable?) {
   match (c1.target, c2.target, dir) {
-    (Player(_), Enemy(typ), South) =>
-      player_attack_enemy(c1.object, typ, c2.sprite, c2.object, state)
-    (Enemy(typ), Player(_), North) =>
-      player_attack_enemy(c2.object, typ, c1.sprite, c1.object, state)
-    (Player(_), Enemy(t2), _) =>
-      enemy_attack_player(c1.object, t2, c2.sprite, c2.object)
-    (Enemy(t2), Player(_), _) =>
-      enemy_attack_player(c2.object, t2, c1.sprite, c1.object)
+    (Player(_), Enemy(_), South) => player_attack_enemy(c1, c2, state)
+    (Enemy(_), Player(_), North) => player_attack_enemy(c2, c1, state)
+    (Player(_), Enemy(_), _) => enemy_attack_player(c1, c2)
+    (Enemy(_), Player(_), _) => enemy_attack_player(c2, c1)
     (Player(_), Item(t2), _) =>
       match t2 {
         Mushroom => {
-          dec_health(c2.object)
+          dec_health(c2)
           if c1.object.health == 2 {
             ()
           } else {
@@ -37,7 +33,7 @@ fn process_collision(
         }
         Coin => {
           state.increase_coin()
-          dec_health(c2.object)
+          dec_health(c2)
           state.increase_score(100)
           (None, None)
         }
@@ -45,7 +41,7 @@ fn process_collision(
     (Item(t2), Player(_), _) =>
       match t2 {
         Mushroom => {
-          dec_health(c1.object)
+          dec_health(c1)
           if c2.object.health == 2 {
             ()
           } else {
@@ -59,47 +55,42 @@ fn process_collision(
         }
         Coin => {
           state.increase_coin()
-          dec_health(c1.object)
+          dec_health(c1)
           state.increase_score(100)
           (None, None)
         }
       }
-    (Enemy(t1), Enemy(t2), dir) =>
-      col_enemy_enemy(t1, c1.sprite, c1.object, t2, c2.sprite, c2.object, dir)
-    (Enemy(t1), Block(t2), East) | (Enemy(t1), Block(t2), West) =>
+    (Enemy(_), Enemy(_), dir) => col_enemy_enemy(c1, c2, dir)
+    (Enemy(t1), Block(t2), East | West) =>
       match (t1, t2) {
         (RKoopaShell, Brick) | (GKoopaShell, Brick) => {
-          dec_health(c2.object)
+          dec_health(c2)
           reverse_left_right(c1.object)
           (None, None)
         }
         (RKoopaShell, QBlock(typ)) | (GKoopaShell, QBlock(typ)) => {
-          let updated_block = evolve_block(c2.object)
+          let updated_block = evolve_block(c2)
           let spawned_item = spawn_above(c1.object.dir, c2.object, typ)
-          rev_dir(c1.object, t1, c1.sprite)
+          rev_dir(c1)
           (Some(updated_block), Some(spawned_item))
         }
         (_, _) => {
-          rev_dir(c1.object, t1, c1.sprite)
+          rev_dir(c1)
           (None, None)
         }
       }
-    (Item(_), Block(_), East) | (Item(_), Block(_), West) => {
+    (Item(_), Block(_), East | West) => {
       reverse_left_right(c1.object)
       (None, None)
     }
-    (Enemy(_), Block(_), _) => {
-      collide_block(true, dir, c1.object)
-      (None, None)
-    }
-    (Item(_), Block(_), _) => {
+    (Enemy(_) | Item(_), Block(_), _) => {
       collide_block(true, dir, c1.object)
       (None, None)
     }
     (Player(t1, _), Block(t), North) =>
       match t {
         QBlock(typ) => {
-          let updated_block = evolve_block(c2.object)
+          let updated_block = evolve_block(c2)
           let spawned_item = spawn_above(c1.object.dir, c2.object, typ)
           collide_block(true, dir, c1.object)
           (Option::Some(spawned_item), Option::Some(updated_block))
@@ -107,7 +98,7 @@ fn process_collision(
         Brick =>
           if t1 is Large {
             collide_block(true, dir, c1.object)
-            dec_health(c2.object)
+            dec_health(c2)
             (None, None)
           } else {
             collide_block(true, dir, c1.object)

@@ -1,7 +1,6 @@
 {
   "import": [
     "mario/game/actors",
-    "mario/rendering/sprite",
     "mario/core/utils",
     "mario/rendering/viewport",
     "mario/rendering/draw",

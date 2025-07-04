@@ -298,12 +298,8 @@ pub fn reverse_left_right(obj : Object) -> Unit {
 }
 
 ///|
-pub fn evolve_enemy(
-  player_dir : Dir1d,
-  typ : Enemy,
-  spr : Sprite,
-  obj : Object
-) -> Collidable? {
+pub fn evolve_enemy(player_dir : Dir1d, enemy : Collidable) -> Collidable? {
+  guard enemy is { object: obj, target: Enemy(typ), sprite: spr }
   match typ {
     GKoopa => {
       let (new_spr, new_obj) = makeobj(
@@ -344,15 +340,17 @@ pub fn evolve_enemy(
 }
 
 ///|
-pub fn rev_dir(o : Object, t : Enemy, s : Sprite) -> Unit {
-  reverse_left_right(o)
-  let old_params = s.params
-  s.transform_enemy(t, o.dir)
-  normalize_pos(o.pos, old_params, s.params)
+pub fn rev_dir(collidable : Collidable) -> Unit {
+  guard collidable.target is Enemy(t)
+  collidable.object |> reverse_left_right()
+  let old_params = collidable.sprite.params
+  collidable.sprite.transform_enemy(t, collidable.object.dir)
+  normalize_pos(collidable.object.pos, old_params, collidable.sprite.params)
 }
 
 ///|
-pub fn dec_health(obj : Object) -> Unit {
+pub fn dec_health(collidable : Collidable) -> Unit {
+  let obj = collidable.object
   let health = obj.health - 1
   if health == 0 {
     obj.kill = true
@@ -361,17 +359,17 @@ pub fn dec_health(obj : Object) -> Unit {
   }
 }
 
-// (*Used for deleting a block and replacing it with a used block*)
-
 ///|
-pub fn evolve_block(obj : Object) -> Collidable {
-  dec_health(obj)
+/// (*Used for deleting a block and replacing it with a used block*)
+pub fn evolve_block(collidable : Collidable) -> Collidable {
+  guard collidable.target is Block(QBlock(_))
+  dec_health(collidable)
   let (new_spr, new_obj) = makeobj(
     new_id(),
     Left,
     Block(QBlockUsed),
-    obj.pos.x,
-    obj.pos.y,
+    collidable.object.pos.x,
+    collidable.object.pos.y,
   )
   { target: Block(QBlockUsed), sprite: new_spr, object: new_obj }
 }

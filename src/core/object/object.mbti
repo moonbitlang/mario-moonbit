@@ -12,17 +12,17 @@ fn check_collision(Collidable, Collidable) -> @utils.Dir2d?
 
 fn collide_block(Bool, @utils.Dir2d, Object) -> Unit
 
-fn dec_health(Object) -> Unit
+fn dec_health(Collidable) -> Unit
 
-fn evolve_block(Object) -> Collidable
+fn evolve_block(Collidable) -> Collidable
 
-fn evolve_enemy(@utils.Dir1d, @actors.Enemy, @sprite.Sprite, Object) -> Collidable?
+fn evolve_enemy(@utils.Dir1d, Collidable) -> Collidable?
 
 fn kill(Collidable) -> @list.T[@sprite.Particle]
 
 fn process_obj(Object, Double) -> Unit
 
-fn rev_dir(Object, @actors.Enemy, @sprite.Sprite) -> Unit
+fn rev_dir(Collidable) -> Unit
 
 fn reverse_left_right(Object) -> Unit
 

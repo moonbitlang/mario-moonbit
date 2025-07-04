@@ -1,14 +1,8 @@
 ///|
-typealias @actors.Enemy
-
-///|
-typealias @sprite.Sprite
-
-///|
 typealias @utils.Dir2d
 
 ///|
-typealias @object.(Collidable, Object)
+typealias @object.Collidable
 
 ///|
 typealias @list.T as List
